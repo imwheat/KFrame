@@ -10,6 +10,12 @@ using Sirenix.OdinInspector;
 using UnityEngine.Audio;
 using KFrame.Utilities;
 
+#if UNITY_EDITOR
+
+using UnityEditor;
+
+#endif
+
 namespace KFrame.Systems
 {
     [CreateAssetMenu(fileName = "AudioLibrary", menuName = "ScriptableObject/AudioLibrary")]
@@ -23,6 +29,7 @@ namespace KFrame.Systems
         public List<AudioClip> AudioClips { get; private set; }
         [field: SerializeField, LabelText("BGM音源库"), FoldoutGroup("参数设置"), ListDrawerSettings(ShowIndexLabels = true)] 
         public List<AudioClip> BGMClips { get; private set; }
+        [field: SerializeField, LabelText("混音器"), FoldoutGroup("参数设置")] public AudioMixer AudioMixer { get; private set; }
         [field: SerializeField, LabelText("混音器分组库"), FoldoutGroup("参数设置")] public List<AudioMixerGroup> AudioMixerGroups { get; private set; }
         
         #if UNITY_EDITOR
@@ -132,7 +139,68 @@ namespace KFrame.Systems
             UpdateAudioDic(audioStack);
             UpdateAudioNameDic(audioStack);
         }
+        
+        /// <summary>
+        /// 递归查找每个Group的子集
+        /// </summary>
+        public void FindChildGroup(Dictionary<AudioMixerGroup, AudioGroup> groupDic,
+            AudioMixer mixer,string path, HashSet<string> seen)
+        {
+            //标记已经设置过了
+            if (seen.Contains(path))
+            {
+                return;
+            }
+            seen.Add(path);
+            
+            //先根据路径查找子集，如果只有1个那就说明到底了
+            AudioMixerGroup[] groups = mixer.FindMatchingGroups(path);
+            if (groups.Length == 1 && !string.IsNullOrEmpty(path))
+            {
+                //查找它的父级然后绑定
+                AudioGroup nGroup = groupDic[groups[0]];
 
+                AudioGroup parent =
+                    groupDic[mixer.FindMatchingGroups(path.Substring(0, path.Length - ($"/{nGroup.GroupName}").Length))[0]];
+                nGroup.SetParentGroup(parent);
+            }
+            else
+            {
+                //如果还找到多个Group，那就继续查询
+                foreach (AudioMixerGroup group in groups)
+                {
+                    FindChildGroup(groupDic, mixer, path + $"/{group.name}", seen);
+                }
+            }
+        }
+        /// <summary>
+        /// 更新AudioGroups
+        /// </summary>
+        public void UpdateAudioGroups()
+        {
+            if (AudioMixer == null)
+            {
+                EditorUtility.DisplayDialog("错误", "AudioMixer为空，无法更新", "确认");
+                return;
+            }
+            
+            //清空AudioGroup，然后递归查询每个Group的子集
+            AudioGroups = new List<AudioGroup>();
+            AudioMixerGroup[] groups = AudioMixer.FindMatchingGroups("");
+            Dictionary<AudioMixerGroup, AudioGroup> groupDic = new Dictionary<AudioMixerGroup, AudioGroup>();
+            foreach (AudioMixerGroup group in groups)
+            {
+                AudioGroup newGroup = new AudioGroup(group.name, AudioGroups.Count);
+                groupDic[group] = newGroup;
+                AudioGroups.Add(newGroup);
+            }
+            FindChildGroup(groupDic, AudioMixer, AudioGroups[0].GroupName, new HashSet<string>());
+                
+            //保存
+            EditorUtility.SetDirty(this);
+            AssetDatabase.Refresh();
+            AssetDatabase.SaveAssets();
+        }
 
         /// <summary>
         /// 初始化字典

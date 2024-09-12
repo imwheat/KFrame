@@ -93,11 +93,6 @@ namespace KFrame.Editor
             //更新赋值
             curEditGroup = group;
         }
-
-        protected override void OnGUI()
-        {
-            base.OnGUI();
-        }
         private void OnDisable()
         {
             //如果有更改过，会弹出提示窗口

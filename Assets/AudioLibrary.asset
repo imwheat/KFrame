@@ -12,46 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fd6faea11d382d47b724ce6a6192d46, type: 3}
   m_Name: AudioLibrary
   m_EditorClassIdentifier: 
-  <Audioes>k__BackingField:
-  - <AudioIndex>k__BackingField: 0
-    <AudioName>k__BackingField: "\u6D4B\u8BD5"
-    <Clips>k__BackingField: 
-    <AudioGroupIndex>k__BackingField: 0
-    <Volume>k__BackingField: 1
-    <Pitch>k__BackingField: 1
-    <RandomMinPitch>k__BackingField: 1
-    <RandomMaxPitch>k__BackingField: 1
-    <MaxPitch>k__BackingField: 1
-    <LimitPlay>k__BackingField: 0
-    <LimitPlayCount>k__BackingField: 2
-    <Loop>k__BackingField: 0
-    <Is3D>k__BackingField: 0
-    <AudioType>k__BackingField: 1
-  - <AudioIndex>k__BackingField: 0
-    <AudioName>k__BackingField: "\u6D4B\u8BD52"
-    <Clips>k__BackingField: 
-    <AudioGroupIndex>k__BackingField: 0
-    <Volume>k__BackingField: 1
-    <Pitch>k__BackingField: 1
-    <RandomMinPitch>k__BackingField: 1
-    <RandomMaxPitch>k__BackingField: 1
-    <MaxPitch>k__BackingField: 1
-    <LimitPlay>k__BackingField: 0
-    <LimitPlayCount>k__BackingField: 2
-    <Loop>k__BackingField: 0
-    <Is3D>k__BackingField: 0
-    <AudioType>k__BackingField: 1
+  <Audioes>k__BackingField: []
   <BGMs>k__BackingField: []
   <AudioGroups>k__BackingField:
-  - GroupName: Main
+  - GroupName: Master
     GroupIndex: 0
-    ChildrenIndexes: 
+    ChildrenIndexes: 010000000200000003000000
   - GroupName: SFX
     GroupIndex: 1
     ChildrenIndexes: 
   - GroupName: BGM
     GroupIndex: 2
     ChildrenIndexes: 
+  - GroupName: UI
+    GroupIndex: 3
+    ChildrenIndexes: 
   <AudioClips>k__BackingField: []
   <BGMClips>k__BackingField: []
+  <AudioMixer>k__BackingField: {fileID: 24100000, guid: 96598e9a8444ddb429c766161c0af201, type: 2}
   <AudioMixerGroups>k__BackingField: []

@@ -66,6 +66,11 @@ namespace KFrame.Systems
             Children = new List<AudioGroup>();
             ChildrenIndexes = new List<int>();
         }
+
+        public AudioGroup(string groupName) : this()
+        {
+            GroupName = groupName;
+        }
         public AudioGroup(string groupName, int groupIndex) : this()
         {
             GroupName = groupName;
@@ -117,7 +122,7 @@ namespace KFrame.Systems
 
             //更新父级
             Parent = parent;
-            ChildrenIndexes.Add(this.GroupIndex);
+            Parent.ChildrenIndexes.Add(this.GroupIndex);
         }
 #endif
 

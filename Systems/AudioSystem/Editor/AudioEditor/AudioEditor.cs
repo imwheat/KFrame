@@ -69,6 +69,30 @@ namespace KFrame.Systems
 
         #region GUI显示相关
         
+        
+        /// <summary>
+        /// 编辑模式
+        /// 0.音效编辑
+        /// 1.BGM编辑
+        /// 2.Clip编辑
+        /// 3.分组编辑
+        /// </summary>
+        private enum EditMode
+        {
+            SFX = 0,
+            BGM = 1,
+            Clip = 2,
+            Group = 3,
+        }
+        
+        /// <summary>
+        /// 编辑模式
+        /// 0.音效编辑
+        /// 1.BGM编辑
+        /// 2.Clip编辑
+        /// 3.分组编辑
+        /// </summary>
+        private EditMode editMode = EditMode.SFX;
         internal abstract class GUIBase
         {
             /// <summary>
@@ -154,9 +178,13 @@ namespace KFrame.Systems
         }
         
         /// <summary>
-        /// GUI显示选项
+        /// 音效GUI选项
         /// </summary>
-        private List<GUIBase> guiOptions;
+        private List<AudioGUI> audioGUIs;
+        /// <summary>
+        /// BGMGUI选项
+        /// </summary>
+        private List<BGMGUI> bgmGUIs;
         
         /// <summary>
         /// 标准化统一当前编辑器的绘制Style
@@ -202,7 +230,7 @@ namespace KFrame.Systems
         private void OnEnable()
         {
             //垃圾回收导致GUI没了，那就重新生成
-            if (guiOptions == null)
+            if (audioGUIs == null)
             {
                 InitGUI();
             }
@@ -246,7 +274,8 @@ namespace KFrame.Systems
             {
                 filterBoolDic[type] = true;
             }
-            guiOptions = new List<GUIBase>();
+            audioGUIs = new List<AudioGUI>();
+            bgmGUIs = new List<BGMGUI>();
             
             //多线程初始化GUI
             int midAudioIndex = Library.Audioes.Count / 2;
@@ -287,9 +316,9 @@ namespace KFrame.Systems
         private void AddBGMStackGUI(BGMStack bgmStack, bool checkFilter)
         {
             BGMGUI gui = new BGMGUI(bgmStack);
-            lock (guiOptions)
+            lock (bgmGUIs)
             {
-                guiOptions.Add(gui);
+                bgmGUIs.Add(gui);
             }
             
             if (checkFilter)
@@ -304,9 +333,9 @@ namespace KFrame.Systems
         private void AddAudioStackGUI(AudioStack audioStack, bool checkFilter)
         {
             AudioGUI gui = new AudioGUI(audioStack);
-            lock (guiOptions)
+            lock (audioGUIs)
             {
-                guiOptions.Add(gui);
+                audioGUIs.Add(gui);
             }
 
             if (checkFilter)
@@ -384,10 +413,16 @@ namespace KFrame.Systems
             searchText = SirenixEditorGUI.SearchField(serachRect, searchText);
             if (EditorGUI.EndChangeCheck())
             {
-                for (int i = 0; i < guiOptions.Count; i++)
+                for (int i = 0; i < audioGUIs.Count; i++)
                 {
                     //检测名称是否符合筛选结果
-                    CheckFilterText(guiOptions[i]);
+                    CheckFilterText(audioGUIs[i]);
+                }
+
+                for (int i = 0; i < bgmGUIs.Count; i++)
+                {
+                    //检测名称是否符合筛选结果
+                    CheckFilterText(bgmGUIs[i]);
                 }
             }
             
@@ -428,10 +463,16 @@ namespace KFrame.Systems
             
             if (EditorGUI.EndChangeCheck())
             {
-                for (int i = 0; i < guiOptions.Count; i++)
+                for (int i = 0; i < audioGUIs.Count; i++)
                 {
                     //检测类型是否符合筛选结果
-                    CheckFilterType(guiOptions[i]);
+                    CheckFilterType(audioGUIs[i]);
+                }
+                
+                for (int i = 0; i < bgmGUIs.Count; i++)
+                {
+                    //检测类型是否符合筛选结果
+                    CheckFilterType(bgmGUIs[i]);
                 }
             }
             
@@ -455,13 +496,26 @@ namespace KFrame.Systems
             EditorGUILayout.BeginVertical();
 
             listScrollPosition = EditorGUILayout.BeginScrollView(listScrollPosition);
-            
-            //遍历绘制每个GUI
-            for (int i = 0; i < guiOptions.Count; i++)
+
+            if (editMode == EditMode.SFX)
             {
-                //绘制GUI
-                DrawGUIOption(guiOptions[i], i);
+                //遍历绘制每个GUI
+                for (int i = 0; i < audioGUIs.Count; i++)
+                {
+                    //绘制GUI
+                    DrawGUIOption(audioGUIs[i], i);
+                }
             }
+            else if (editMode == EditMode.BGM)
+            {
+                //遍历绘制每个GUI
+                for (int i = 0; i < bgmGUIs.Count; i++)
+                {
+                    //绘制GUI
+                    DrawGUIOption(bgmGUIs[i], i);
+                }
+            }
+
             
             EditorGUILayout.EndScrollView();
             
