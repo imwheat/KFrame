@@ -20,7 +20,7 @@ namespace KFrame.Editor
         [MenuItem("项目工具/音效编辑器")]
         public static void ShowAudioEditorWindow()
         {
-            AudioEditor.ShowWindow();
+            Systems.AudioEditor.ShowWindow();
         }
     }
 }

@@ -61,9 +61,21 @@ namespace KFrame.Systems
         /// </summary>
         private AudioesType[] filterTypes;
         /// <summary>
-        /// 列表的滚动位置
+        /// Audio列表的滚动位置
         /// </summary>
-        private Vector2 listScrollPosition;
+        private Vector2 audioScrollPosition;
+        /// <summary>
+        /// BGM列表的滚动位置
+        /// </summary>
+        private Vector2 bgmScrollPosition;
+        /// <summary>
+        /// Clip列表的滚动位置
+        /// </summary>
+        private Vector2 clipScrollPosition;
+        /// <summary>
+        /// Group列表的滚动位置
+        /// </summary>
+        private Vector2 groupScrollPosition;
 
         #endregion
 
@@ -203,7 +215,7 @@ namespace KFrame.Systems
             /// <summary>
             /// Label高度
             /// </summary>
-            internal static readonly float labelHeight = 15f;
+            internal static readonly float labelHeight = 20f;
             /// <summary>
             /// 筛选类型的宽度
             /// </summary>
@@ -357,9 +369,25 @@ namespace KFrame.Systems
             
             //绘制顶部选项GUI
             DrawTopGUI();
-            
-            //绘制选项列表
-            DrawOptionList();
+
+            switch (editMode)
+            {
+                case EditMode.SFX:
+                    //绘制音效选项列表
+                    DrawAudioList();
+                    break;
+                case EditMode.BGM:
+                    //绘制BGM列表
+                    DrawBGMList();
+                    break;
+                case EditMode.Clip:
+                    break;
+                case EditMode.Group:
+                    //绘制Group列表
+                    DrawGroupList();
+                    break;
+            }
+
             
         }
         /// <summary>
@@ -407,6 +435,35 @@ namespace KFrame.Systems
         {
             EditorGUILayout.BeginVertical();
             
+            GUILayout.Space(10f);
+            
+            EditorGUILayout.BeginHorizontal();
+
+            if (GUILayout.Button("音效"))
+            {
+                editMode = EditMode.SFX;
+                searchText = "";
+            }
+            if (GUILayout.Button("BGM"))
+            {
+                editMode = EditMode.BGM;
+                searchText = "";
+            }
+            if (GUILayout.Button("Clip"))
+            {
+                editMode = EditMode.Clip;
+                searchText = "";
+            }
+            if (GUILayout.Button("Group"))
+            {
+                editMode = EditMode.Group;
+                searchText = "";
+            }
+            
+            EditorGUILayout.EndHorizontal();
+            
+            GUILayout.Space(10f);
+            
             //搜索栏
             EditorGUI.BeginChangeCheck();
             Rect serachRect = EditorGUILayout.GetControlRect(GUILayout.Height(MStyle.labelHeight));
@@ -425,6 +482,19 @@ namespace KFrame.Systems
                     CheckFilterText(bgmGUIs[i]);
                 }
             }
+            
+
+            GUILayout.Space(MStyle.spacing);
+            
+            EditorGUILayout.EndVertical();
+        }
+        /// <summary>
+        /// 绘制选项列表
+        /// </summary>
+        private void DrawAudioList()
+        {
+            
+            EditorGUILayout.BeginVertical();
             
             //筛选选项            
             EditorGUITool.ShowAClearFoldOut(ref showFilter, "筛选");
@@ -469,12 +539,9 @@ namespace KFrame.Systems
                     CheckFilterType(audioGUIs[i]);
                 }
                 
-                for (int i = 0; i < bgmGUIs.Count; i++)
-                {
-                    //检测类型是否符合筛选结果
-                    CheckFilterType(bgmGUIs[i]);
-                }
             }
+            
+            GUILayout.Space(10f);
             
             //创建新的音效资源
             GUILayout.Space(MStyle.spacing);
@@ -482,40 +549,69 @@ namespace KFrame.Systems
             {
                 AudioStackCreateEditor.ShowWindow();
             }
-            GUILayout.Space(MStyle.spacing);
+            
+            GUILayout.Space(10f);
+            
+            audioScrollPosition = EditorGUILayout.BeginScrollView(audioScrollPosition);
+
+            //遍历绘制每个GUI
+            for (int i = 0; i < audioGUIs.Count; i++)
+            {
+                //绘制GUI
+                DrawGUIOption(audioGUIs[i], i);
+            }
+
+            
+            EditorGUILayout.EndScrollView();
             
             EditorGUILayout.EndVertical();
         }
         /// <summary>
-        /// 绘制选项列表
+        /// 绘制BGM列表
         /// </summary>
-        private void DrawOptionList()
+        private void DrawBGMList()
         {
-            
             
             EditorGUILayout.BeginVertical();
 
-            listScrollPosition = EditorGUILayout.BeginScrollView(listScrollPosition);
+            bgmScrollPosition = EditorGUILayout.BeginScrollView(bgmScrollPosition);
 
-            if (editMode == EditMode.SFX)
+            //遍历绘制每个GUI
+            for (int i = 0; i < bgmGUIs.Count; i++)
             {
-                //遍历绘制每个GUI
-                for (int i = 0; i < audioGUIs.Count; i++)
-                {
-                    //绘制GUI
-                    DrawGUIOption(audioGUIs[i], i);
-                }
-            }
-            else if (editMode == EditMode.BGM)
-            {
-                //遍历绘制每个GUI
-                for (int i = 0; i < bgmGUIs.Count; i++)
-                {
-                    //绘制GUI
-                    DrawGUIOption(bgmGUIs[i], i);
-                }
+                //绘制GUI
+                DrawGUIOption(bgmGUIs[i], i);
             }
 
+            
+            EditorGUILayout.EndScrollView();
+            
+            EditorGUILayout.EndVertical();
+        }
+        /// <summary>
+        /// 绘制Group列表
+        /// </summary>
+        private void DrawGroupList()
+        {
+            EditorGUILayout.BeginVertical();
+            
+            GUILayout.Space(10f);
+
+            if (GUILayout.Button("打开AudioMixer编辑"))
+            {
+                AssetDatabase.OpenAsset(Library.AudioMixer);
+            }
+            
+            GUILayout.Space(10f);
+
+            EditorGUILayout.LabelField("Group列表",EditorStyles.boldLabel);
+            
+            groupScrollPosition = EditorGUILayout.BeginScrollView(groupScrollPosition);
+
+            for (int i = 0; i < Library.AudioGroups.Count; i++)
+            {
+                EditorGUILayout.LabelField(Library.AudioGroups[i].GroupName);
+            }
             
             EditorGUILayout.EndScrollView();
             
