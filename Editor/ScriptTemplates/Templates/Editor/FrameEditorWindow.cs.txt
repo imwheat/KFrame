@@ -1,0 +1,23 @@
+//****************** 代码文件申明 ***********************
+//* 文件：#SCRIPTNAME#
+//* 作者：#AUTHORNAME#
+//* 创建时间：#CREATETIME#
+//* 描述：
+//*******************************************************
+
+using UnityEngine;
+using UnityEditor;
+using KFrame;
+using KFrame.Tools;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+
+namespace KFrame.Editor
+{
+    public class #SCRIPTNAME# : KEditorWindow
+    {
+        
+    }
+}
+

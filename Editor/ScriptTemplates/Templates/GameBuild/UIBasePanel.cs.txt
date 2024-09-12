@@ -1,0 +1,21 @@
+//****************** 代码文件申明 ************************
+//* 文件：#SCRIPTNAME#                                       
+//* 作者：#AUTHORNAME#
+//* 创建时间：#CREATETIME#
+//* 描述：Nothing
+//*****************************************************
+using UnityEngine;
+using UnityEngine.UI;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+
+namespace GameBuild
+{
+    [UIWindowData(typeof(#SCRIPTNAME#), true, "#SCRIPTNAME#", 0)]
+    public class #SCRIPTNAME# : UI_WindowBase
+    {
+        
+    }
+}
+

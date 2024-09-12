@@ -1,0 +1,20 @@
+//****************** 代码文件声明 ***********************
+//* 文件：#SCRIPTNAME#
+//* 作者：#AUTHORNAME#
+//* 创建时间：#CREATETIME#
+//* 描述：
+//*******************************************************
+
+using System;
+using System.Diagnostics;
+
+namespace KFrame.Attributes
+{
+    //只有在Unity编辑器里编译
+    [Conditional("UNITY_EDITOR")]
+    public class #SCRIPTNAME# : KGUIAttribute
+    {
+        
+    }
+}
+

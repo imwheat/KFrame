@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fd6faea11d382d47b724ce6a6192d46, type: 3}
+  m_Name: AudioLibrary
+  m_EditorClassIdentifier: 
+  <Audioes>k__BackingField:
+  - <AudioIndex>k__BackingField: 0
+    <AudioName>k__BackingField: "\u6D4B\u8BD5"
+    <Clips>k__BackingField: 
+    <AudioGroupIndex>k__BackingField: 0
+    <Volume>k__BackingField: 1
+    <Pitch>k__BackingField: 1
+    <RandomMinPitch>k__BackingField: 1
+    <RandomMaxPitch>k__BackingField: 1
+    <MaxPitch>k__BackingField: 1
+    <LimitPlay>k__BackingField: 0
+    <LimitPlayCount>k__BackingField: 2
+    <Loop>k__BackingField: 0
+    <Is3D>k__BackingField: 0
+    <AudioType>k__BackingField: 1
+  - <AudioIndex>k__BackingField: 0
+    <AudioName>k__BackingField: "\u6D4B\u8BD52"
+    <Clips>k__BackingField: 
+    <AudioGroupIndex>k__BackingField: 0
+    <Volume>k__BackingField: 1
+    <Pitch>k__BackingField: 1
+    <RandomMinPitch>k__BackingField: 1
+    <RandomMaxPitch>k__BackingField: 1
+    <MaxPitch>k__BackingField: 1
+    <LimitPlay>k__BackingField: 0
+    <LimitPlayCount>k__BackingField: 2
+    <Loop>k__BackingField: 0
+    <Is3D>k__BackingField: 0
+    <AudioType>k__BackingField: 1
+  <BGMs>k__BackingField: []
+  <AudioGroups>k__BackingField:
+  - GroupName: Main
+    GroupIndex: 0
+    ChildrenIndexes: 
+  - GroupName: SFX
+    GroupIndex: 1
+    ChildrenIndexes: 
+  - GroupName: BGM
+    GroupIndex: 2
+    ChildrenIndexes: 
+  <AudioClips>k__BackingField: []
+  <BGMClips>k__BackingField: []
+  <AudioMixerGroups>k__BackingField: []

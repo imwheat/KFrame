@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5217af948cdead248a3a08b9f88eac90, type: 3}
+  m_Name: FrameSettings
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: UIWindowDataDic
+      Entry: 7
+      Data: 0|System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[KFrame.Systems.UIWindowData,
+        KFrame]], mscorlib
+    - Name: comparer
+      Entry: 7
+      Data: 1|System.Collections.Generic.GenericEqualityComparer`1[[System.String,
+        mscorlib]], mscorlib
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: binarySerializer
+      Entry: 6
+      Data: 
+  resourcesSystemType: 1
+  SaveSystemType: 1
+  _frameAssetPath: Assets/KFrame
+  _frameEditorPath: Assets/KFrame/Editor
+  _frameScriptTemplatesPath: Assets/KFrame/Editor/ScriptTemplates/Templates
+  AudioLibrary: {fileID: 11400000, guid: 3768499e882a87040a54c5818c496622, type: 2}
+  _templates:
+  - {fileID: 4900000, guid: 8a62dfa9a187f02488c8a5dac509fb00, type: 3}
+  - {fileID: 4900000, guid: ba8ff228e808b974fb38dee655cd5b61, type: 3}
+  - {fileID: 4900000, guid: a4665f6e4e5ac5f448b83fd075358e11, type: 3}
+  - {fileID: 4900000, guid: 46cc59a009b351440bba6c9a18fce56b, type: 3}
+  - {fileID: 4900000, guid: f7c69d2b9d1d1bf42905da93eaeaf2a8, type: 3}
+  - {fileID: 4900000, guid: 40f7ba7839601494a8634e8a469d2b3e, type: 3}

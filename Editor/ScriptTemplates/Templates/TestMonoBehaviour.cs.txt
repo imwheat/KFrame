@@ -1,0 +1,38 @@
+//****************** 测试代码文件申明 ********************
+//* 文件：#SCRIPTNAME#                                       
+//* 作者：#AUTHORNAME#
+//* 创建时间：#CREATETIME#
+//* 测试功能：(测试用)Nothing 
+//*****************************************************
+
+using UnityEngine;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+
+#if UNITY_EDITOR
+
+namespace GameTest
+{
+    public class #SCRIPTNAME# : MonoBehaviour
+    {
+        private void Awake()
+        {
+            
+        }
+    
+        private void Start()
+        {
+            
+        }
+    
+        private void Update()
+        {
+            
+        }
+    
+    }
+}
+
+
+#endif
