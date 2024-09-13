@@ -57,8 +57,11 @@ namespace KFrame.Systems
         /// <summary>
         /// 音效Clip对id的字典(编辑器使用)
         /// </summary>
-        private static Dictionary<AudioClip, int> clipIndexDic = new Dictionary<AudioClip, int>();
-        
+        private static Dictionary<AudioClip, int> audioClipIndexDic = new Dictionary<AudioClip, int>();
+        /// <summary>
+        /// BGMClip对id的字典(编辑器使用)
+        /// </summary>
+        private static Dictionary<AudioClip, int> bgmClipIndexDic = new Dictionary<AudioClip, int>();
 
         static AudioDic()
         {
@@ -109,7 +112,7 @@ namespace KFrame.Systems
                     audioClipDic[i] = audioLibrary.AudioClips[i];
 
 #if UNITY_EDITOR
-                    clipIndexDic[audioLibrary.AudioClips[i]] = i;
+                    audioClipIndexDic[audioLibrary.AudioClips[i]] = i;
 #endif
                     
                 }
@@ -117,6 +120,10 @@ namespace KFrame.Systems
                 for (int i = 0; i < audioLibrary.BGMClips.Count; i++)
                 {
                     bgmClipDic[i] = audioLibrary.BGMClips[i];
+                    
+#if UNITY_EDITOR
+                    bgmClipIndexDic[audioLibrary.BGMClips[i]] = i;
+#endif
                 }
                 
                 foreach (var group in audioLibrary.AudioGroups)
@@ -234,7 +241,7 @@ namespace KFrame.Systems
         /// 获取音效Clip
         /// </summary>
         /// <param name="index">音效clip的id</param>
-        internal static AudioClip GetAudioClip(int index)
+        public static AudioClip GetAudioClip(int index)
         {
             //如果字典中有的话就返回
             if (audioClipDic.ContainsKey(index))
@@ -243,7 +250,6 @@ namespace KFrame.Systems
             }
             else
             {
-                Debug.Log("无法找到对应id的AudioClip:" + index);
                 return null;
             }
         }
@@ -252,7 +258,7 @@ namespace KFrame.Systems
         /// 获取BGMClip
         /// </summary>
         /// <param name="index">音效clip的id</param>
-        internal static AudioClip GetBGMClip(int index)
+        public static AudioClip GetBGMClip(int index)
         {
             //如果字典中有的话就返回
             if (bgmClipDic.ContainsKey(index))
@@ -261,7 +267,6 @@ namespace KFrame.Systems
             }
             else
             {
-                Debug.Log("无法找到对应id的BGMClip:" + index);
                 return null;
             }
         }
@@ -315,12 +320,25 @@ namespace KFrame.Systems
         /// </summary>
         /// <param name="indexes">音效id列表</param>
         /// <param name="clips">Clip列表</param>
-        public static void FindClipsByIndexes(List<int> indexes, List<AudioClip> clips)
+        public static void FindAudioClipsByIndexes(List<int> indexes, List<AudioClip> clips)
         {
             //遍历查找，然后一个个添加
             foreach (int index in indexes)
             {
                 clips.Add(Systems.AudioDic.GetAudioClip(index));
+            }
+        }
+        /// <summary>
+        /// 通过clips列表查找一个个Index放入indexes列表
+        /// </summary>
+        /// <param name="indexes">音效id列表</param>
+        /// <param name="clips">Clip列表</param>
+        public static void FindIndexesByAudioClips(List<int> indexes, List<AudioClip> clips)
+        {
+            //遍历查找，然后一个个添加
+            foreach (AudioClip clip in clips)
+            {
+                indexes.Add(GetAudioClipIndex(clip));
             }
         }
 
@@ -331,9 +349,9 @@ namespace KFrame.Systems
         public static int GetAudioClipIndex(AudioClip clip)
         {
             //如果字典中有的话就返回
-            if (clipIndexDic.ContainsKey(clip))
+            if (audioClipIndexDic.ContainsKey(clip))
             {
-                return clipIndexDic[clip];
+                return audioClipIndexDic[clip];
             }
             else
             {
@@ -342,12 +360,38 @@ namespace KFrame.Systems
             }
         }
         /// <summary>
+        /// 查找AudioClip的id(编辑器使用)
+        /// </summary>
+        /// <returns>返回Clip下标，找不到返回-1</returns>
+        public static int GetBGMClipIndex(AudioClip clip)
+        {
+            //如果字典中有的话就返回
+            if (bgmClipIndexDic.ContainsKey(clip))
+            {
+                return bgmClipIndexDic[clip];
+            }
+            else
+            {
+                //找不到返回-1
+                return -1;
+            }
+        }
+
+        /// <summary>
         /// 更新AudioClip库(编辑器使用)
         /// </summary>
         public static void SetAudioClipIndex(AudioClip clip, int id)
         {
-            clipIndexDic[clip] = id;
+            audioClipIndexDic[clip] = id;
             audioClipDic[id] = clip;
+        }
+        /// <summary>
+        /// 更新BGMClip库(编辑器使用)
+        /// </summary>
+        public static void SetBGMClipIndex(AudioClip clip, int id)
+        {
+            bgmClipIndexDic[clip] = id;
+            bgmClipDic[id] = clip;
         }
         /// <summary>
         /// 更新AudioStack库(编辑器使用)
@@ -356,7 +400,27 @@ namespace KFrame.Systems
         {
             audioDic[id] = stack;
         }
-        
+        /// <summary>
+        /// 更新BGMStack库(编辑器使用)
+        /// </summary>
+        public static void SetBGMStack(BGMStack stack, int id)
+        {
+            bgmDic[id] = stack;
+        }
+        /// <summary>
+        /// 从库中删除Audio(编辑器使用)
+        /// </summary>
+        public static void RemoveAudioStack(AudioStack stack)
+        {
+            audioDic.Remove(stack.AudioIndex);
+        }
+        /// <summary>
+        /// 从库中删除BGM(编辑器使用)
+        /// </summary>
+        public static void RemoveBGMStack(BGMStack stack)
+        {
+            bgmDic.Remove(stack.BGMIndex);
+        }
         /// <summary>
         /// 查找AudioGroup(编辑器使用)
         /// </summary>

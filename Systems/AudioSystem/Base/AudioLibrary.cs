@@ -35,9 +35,18 @@ namespace KFrame.Systems
         #if UNITY_EDITOR
         
         /// <summary>
+        /// 音效id的起始数
+        /// </summary>
+        private const int InitAudioIndex = 200000;
+        
+        /// <summary>
+        /// BGMid的起始数
+        /// </summary>
+        private const int InitBGMIndex = 300000;
+        /// <summary>
         /// 当前库中最大的音效id
         /// </summary>
-        private static int maxAudioIndex = 0;
+        private static int maxAudioIndex = InitAudioIndex;
         /// <summary>
         /// 当前库中最大的音效id
         /// </summary>
@@ -45,8 +54,8 @@ namespace KFrame.Systems
         {
             get
             {
-                //等于0说明还没初始化那就更新一下
-                if (maxAudioIndex == 0)
+                //等于InitAudioIndex说明还没初始化那就更新一下
+                if (maxAudioIndex == InitAudioIndex)
                 {
                     foreach (AudioStack audioStack in Instance.Audioes)
                     {
@@ -62,62 +71,31 @@ namespace KFrame.Systems
             set => maxAudioIndex = value;
         }
         /// <summary>
-        /// 音效字典
+        /// 当前库中最大的BGMid
         /// </summary>
-        private Dictionary<int, AudioStack> _audioDic;
+        private static int maxBGMIndex = InitBGMIndex;
         /// <summary>
-        /// 音效字典
+        /// 当前库中最大的BGMid
         /// </summary>
-        public Dictionary<int, AudioStack> AudioDic
+        public static int MaxBGMIndex
         {
             get
             {
-                if (_audioDic == null)
+                //等于InitBGMIndex说明还没初始化那就更新一下
+                if (maxBGMIndex == InitBGMIndex)
                 {
-                    InitAudioDic();
+                    foreach (BGMStack audioStack in Instance.BGMs)
+                    {
+                        if (maxAudioIndex < audioStack.BGMIndex)
+                        {
+                            maxAudioIndex = audioStack.BGMIndex;
+                        }
+                    }
                 }
-
-                return _audioDic;
+                
+                return maxBGMIndex;
             }
-        }
-        
-        /// <summary>
-        /// 音效字典
-        /// </summary>
-        private Dictionary<string, AudioStack> _audioNameDic;
-        /// <summary>
-        /// 音效字典
-        /// </summary>
-        public Dictionary<string, AudioStack> AudioNameDic
-        {
-            get
-            {
-                if (_audioNameDic == null)
-                {
-                    InitAudioDic();
-                }
-
-                return _audioNameDic;
-            }
-        }
-        /// <summary>
-        /// 音效Clip字典
-        /// </summary>
-        private Dictionary<AudioClip, int> _clipDic;
-        /// <summary>
-        /// 音效Clip字典
-        /// </summary>
-        public Dictionary<AudioClip, int> ClipDic
-        {
-            get
-            {
-                if (_audioDic == null)
-                {
-                    InitAudioClipDic();
-                }
-
-                return _clipDic;
-            }
+            set => maxBGMIndex = value;
         }
         
         #endif
@@ -125,21 +103,61 @@ namespace KFrame.Systems
         #if UNITY_EDITOR
 
         #region 编辑器相关
-        
-        private void UpdateAudioDic(AudioStack audioStack)
+
+        /// <summary>
+        /// 添加一个新的AudioStack
+        /// </summary>
+        public static void AddAudioStack(AudioStack stack)
         {
-            _audioDic[audioStack.AudioIndex] = audioStack;
+            //防空
+            if(stack == null) return;
+            
+            //添加到库
+            Instance.Audioes.Add(stack);
+            //更新字典
+            AudioDic.SetAudioStack(stack, stack.AudioIndex);
         }
-        private void UpdateAudioNameDic(AudioStack audioStack)
+        /// <summary>
+        /// 删除BGMStack
+        /// </summary>
+        /// <param name="stack"></param>
+        public static void DeleteAudioStack(AudioStack stack)
         {
-            _audioNameDic[audioStack.AudioName] = audioStack;
+            //防空
+            if(stack == null) return;
+            
+            //从库里删除
+            Instance.Audioes.Remove(stack);
+            //更新字典
+            AudioDic.RemoveAudioStack(stack);
         }
-        private void UpdateAudioDics(AudioStack audioStack)
+        /// <summary>
+        /// 添加一个新的BGMStack
+        /// </summary>
+        public static void AddBGMStack(BGMStack stack)
         {
-            UpdateAudioDic(audioStack);
-            UpdateAudioNameDic(audioStack);
+            //防空
+            if(stack == null) return;
+            
+            //添加到库
+            Instance.BGMs.Add(stack);
+            //更新字典
+            AudioDic.SetBGMStack(stack, stack.BGMIndex);
         }
-        
+        /// <summary>
+        /// 删除BGMStack
+        /// </summary>
+        /// <param name="stack"></param>
+        public static void DeleteBGMStack(BGMStack stack)
+        {
+            //防空
+            if(stack == null) return;
+            
+            //从库里删除
+            Instance.BGMs.Remove(stack);
+            //更新字典
+            AudioDic.RemoveBGMStack(stack);
+        }
         /// <summary>
         /// 递归查找每个Group的子集
         /// </summary>
@@ -204,39 +222,7 @@ namespace KFrame.Systems
             AssetDatabase.SaveAssets();
         }
 
-        /// <summary>
-        /// 初始化字典
-        /// </summary>
-        private void InitAudioDic()
-        {
-            _audioDic = new Dictionary<int, AudioStack>();
-            foreach (AudioStack audioStack in Audioes)
-            {
-                UpdateAudioDic(audioStack);
-            }
-        }
-        /// <summary>
-        /// 初始化字典
-        /// </summary>
-        private void InitAudioNameDic()
-        {
-            _audioNameDic = new Dictionary<string, AudioStack>();
-            foreach (AudioStack audioStack in Audioes)
-            {
-                UpdateAudioNameDic(audioStack);
-            }
-        }
-        /// <summary>
-        /// 初始化字典
-        /// </summary>
-        private void InitAudioClipDic()
-        {
-            _clipDic = new Dictionary<AudioClip, int>();
-            for (int i = 0; i < AudioClips.Count; i++)
-            {
-                ClipDic[AudioClips[i]] = i;
-            }
-        }
+       
         /// <summary>
         /// 检测音效id是否合理
         /// </summary>
@@ -245,8 +231,32 @@ namespace KFrame.Systems
         /// <returns>合理的话返回true</returns>
         public bool CheckAudioIndexValid(AudioStack audioStack, int index)
         {
+            //如果太小了也不合理
+            if (index <= InitAudioIndex) return false;
+            
+            AudioStack findStack = AudioDic.GetAudioStack(index);
             //如果先前已经有这个id，并且id所指的对象和当前的不是同一个，那就不合理
-            if (AudioDic.ContainsKey(index) && AudioDic[index] != audioStack)
+            if (findStack != null && findStack != audioStack)
+            {
+                return false;
+            }
+
+            return true;
+        }
+        /// <summary>
+        /// 检测BGMid是否合理
+        /// </summary>
+        /// <param name="bgmStack">待检测的BGM</param>
+        /// <param name="index">要使用的id</param>
+        /// <returns>合理的话返回true</returns>
+        public bool CheckBGMIndexValid(BGMStack bgmStack, int index)
+        {
+            //如果太小了也不合理
+            if (index <= InitBGMIndex) return false;
+            
+            BGMStack findStack = AudioDic.GetBGMStack(index);
+            //如果先前已经有这个id，并且id所指的对象和当前的不是同一个，那就不合理
+            if (findStack != null && findStack != bgmStack)
             {
                 return false;
             }
@@ -261,13 +271,15 @@ namespace KFrame.Systems
         public bool CheckAudioNameValid(string name)
         {
             //如果先前已经有这个名称或者名称为空那就返回false
-            if (string.IsNullOrEmpty(name) || AudioNameDic.ContainsKey(name))
+            if (string.IsNullOrEmpty(name))
             {
                 return false;
             }
 
             return true;
         }
+
+
         /// <summary>
         /// 检测clip是否已在库中
         /// 如果没有的话那就添加进去
@@ -279,10 +291,29 @@ namespace KFrame.Systems
             if(clip == null) return;
 
             //如果没有的话那就添加到列表里面
-            if (!ClipDic.ContainsKey(clip))
+            int findIndex = AudioDic.GetAudioClipIndex(clip);
+            if (findIndex == -1)
             {
-                ClipDic[clip] = AudioClips.Count;
+                AudioDic.SetAudioClipIndex(clip,AudioClips.Count);
                 AudioClips.Add(clip);
+            }
+        }
+        /// <summary>
+        /// 检测clip是否已在库中
+        /// 如果没有的话那就添加进去
+        /// </summary>
+        /// <param name="clip">要检测的clip</param>
+        public void EditorCheckBGMClip(AudioClip clip)
+        {
+            //如果为空那就直接返回
+            if(clip == null) return;
+
+            //如果没有的话那就添加到列表里面
+            int findIndex = AudioDic.GetBGMClipIndex(clip);
+            if (findIndex == -1)
+            {
+                AudioDic.SetBGMClipIndex(clip,BGMClips.Count);
+                BGMClips.Add(clip);
             }
         }
 

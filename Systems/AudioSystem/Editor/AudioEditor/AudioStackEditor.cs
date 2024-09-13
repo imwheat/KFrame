@@ -39,11 +39,11 @@ namespace KFrame.Systems
             /// <summary>
             /// 编辑音效Stack
             /// </summary>
-            Stack = 0,
+            Edit = 0,
             /// <summary>
             /// 新建音效Stack
             /// </summary>
-            CreateNewStack = 1,
+            Create = 1,
         }
         /// <summary>
         /// ScrollView的位置
@@ -142,7 +142,7 @@ namespace KFrame.Systems
         /// <param name="audioStack"></param>
         private void Init(AudioStackCreateEditor.AudioCreateGUI editCreateGUI)
         {
-            editMode = EditMode.CreateNewStack;
+            editMode = EditMode.Create;
             curEditStack = null;
             curEditCreateGUI = editCreateGUI;
             curEditData = new AudioEditData(editCreateGUI.EditData);
@@ -154,7 +154,7 @@ namespace KFrame.Systems
         /// <param name="audioStack"></param>
         private void Init(AudioStack audioStack)
         {
-            editMode = EditMode.Stack;
+            editMode = EditMode.Edit;
             curEditStack = audioStack;
             curEditCreateGUI = null;
             curEditData = new AudioEditData(curEditStack);
@@ -331,6 +331,11 @@ namespace KFrame.Systems
             
             #region 编辑参数
 
+            if (editMode == EditMode.Edit)
+            {
+                DrawIntField(ref curEditData.AudioIndex, "音效 id:");
+            }
+            
             DrawTextField(ref curEditData.AudioName, "音效名称:");
             DrawObjectField<AudioMixerGroup>(ref curEditData.AudioMixerGroup, "音效分组:");
             DrawSliderField(ref curEditData.Volume, "音量:", 0f, 1f);
@@ -440,6 +445,17 @@ namespace KFrame.Systems
         private bool SaveCheck()
         {
             string errorTitle = "错误:保存失败";
+            
+            //如果在编辑模式，再检测一下id
+            if (editMode == EditMode.Edit &&
+                !AudioLibrary.Instance.CheckAudioIndexValid(curEditStack, curEditData.AudioIndex))
+            {
+                curEditData.AudioIndex = oldEditData.AudioIndex;
+                EditorUtility.DisplayDialog(errorTitle, "音效id不合理\n自动更正为原先id", "确认");
+                
+                return true;
+            }
+            
             //更新分组id
             curEditData.AudioGroupIndex = AudioDic.GetAudioGroupIndex(curEditData.AudioMixerGroup);
             //如果音效名称为空也不合理
@@ -482,6 +498,10 @@ namespace KFrame.Systems
                 {
                     return;
                 }
+                
+                //更新下标列表
+                curEditData.ClipIndexes = new List<int>();
+                AudioDic.FindIndexesByAudioClips(curEditData.ClipIndexes, curEditData.Clips);
                 
                 //保存数据
                 curEditData.PasteData(curEditStack);

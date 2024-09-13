@@ -719,12 +719,8 @@ namespace KFrame.Systems
             //开始逐个创建
             foreach (AudioCreateGUI createGUI in createGUIs)
             {
-                //创建
-                AudioStack stack = CreateAudioStack(createGUI.EditData);
-                //添加到库
-                AudioLibrary.Instance.Audioes.Add(stack);
-                //更新字典
-                AudioDic.SetAudioStack(stack, stack.AudioIndex);
+                //创建并添加到库中
+                AudioLibrary.AddAudioStack(CreateAudioStack(createGUI.EditData));
             }
             
             //创建完了清空列表

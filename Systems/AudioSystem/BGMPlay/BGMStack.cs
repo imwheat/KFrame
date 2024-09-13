@@ -24,6 +24,10 @@ namespace KFrame.Systems
 
         #endregion
 
+        public BGMStack()
+        {
+            
+        }
         public BGMStack(int bgmIndex, string bgmName, float volume,bool loop, int clipIndex)
         {
             BGMIndex = bgmIndex;

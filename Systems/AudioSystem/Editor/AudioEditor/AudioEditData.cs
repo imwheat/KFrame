@@ -152,7 +152,7 @@ namespace KFrame.Systems
             AudioName = audioStack.AudioName;
             ClipIndexes = new List<int>(audioStack.Clips);
             Clips = new List<AudioClip>();
-            AudioDic.FindClipsByIndexes(ClipIndexes, Clips);
+            AudioDic.FindAudioClipsByIndexes(ClipIndexes, Clips);
             AudioGroupIndex = audioStack.AudioGroupIndex;
             Volume = audioStack.Volume;
             Pitch = audioStack.Pitch;
@@ -166,12 +166,34 @@ namespace KFrame.Systems
             AudioType = audioStack.AudioesType;
         }
         /// <summary>
+        /// 加载模版
+        /// </summary>
+        /// <param name="template">复制的模版数据</param>
+        public void LoadTemplate(AudioEditData template)
+        {
+            AudioGroupIndex = template.AudioGroupIndex;
+            Volume = template.Volume;
+            Pitch = template.Pitch;
+            RandomMinPitch = template.RandomMinPitch;
+            RandomMaxPitch = template.RandomMaxPitch;
+            MaxPitch = template.MaxPitch;
+            LimitContinuousPlay = template.LimitContinuousPlay;
+            LimitPlayCount = template.LimitPlayCount;
+            Loop = template.Loop;
+            Is3D = template.Is3D;
+            AudioType = template.AudioType;
+        }
+        /// <summary>
         /// 复制数据
         /// </summary>
         /// <param name="copyData">复制的数据</param>
         public void CopyData(AudioEditData copyData)
         {
+            AudioIndex = copyData.AudioIndex;
+            AudioName = copyData.AudioName;
             AudioGroupIndex = copyData.AudioGroupIndex;
+            ClipIndexes = new List<int>(copyData.ClipIndexes);
+            Clips = new List<AudioClip>(copyData.Clips);
             Volume = copyData.Volume;
             Pitch = copyData.Pitch;
             RandomMinPitch = copyData.RandomMinPitch;

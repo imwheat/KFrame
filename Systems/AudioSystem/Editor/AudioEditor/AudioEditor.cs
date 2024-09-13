@@ -607,6 +607,17 @@ namespace KFrame.Systems
                 }
             }
             
+            GUILayout.Space(10f);
+            
+            //创建新的音效资源
+            GUILayout.Space(MStyle.spacing);
+            if (GUILayout.Button("创建新的BGM资源", GUILayout.Height(MStyle.labelHeight)))
+            {
+                BGMEditor.ShowWindowCreateNewStack();
+            }
+            
+            GUILayout.Space(10f);
+            
             bgmScrollPosition = EditorGUILayout.BeginScrollView(bgmScrollPosition);
 
             //遍历绘制每个GUI
@@ -728,11 +739,38 @@ namespace KFrame.Systems
                 switch (option)
                 {
                     case BGMGUI bgm:
+                        BGMEditor.ShowWindow(bgm.Stack);
                         break;
                     case AudioGUI audio:
                         AudioStackEditor.ShowWindow(audio.Stack);
                         break;
                 }
+            }
+            
+            //点击删除
+            if(GUILayout.Button("删除",GUILayout.Height(MStyle.labelHeight), GUILayout.Width(MStyle.btnWidth)))
+            {
+                if (EditorUtility.DisplayDialog("警告", "这是一项危险操作，你确定要删除吗？", "确定", "取消"))
+                {
+                    switch (option)
+                    {
+                        case BGMGUI bgm:
+                            AudioLibrary.DeleteBGMStack(bgm.Stack);
+                            //然后删除GUI
+                            bgmGUIs.RemoveAt(i);
+                            Repaint();
+                            break;
+                        case AudioGUI audio:
+                            AudioLibrary.DeleteAudioStack(audio.Stack);
+                            //然后删除GUI
+                            audioGUIs.RemoveAt(i);
+                            Repaint();
+                            break;
+                    }
+                    
+                    
+                }
+
             }
             
             EditorGUILayout.EndHorizontal();
