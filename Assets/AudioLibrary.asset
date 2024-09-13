@@ -30,4 +30,8 @@ MonoBehaviour:
   <AudioClips>k__BackingField: []
   <BGMClips>k__BackingField: []
   <AudioMixer>k__BackingField: {fileID: 24100000, guid: 96598e9a8444ddb429c766161c0af201, type: 2}
-  <AudioMixerGroups>k__BackingField: []
+  <AudioMixerGroups>k__BackingField:
+  - {fileID: 24300002, guid: 96598e9a8444ddb429c766161c0af201, type: 2}
+  - {fileID: -2697891055904758130, guid: 96598e9a8444ddb429c766161c0af201, type: 2}
+  - {fileID: 8024287094261967831, guid: 96598e9a8444ddb429c766161c0af201, type: 2}
+  - {fileID: -2606921185042502454, guid: 96598e9a8444ddb429c766161c0af201, type: 2}

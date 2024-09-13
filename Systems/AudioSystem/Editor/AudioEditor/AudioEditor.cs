@@ -641,10 +641,19 @@ namespace KFrame.Systems
             
             GUILayout.Space(10f);
 
-            if (GUILayout.Button("打开AudioMixer编辑"))
+            EditorGUILayout.BeginHorizontal();
+            
+            if (GUILayout.Button("打开AudioMixer编辑", GUILayout.Height(MStyle.labelHeight)))
             {
                 AssetDatabase.OpenAsset(Library.AudioMixer);
             }
+            if (GUILayout.Button("刷新Group", GUILayout.Height(MStyle.labelHeight)))
+            {
+                AudioLibrary.Instance.UpdateAudioGroups();
+                AudioLibrary.Instance.SaveAsset();
+            }
+            
+            EditorGUILayout.EndHorizontal();
             
             GUILayout.Space(10f);
 
