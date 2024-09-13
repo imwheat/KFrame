@@ -13,9 +13,47 @@ namespace KFrame.Systems
     {
         private static GameObjectPoolModule _poolModule;
 
-        //[SerializeField, LabelText("背景音乐播放器")] private AudioSource BGMAudioSource;
         [SerializeField, LabelText("背景音乐播放器")] private BGMPlayer bgmPlayer;
-
+        
+        /// <summary>
+        /// MasterMixerGroup
+        /// </summary>
+        [SerializeField, LabelText("MasterMixerGroup")]
+        private AudioMixerGroup masterMixerGroup;
+        /// <summary>
+        /// BGMMixerGroup
+        /// </summary>
+        [SerializeField, LabelText("BGMMixerGroup")]
+        private AudioMixerGroup bgmMixerGroup;
+        /// <summary>
+        /// SFXMixerGroup
+        /// </summary>
+        [SerializeField, LabelText("SFXMixerGroup")]
+        private AudioMixerGroup sfxMixerGroup;
+        /// <summary>
+        /// MasterGroup
+        /// </summary>
+        [SerializeField, LabelText("MasterGroup")]
+        private AudioGroup masterGroup;
+        /// <summary>
+        /// MasterGroup
+        /// </summary>
+        public AudioGroup MasterGroup => masterGroup;
+        /// <summary>
+        /// BGMGroup
+        /// </summary>
+        [SerializeField, LabelText("BGMGroup")]
+        private AudioGroup bgmGroup;
+        /// <summary>
+        /// BGMGroup
+        /// </summary>
+        public AudioGroup BGMGroup => bgmGroup;
+        /// <summary>
+        /// SFXGroup
+        /// </summary>
+        [SerializeField, LabelText("SFXGroup")]
+        private AudioGroup sfxGroup;
+        
         [SerializeField, LabelText("效果播放器预制体2D")]
         private GameObject effectAudioPlayPrefab2D;
         [SerializeField, LabelText("效果播放器预制体3D")]
@@ -27,8 +65,6 @@ namespace KFrame.Systems
         [SerializeField, LabelText("混音器")] private AudioMixer _AudioMixer;
         [SerializeField, LabelText("混音器")] public AudioMixer AudioMixer => _AudioMixer;
 
-        // 场景中生效的所有特效音乐播放器
-        private List<AudioSource> audioPlayList;
         /// <summary>
         /// 正在播放的音效的字典，用来处理高频播放的音效
         /// </summary>
@@ -36,170 +72,41 @@ namespace KFrame.Systems
 
         #region 音量、播放控制
 
-        [SerializeField, Range(0, 1), OnValueChanged("UpdateMasterVolume"), LabelText("主音量")]
-        private float masterVolume;
-
+        /// <summary>
+        /// 主音量
+        /// </summary>
         public float MasterlVolume
         {
-            get => masterVolume;
+            get => masterGroup.CurVolume;
             set
             {
-                if (masterVolume == value) return;
-                masterVolume = value;
-                UpdateMasterVolume();
+                if (masterGroup.Volume == value) return;
+                masterGroup.UpdateVolume(value);
             }
         }
-
-        [SerializeField] [Range(0, 1)] [OnValueChanged("UpdateBGAudioPlay"), LabelText("音乐音量")]
-        private float bgmVolume;
-
+        /// <summary>
+        /// BGM音量
+        /// </summary>
         public float BGMVolume
         {
-            get => bgmVolume;
+            get => bgmGroup.CurVolume;
             set
             {
-                if (bgmVolume == value) return;
-                bgmVolume = value;
-                UpdateBGAudioPlay();
+                if (bgmGroup.Volume == value) return;
+                bgmGroup.UpdateVolume(value);
             }
         }
-
-        [SerializeField] [Range(0, 1)] [OnValueChanged("UpdateEffectAudioPlay"), LabelText("音效音量")]
-        private float sfxVolume;
 
         public float SFXVolume
         {
-            get => sfxVolume;
+            get => sfxGroup.CurVolume;
             set
             {
-                if (sfxVolume == value) return;
-                sfxVolume = value;
-                UpdateEffectAudioPlay();
+                if (sfxGroup.Volume == value) return;
+                sfxGroup.UpdateVolume(value);
             }
         }
 
-        [SerializeField] [OnValueChanged("UpdateMute")]
-        private bool isMute = false;
-
-        public bool IsMute
-        {
-            get => isMute;
-            set
-            {
-                if (isMute == value) return;
-                isMute = value;
-                UpdateMute();
-            }
-        }
-
-        [SerializeField] [OnValueChanged("UpdateLoop")]
-        private bool isLoop = true;
-
-        public bool IsLoop
-        {
-            get => isLoop;
-            set
-            {
-                if (isLoop == value) return;
-                isLoop = value;
-                UpdateLoop();
-            }
-        }
-
-        [SerializeField] [OnValueChanged("UpdatePause")]
-        private bool isPause = false;
-
-        public bool IsPause
-        {
-            get => isPause;
-            set
-            {
-                if (isPause == value) return;
-                isPause = value;
-                UpdatePause();
-            }
-        }
-
-        /// <summary>
-        /// 更新全部播放器类型
-        /// </summary>
-        private void UpdateMasterVolume()
-        {
-            //设置SFXGroup的音量
-            _AudioMixer.SetFloat("MasterVolume", masterVolume);
-        }
-
-        /// <summary>
-        /// 更新背景音乐
-        /// </summary>
-        private void UpdateBGAudioPlay()
-        {
-            //设置SFXGroup的音量
-            _AudioMixer.SetFloat("BGMVolume", masterVolume * bgmVolume);
-        }
-
-        /// <summary>
-        /// 更新特效音乐播放器
-        /// </summary>
-        private void UpdateEffectAudioPlay()
-        {
-            //设置SFXGroup的音量
-            _AudioMixer.SetFloat("SFXVolume", sfxVolume * masterVolume);
-        }
-
-        /// <summary>
-        /// 设置特效音乐播放器
-        /// </summary>
-        private void SetEffectAudioPlay(AudioSource audioPlay, float spatial = -1)
-        {
-            audioPlay.mute = isMute;
-            audioPlay.volume = sfxVolume * masterVolume;
-            if (spatial != -1)
-            {
-                audioPlay.spatialBlend = spatial;
-            }
-
-            if (isPause)
-            {
-                audioPlay.Pause();
-            }
-            else
-            {
-                audioPlay.UnPause();
-            }
-        }
-
-        /// <summary>
-        /// 更新全局音乐静音情况
-        /// </summary>
-        private void UpdateMute()
-        {
-            //BGMAudioSource.mute = isMute;
-            UpdateEffectAudioPlay();
-        }
-
-        /// <summary>
-        /// 更新背景音乐循环
-        /// </summary>
-        private void UpdateLoop()
-        {
-            //BGMAudioSource.loop = isLoop;
-        }
-
-        /// <summary>
-        /// 更新背景音乐暂停
-        /// </summary>
-        private void UpdatePause()
-        {
-            if (isPause)
-            {
-                //BGMAudioSource.Pause();
-            }
-            else
-            {
-                //BGMAudioSource.UnPause();
-            }
-        }
 
         #endregion
 
@@ -214,11 +121,15 @@ namespace KFrame.Systems
             _poolModule.Init(poolRoot);
             _poolModule.InitGameObjectPool(effectAudioPlayPrefab2D, -1, effectAudioDefaultQuantity);
             _poolModule.InitGameObjectPool(effectAudioPlayPrefab3D, -1, effectAudioDefaultQuantity);
-            audioPlayList = new List<AudioSource>(effectAudioDefaultQuantity);
             audioPlayRoot = new GameObject("audioPlayRoot").transform;
             audioPlayRoot.SetParent(transform);
             m_AudioPlayingDic = new Dictionary<int, List<AudioPlay>>();
-            UpdateMasterVolume();
+            
+            //初始化Group
+            masterGroup = AudioDic.GetAudioGroup(masterMixerGroup);
+            bgmGroup = AudioDic.GetAudioGroup(bgmMixerGroup);
+            sfxGroup = AudioDic.GetAudioGroup(sfxMixerGroup);
+            
             //防空
             if(bgmPlayer==null)
             {
@@ -233,129 +144,21 @@ namespace KFrame.Systems
 
         #region 背景音乐
 
-        #region 旧的
-        /*旧的
-        private static Coroutine fadeCoroutine;
-
-        /// <summary>
-        /// 播放背景音乐
-        /// </summary>
-        /// <param name="clip"></param>
-        /// <param name="loop"></param>
-        /// <param name="volume"></param>
-        /// <param name="fadeOutTime"></param>
-        /// <param name="fadeInTime"></param>
-        public void PlayBGMAudio(AudioClip clip, bool loop = true, float volume = -1, float fadeOutTime = 0,
-            float fadeInTime = 0)
-        {
-            IsLoop = loop;
-            if (volume != -1)
-            {
-                BGMVolume = volume;
-            }
-
-            fadeCoroutine = StartCoroutine(DoVolumeFade(clip, fadeOutTime, fadeInTime));
-            BGMAudioSource.Play();
-        }
-
-        /// <summary>
-        /// 渐入渐出
-        /// </summary>
-        /// <param name="clip"></param>
-        /// <param name="fadeOutTime"></param>
-        /// <param name="fadeInTime"></param>
-        /// <returns></returns>
-        private IEnumerator DoVolumeFade(AudioClip clip, float fadeOutTime, float fadeInTime)
-        {
-            float currTime = 0;
-            if (fadeOutTime <= 0) fadeOutTime = 0.0001f;
-            if (fadeInTime <= 0) fadeInTime = 0.0001f;
-
-            // 降低音量，也就是淡出
-            while (currTime < fadeOutTime)
-            {
-                yield return CoroutineTool.WaitForFrames();
-                if (!isPause) currTime += Time.deltaTime;
-                float ratio = Mathf.Lerp(1, 0, currTime / fadeOutTime);
-                BGMAudioSource.volume = bgmVolume * ratio;
-            }
-
-            BGMAudioSource.clip = clip;
-            BGMAudioSource.Play();
-            currTime = 0;
-            // 提高音量，也就是淡入
-            while (currTime < fadeInTime)
-            {
-                yield return CoroutineTool.WaitForFrames();
-                if (!isPause) currTime += Time.deltaTime;
-                float ratio = Mathf.InverseLerp(0, 1, currTime / fadeInTime);
-                BGMAudioSource.volume = bgmVolume * ratio;
-            }
-
-            fadeCoroutine = null;
-        }
-
-        private static Coroutine bgWithClipsCoroutine;
-
-        /// <summary>
-        /// 使用音效数组播放背景音乐，自动循环
-        /// </summary>
-        public void PlayBGMAudioWithClips(AudioClip[] clips, float volume = -1, float fadeOutTime = 0,
-            float fadeInTime = 0)
-        {
-            bgWithClipsCoroutine = MonoSystem.Start_Coroutine(DoPlayBGAudioWithClips(clips, volume));
-        }
-
-        private IEnumerator DoPlayBGAudioWithClips(AudioClip[] clips, float volume = -1, float fadeOutTime = 0,
-            float fadeInTime = 0)
-        {
-            if (volume != -1) BGMVolume = volume;
-            int currIndex = 0;
-            while (true)
-            {
-                AudioClip clip = clips[currIndex];
-                fadeCoroutine = StartCoroutine(DoVolumeFade(clip, fadeOutTime, fadeInTime));
-                float time = clip.length;
-                // 时间只要还好，一直检测
-                while (time > 0)
-                {
-                    yield return CoroutineTool.WaitForFrames();
-                    if (!isPause) time -= Time.deltaTime;
-                }
-
-                // 到达这里说明倒计时结束，修改索引号，继续外侧While循环
-                currIndex++;
-                if (currIndex >= clips.Length) currIndex = 0;
-            }
-        }
-
-        public void StopBGMAudio()
-        {
-            if (bgWithClipsCoroutine != null) MonoSystem.Stop_Coroutine(bgWithClipsCoroutine);
-            if (fadeCoroutine != null) MonoSystem.Stop_Coroutine(fadeCoroutine);
-            BGMAudioSource.Stop();
-            BGMAudioSource.clip = null;
-        }
-
-        public void PauseBGMAudio()
-        {
-            IsPause = true;
-        }
-
-        public void UnPauseBGMAudio()
-        {
-            IsPause = false;
-        }
-        */
-        #endregion
-
         /// <summary>
         /// 播放BGM
         /// </summary>
         /// <param name="bgmStack">要播放的BGM的包</param>
-        public void PlayBGMAudio(BGMStack bgmStack)
+        public void PlayBGM(BGMStack bgmStack)
         {
             bgmPlayer.PlayBGM(bgmStack);
+        }
+        /// <summary>
+        /// 播放BGM
+        /// </summary>
+        /// <param name="bgmIndex">要播放的BGM的id</param>
+        public void PlayBGM(int bgmIndex)
+        {
+            bgmPlayer.PlayBGM(bgmIndex);
         }
         /// <summary>
         /// 停止播放BGM
@@ -366,19 +169,10 @@ namespace KFrame.Systems
         {
             bgmPlayer.StopBGMPlay(immediate);
         }
-        /// <summary>
-        /// 切换播放的音轨
-        /// </summary>
-        /// <param name="trackId">音轨id</param>
-        [Button("切换播放BGM的音轨", 30), PropertySpace(5f, 5f), FoldoutGroup("测试按钮")]
-        public void ChangeSoundTrack(int trackId)
-        {
-            bgmPlayer.ChangeSoundTrack(trackId);
-        }
 
         #endregion
 
-        #region 特效音乐
+        #region 音效
 
         private Transform audioPlayRoot;
 

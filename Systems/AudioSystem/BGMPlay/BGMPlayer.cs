@@ -21,34 +21,13 @@ namespace KFrame.Systems
 
         [LabelText("播放BGM的预制体"), TabGroup("设置")] public GameObject BGMPlayPrefab;
         [LabelText("混音器"), TabGroup("设置")] public AudioMixer AudioMixer;
-        [LabelText("混音器的快照"), TabGroup("设置")] public AudioMixerSnapshot AudioMixerSnapshot;
-        [LabelText("音轨列表"),TabGroup("设置")] public List<AudioMixerGroup> SoundTrackList;
-        [LabelText("音轨启用所需时间"),TabGroup("设置")] public float SoundTrackEnableTranlationDuration = 2f;
-        [LabelText("音轨禁用所需时间"),TabGroup("设置")] public float SoundTrackDisableTranlationDuration = 5f;
         [LabelText("BGM切换所需时间"),TabGroup("设置")] public float BGMTranslationDuration = 5f;
         [LabelText("BGM切换音量曲线"),TabGroup("设置")] public AnimationCurve BGMTranslationVolumeCurve;
-        [ShowInInspector, LabelText("播放中的音轨字典"), TabGroup("逻辑"), Tooltip("int是音轨id，float是当前分轨音量")] 
-        public Dictionary<int,float> PlayingTrackDic;
         [SerializeField ,LabelText("当前的BGMStack"), TabGroup("逻辑")] public BGMStack PlayingBGMStack;
         [SerializeField ,LabelText("播放中的BGM列表"), TabGroup("逻辑")] public List<BGMPlay> BGMPlayingList;
-        [SerializeField ,LabelText("持续播放的BGM列表"), TabGroup("逻辑")] private List<BGMPlay> BGMPlayingPersistList;
-        [ShowInInspector ,LabelText("正在播放的音轨List"), TabGroup("逻辑")] public HashSet<int> PlayingList;
-        [ShowInInspector, LabelText("正在启用播放的音轨List"), TabGroup("逻辑")] private List<int> enablingPlayList;
-        [ShowInInspector, LabelText("正在禁用播放的音轨List"), TabGroup("逻辑")] private List<int> disablingPlayList;
-        [SerializeField ,LabelText("bgm切换音量的写成"), TabGroup("逻辑")] private Coroutine bgmTranslationCoroutine;
-        [SerializeField ,LabelText("音轨切换音量的写成"), TabGroup("逻辑")] private Coroutine soundtrackTranslationCoroutine;
-
-        #endregion
-
-        #region 静态字段
-
-        public static readonly string TrackBGMTranslationVolume = "BGMTranslationVolume";
-        public static readonly string TrackBGM01Volume = "BGM01Volume";
-        public static readonly string TrackBGM02Volume = "BGM02Volume";
-        public static readonly string TrackBGM03Volume = "BGM03Volume";
-        public static readonly string TrackBGM04Volume = "BGM04Volume";
-        public static readonly string TrackBGM05Volume = "BGM05Volume";
-        public static readonly string TrackBGM06Volume = "BGM06Volume";
+        [ShowInInspector, LabelText("正在启用播放的音轨List"), TabGroup("逻辑")] private List<BGMPlay> enablingPlayList;
+        [ShowInInspector, LabelText("正在禁用播放的音轨List"), TabGroup("逻辑")] private List<BGMPlay> disablingPlayList;
+        [SerializeField ,LabelText("bgm切换音量的协程"), TabGroup("逻辑")] private Coroutine bgmTranslationCoroutine;
 
         #endregion
 
@@ -67,49 +46,12 @@ namespace KFrame.Systems
             {
                 AudioMixer = ResSystem.LoadAsset<AudioMixer>("AudioMixer");
             }
-            //音轨列表
-            if(SoundTrackList==null)
-            {
-                SoundTrackList = new List<AudioMixerGroup>();
-            }
-            if(SoundTrackList.Count == 0)
-            {
-                AudioMixerGroup[] bgmGroups = AudioMixer.FindMatchingGroups("Master/BGM/");
 
-                SoundTrackList.AddRange(bgmGroups);
-            }
-
-            //列表字典初始化
-            PlayingTrackDic = new Dictionary<int,float>();
+            //列表初始化
             BGMPlayingList = new List<BGMPlay>();
-            BGMPlayingPersistList = new List<BGMPlay>();
-            enablingPlayList = new List<int>();
-            disablingPlayList = new List<int>();
-            PlayingList = new HashSet<int>();
+            enablingPlayList = new List<BGMPlay>();
+            disablingPlayList = new List<BGMPlay>();
 
-#if UNITY_EDITOR
-
-            //编辑器快速响应更新
-            if(AudioMixerSnapshot!=null)
-            {
-                AudioMixerSnapshot.TransitionTo(0f);
-            }
-
-#endif
-
-        }
-        private void OnDestroy()
-        {
-
-
-        }
-        private void Start()
-        {
-            //先将音量都调零
-            for (int i = 1; i <= 6; i++)
-            {
-                SetTrackVolume(i, 0f);
-            }
         }
         private void LateUpdate()
         {
@@ -123,20 +65,30 @@ namespace KFrame.Systems
                     i--;
                 }
             }
-            for (int i = 0; i < BGMPlayingPersistList.Count; i++)
-            {
-                if (BGMPlayingPersistList[i].MyAudioSource.isPlaying == false)
-                {
-                    BGMPlayingPersistList[i].EndPlay();
-                    BGMPlayingPersistList.RemoveAt(i);
-                    i--;
-                }
-            }
+
         }
 
         #endregion
 
         #region 方法
+        
+        /// <summary>
+        /// 创建获取一个BGM播放器
+        /// </summary>
+        /// <param name="stack">要播放的BGM</param>
+        public BGMPlay GetBGMPlay(BGMStack stack)
+        {
+            //如果为空返回空
+            if (stack == null) return null;
+            
+            //创建Gameobject然后设置播放的BGM
+            GameObject bgmPlayObj = PoolSystem.GetOrNewGameObject(BGMPlayPrefab, transform);
+            BGMPlay bgmPlay = bgmPlayObj.GetComponent<BGMPlay>();
+            bgmPlay.PlayBGM(stack, AudioSystem.BGMGroup.GetMixerGroup());
+            
+            //返回BGMPlay
+            return bgmPlay;
+        }
         /// <summary>
         /// 播放BGM
         /// </summary>
@@ -147,25 +99,14 @@ namespace KFrame.Systems
             if (stack == PlayingBGMStack) return;
 
             //如果是没有BGM在播放的情况
-            if(PlayingList.Count == 0)
+            if(BGMPlayingList.Count == 0)
             {
                 //更新stack
                 PlayingBGMStack = stack;
-
-                //先把BGM切换的音量调零
-                SetTrackVolume(0, 0f);
-
-                //因为没有BGM在播放默认开启1和2的播放
-                for (int i = 1; i <= 6; i++)
-                {
-                    InitSoundTrack(i);
-                }
-
-                //将音轨1和2的音量调为1f
-                SetTrackVolume(1, 1f);
-                SetTrackVolume(2, 1f);
-                PlayingList.Add(2);
-
+                
+                //添加入正在启用播放的列表
+                enablingPlayList.Add(GetBGMPlay(stack));
+                
                 //开始BGM渐入
                 StartBGMFadeIn();
             }
@@ -228,163 +169,12 @@ namespace KFrame.Systems
             PlayingBGMStack = null;
 
             //把先前播放的BGM给关了
-            foreach (var bgmPlay in BGMPlayingPersistList)
-            {
-                bgmPlay.EndPlay();
-            }
             foreach (var bgmPlay in BGMPlayingList)
             {
                 bgmPlay.EndPlay();
             }
-            BGMPlayingPersistList.Clear();
             BGMPlayingList.Clear();
-            PlayingList.Clear();
 
-        }
-        /// <summary>
-        /// 切换播放的音轨
-        /// </summary>
-        /// <param name="trackId">音轨id</param>
-        [Button("切换播放BGM的音轨", 30), PropertySpace(5f, 5f), FoldoutGroup("测试按钮")]
-        public void ChangeSoundTrack(int trackId)
-        {
-
-#if UNITY_EDITOR
-
-            if (Application.isPlaying == false)
-            {
-                Debug.Log("请在游戏启动的时候再使用此功能");
-                return;
-            }
-#endif
-
-            //如果已经在播放了或者在启用了就返回
-            if (PlayingList.Contains(trackId)||enablingPlayList.Contains(trackId)) return;
-            //如果是1直接播放1
-            if(trackId == 1)
-            {
-                PlaySoundTrack(1);
-                return;
-            }
-            //参数不正确直接返回
-            else if (trackId <=0||trackId>=SoundTrackList.Count)
-            {
-                return;
-            }
-
-            //如果禁用队列里面有对应音轨那就去掉
-            if(disablingPlayList.Contains(trackId))
-            {
-                disablingPlayList.Remove(trackId);
-            }
-
-            //先把正在播放的音轨的id加到禁用播放的里面
-            foreach (var i in PlayingList)
-            {
-                //防止重复添加(id为1的是持续播放的不用加到里面)
-                if (disablingPlayList.Contains(i) == false&&i!=1 && i != trackId)
-                    disablingPlayList.Add(i);
-            }
-            foreach (var i in enablingPlayList)
-            {
-                //防止重复添加(id为1的是持续播放的不用加到里面)
-                if (disablingPlayList.Contains(i) == false&&i!=1 && i!=trackId)
-                    disablingPlayList.Add(i);
-            }
-            //然后清空列表
-            PlayingList.Clear();
-            enablingPlayList.Clear();
-
-            //把新的要播放的音轨id添加到启用中的列表中
-            enablingPlayList.Add(trackId);
-            //先将音轨音量设为0f
-            SetTrackVolume(trackId, 0f);
-
-            //如果已经在切换先把之前的终止
-            if (soundtrackTranslationCoroutine != null)
-            {
-                StopCoroutine(soundtrackTranslationCoroutine);
-            }
-
-            //开始新的切换
-            soundtrackTranslationCoroutine = StartCoroutine(SoundTrackTranslationCoroutine());
-        }
-        /// <summary>
-        /// 播放指定音轨的BGM
-        /// 直接播放音量为1f
-        /// </summary>
-        /// <param name="trackId">音轨id</param>
-        [Button("播放指定BGM的音轨", 30), PropertySpace(5f, 5f), FoldoutGroup("测试按钮")]
-        public void PlaySoundTrack(int trackId)
-        {
-
-#if UNITY_EDITOR
-
-            if (Application.isPlaying == false)
-            {
-                Debug.Log("请在游戏启动的时候再使用此功能");
-                return;
-            }
-#endif
-
-            //如果没有bgm的stack就返回
-            if (PlayingBGMStack == null) return;
-            //如果已经在播放了就返回
-            if(PlayingList.Contains(trackId)) return;
-            //添加到播放中的音轨列表中
-            PlayingList.Add(trackId);
-            PlayingTrackDic.TryAdd(trackId, 1f);
-
-            //查找当前BGM中对应音轨的BGM
-            foreach (var clip in PlayingBGMStack.Clips)
-            {
-                if (clip.SoundTrackIndex == trackId)
-                {
-                    GameObject obj = PoolSystem.GetOrNewGameObject(BGMPlayPrefab, transform);
-                    BGMPlay bgmPlay = obj.GetComponent<BGMPlay>();
-                    bgmPlay.PlayBGM(clip, SoundTrackList[clip.SoundTrackIndex]);
-
-                    if(trackId==1)
-                    {
-                        BGMPlayingPersistList.Add(bgmPlay);
-                    }
-                    else
-                    {
-                        BGMPlayingList.Add(bgmPlay);
-                    }
-                }
-            }
-        }
-        /// <summary>
-        /// 初始化指定音轨的BGM
-        /// </summary>
-        /// <param name="trackId">音轨id</param>
-        private void InitSoundTrack(int trackId)
-        {
-            //如果没有bgm的stack就返回
-            if (PlayingBGMStack == null) return;
-
-            SetTrackVolume(trackId, 0f);
-
-            //查找当前BGM中对应音轨的BGM
-            foreach (var clip in PlayingBGMStack.Clips)
-            {
-                if (clip.SoundTrackIndex == trackId)
-                {
-                    GameObject obj = PoolSystem.GetOrNewGameObject(BGMPlayPrefab, transform);
-                    BGMPlay bgmPlay = obj.GetComponent<BGMPlay>();
-                    bgmPlay.PlayBGM(clip, SoundTrackList[clip.SoundTrackIndex]);
-
-                    if (trackId == 1)
-                    {
-                        BGMPlayingPersistList.Add(bgmPlay);
-                    }
-                    else
-                    {
-                        BGMPlayingList.Add(bgmPlay);
-                    }
-                }
-            }
         }
         /// <summary>
         /// 切换当前BGM的Stack换为另一个
@@ -396,27 +186,12 @@ namespace KFrame.Systems
             PlayingBGMStack = stack;
 
             //先把先前播放的BGM给关了
-            foreach (var bgmPlay in BGMPlayingPersistList)
-            {
-                bgmPlay.EndPlay();
-            }
             foreach (var bgmPlay in BGMPlayingList)
             {
                 bgmPlay.EndPlay();
             }
-            BGMPlayingPersistList.Clear();
             BGMPlayingList.Clear();
 
-            //然后根据之前的播放的音轨id替换对应的BGM开始播放
-            for (int i = 1; i <= 6; i++)
-            {
-                InitSoundTrack(i);
-            }
-            //更新音量
-            foreach (var trackId in PlayingList)
-            {
-                SetTrackVolume(trackId , 1);
-            }
         }
 
         #endregion
@@ -440,51 +215,6 @@ namespace KFrame.Systems
                 return BGMTranslationVolumeCurve.Evaluate(x);
 
             }
-        }
-        /// <summary>
-        /// 设置某个音轨的音量
-        /// </summary>
-        /// <param name="trackId">音轨id</param>
-        /// <param name="volume">0~1f的音量</param>
-        private void SetTrackVolume(int trackId, float volume)
-        {
-            //防止越界
-            if (trackId >= SoundTrackList.Count || trackId < 0) return;
-
-            //获取路径string
-            string track = "";
-            switch (trackId)
-            {
-                case 0:
-                    track = TrackBGMTranslationVolume;
-                    break;
-                case 1:
-                    track = TrackBGM01Volume;
-                    break;
-                case 2:
-                    track = TrackBGM02Volume;
-                    break;
-                case 3:
-                    track = TrackBGM03Volume;
-                    break;
-                case 4:
-                    track = TrackBGM04Volume;
-                    break;
-                case 5:
-                    track = TrackBGM05Volume;
-                    break;
-                case 6:
-                    track = TrackBGM06Volume;
-                    break;
-                default:
-                    return;
-            }
-
-            //设置音量
-            AudioMixer.SetFloat(track, GetVolume(volume));
-
-            //更新字典里面的音量
-            PlayingTrackDic[trackId] = volume;
         }
 
         #endregion
@@ -513,7 +243,7 @@ namespace KFrame.Systems
         private IEnumerator FadeInBGMTranslation()
         {
             //获取当前音量，要是字典里面没有那就取0f
-            float v = PlayingTrackDic.ContainsKey(0) ? PlayingTrackDic[0] : 0f;
+            float v = 0f;
             float speed = 1f / BGMTranslationDuration;
 
             while(v<1f)
@@ -521,7 +251,7 @@ namespace KFrame.Systems
                 v += speed * Time.fixedDeltaTime;
 
                 //更新
-                SetTrackVolume(0, v);
+                
                 yield return CoroutineTool.WaitForFixedUpdate();
             }
 
@@ -554,7 +284,7 @@ namespace KFrame.Systems
         private IEnumerator FadeOutBGMTranslation()
         {
             //获取当前音量，要是字典里面没有那就取1f
-            float v = PlayingTrackDic.ContainsKey(0) ? PlayingTrackDic[0] : 1f;
+            float v = 1f;
             float speed = 1f / BGMTranslationDuration;
 
             while (v > 0f)
@@ -653,68 +383,7 @@ namespace KFrame.Systems
             //清空
             bgmTranslationCoroutine = null;
         }
-        /// <summary>
-        /// 音轨切换的协程
-        /// </summary>
-        private IEnumerator SoundTrackTranslationCoroutine()
-        {
-            //计算速度
-            float speedEnable = 1f / SoundTrackEnableTranlationDuration;
-            float speedDisable = 1f / SoundTrackDisableTranlationDuration;
 
-            //如果还有在启用或者关闭的音轨那就继续循环
-            while(enablingPlayList.Count + disablingPlayList.Count >0)
-            {
-                for (int i = 0; i < enablingPlayList.Count; i++)
-                {
-                    //获取音量
-                    float v = PlayingTrackDic.ContainsKey(enablingPlayList[i]) ? PlayingTrackDic[enablingPlayList[i]] : 0f;
-
-                    //更新音量
-                    v += speedEnable * Time.fixedDeltaTime;
-                    SetTrackVolume(enablingPlayList[i], v);
-
-                    //如果音量到达目标了，那就去掉当前音轨
-                    if (v >= 1f)
-                    {
-                        v = 1f;
-                        SetTrackVolume(enablingPlayList[i], v);
-                        //添加到播放中
-                        PlayingList.Add(enablingPlayList[i]);
-                        //从启动中的去掉
-                        enablingPlayList.RemoveAt(i);
-
-                        i--;
-                    }
-                }
-
-                for (int i = 0; i < disablingPlayList.Count; i++)
-                {
-                    //获取音量
-                    float v = PlayingTrackDic.ContainsKey(disablingPlayList[i]) ? PlayingTrackDic[disablingPlayList[i]] : 0f;
-
-                    //更新音量
-                    v -= speedDisable * Time.fixedDeltaTime;
-                    SetTrackVolume(disablingPlayList[i], v);
-
-                    //如果音量到达目标了，那就去掉当前音轨
-                    if (v <= 0f)
-                    {
-                        v = 0f;
-                        SetTrackVolume(disablingPlayList[i], v);
-                        disablingPlayList.RemoveAt(i);
-                        i--;
-                    }
-                }
-
-                yield return CoroutineTool.WaitForFixedUpdate();
-
-            }
-
-            //结束
-            soundtrackTranslationCoroutine = null;
-
-        }
 
         #endregion
 

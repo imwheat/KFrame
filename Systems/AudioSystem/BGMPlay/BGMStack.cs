@@ -14,32 +14,31 @@ namespace KFrame.Systems
     [System.Serializable]
     public class BGMStack
     {
-        [field: SerializeField, LabelText("BGMid")] public int BGMIndex { get; private set; }
-        [field: SerializeField, LabelText("BGM名称")] public string BGMName { get; private set; }
-        [field: SerializeField, LabelText("音乐Clip")] public bool Loop { get; private set; }
-        [field: SerializeField, LabelText("音乐Clip")] public List<BGMClipStack> Clips { get; private set; }
+        #region 参数(请不要在游戏运行的时候更改)
 
-        public BGMStack(int bgmIndex, string bgmName, bool loop, List<BGMClipStack> clips)
+        [SerializeField, LabelText("BGMid")] public int BGMIndex;
+        [SerializeField, LabelText("BGM名称")] public string BGMName;
+        [SerializeField, LabelText("音量")] public float Volume;
+        [SerializeField, LabelText("音乐Clip")] public bool Loop;
+        [SerializeField, LabelText("音乐Clip")] public int ClipIndex;        
+
+        #endregion
+
+        public BGMStack(int bgmIndex, string bgmName, float volume,bool loop, int clipIndex)
         {
             BGMIndex = bgmIndex;
             BGMName = bgmName;
+            Volume = volume;
             Loop = loop;
-            Clips = clips;
+            ClipIndex = clipIndex;
         }
-        
-        #if UNITY_EDITOR
-        
         /// <summary>
-        /// 更新数据
+        /// 获取播放的Clip
         /// </summary>
-        public void UpdateData(int bgmIndex, string bgmName, bool loop, List<BGMClipStack> clips)
+        public AudioClip GetClip()
         {
-            BGMIndex = bgmIndex;
-            BGMName = bgmName;
-            Loop = loop;
-            Clips = clips;
+            return AudioDic.GetBGMClip(ClipIndex);
         }
         
-        #endif
     }
 }

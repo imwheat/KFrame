@@ -51,7 +51,19 @@ namespace KFrame.Systems
         /// <summary>
         /// 搜索的音效名称
         /// </summary>
-        private string searchText;
+        private string audioSearchText;
+        /// <summary>
+        /// 搜索的BGM名称
+        /// </summary>
+        private string bgmSearchText;
+        /// <summary>
+        /// 搜索的音效Clip名称
+        /// </summary>
+        private string audioClipSearchText;
+        /// <summary>
+        /// 搜索的BGMClip名称
+        /// </summary>
+        private string bgmClipSearchText;
         /// <summary>
         /// 筛选类型的字典
         /// </summary>
@@ -69,9 +81,13 @@ namespace KFrame.Systems
         /// </summary>
         private Vector2 bgmScrollPosition;
         /// <summary>
-        /// Clip列表的滚动位置
+        /// AudioClip列表的滚动位置
         /// </summary>
-        private Vector2 clipScrollPosition;
+        private Vector2 audioClipScrollPosition;
+        /// <summary>
+        /// BGMClip列表的滚动位置
+        /// </summary>
+        private Vector2 bgmClipScrollPosition;
         /// <summary>
         /// Group列表的滚动位置
         /// </summary>
@@ -86,23 +102,26 @@ namespace KFrame.Systems
         /// 编辑模式
         /// 0.音效编辑
         /// 1.BGM编辑
-        /// 2.Clip编辑
-        /// 3.分组编辑
+        /// 2.AudioClip编辑
+        /// 3.BGMClip编辑
+        /// 4.分组编辑
         /// </summary>
         private enum EditMode
         {
             SFX = 0,
             BGM = 1,
-            Clip = 2,
-            Group = 3,
+            AudioClip = 2,
+            BGMClip = 3,
+            Group = 4,
         }
         
         /// <summary>
         /// 编辑模式
         /// 0.音效编辑
         /// 1.BGM编辑
-        /// 2.Clip编辑
-        /// 3.分组编辑
+        /// 2.AudioClip编辑
+        /// 3.BGMClip编辑
+        /// 4.分组编辑
         /// </summary>
         private EditMode editMode = EditMode.SFX;
         internal abstract class GUIBase
@@ -335,7 +354,7 @@ namespace KFrame.Systems
             
             if (checkFilter)
             {
-                CheckFilterText(gui);
+                CheckFilterText(gui, audioSearchText);
                 CheckFilterType(gui);
             }
         }
@@ -352,7 +371,7 @@ namespace KFrame.Systems
 
             if (checkFilter)
             {
-                CheckFilterText(gui);
+                CheckFilterText(gui, bgmSearchText);
                 CheckFilterType(gui);
             }
         }
@@ -374,17 +393,19 @@ namespace KFrame.Systems
             {
                 case EditMode.SFX:
                     //绘制音效选项列表
-                    DrawAudioList();
+                    DrawAudioGUI();
                     break;
                 case EditMode.BGM:
                     //绘制BGM列表
-                    DrawBGMList();
+                    DrawBGMGUI();
                     break;
-                case EditMode.Clip:
+                case EditMode.AudioClip:
+                    break;
+                case EditMode.BGMClip:
                     break;
                 case EditMode.Group:
                     //绘制Group列表
-                    DrawGroupList();
+                    DrawGroupGUI();
                     break;
             }
 
@@ -410,7 +431,7 @@ namespace KFrame.Systems
         /// <summary>
         /// 检测名称是否符合筛选结果
         /// </summary>
-        private void CheckFilterText(GUIBase gui)
+        private void CheckFilterText(GUIBase gui, string searchText)
         {
             if (string.IsNullOrEmpty(searchText))
             {
@@ -442,59 +463,62 @@ namespace KFrame.Systems
             if (GUILayout.Button("音效"))
             {
                 editMode = EditMode.SFX;
-                searchText = "";
             }
             if (GUILayout.Button("BGM"))
             {
                 editMode = EditMode.BGM;
-                searchText = "";
             }
-            if (GUILayout.Button("Clip"))
+            if (GUILayout.Button("AudioClip"))
             {
-                editMode = EditMode.Clip;
-                searchText = "";
+                editMode = EditMode.AudioClip;
+            }
+            if (GUILayout.Button("BGMClip"))
+            {
+                editMode = EditMode.BGMClip;
             }
             if (GUILayout.Button("Group"))
             {
                 editMode = EditMode.Group;
-                searchText = "";
             }
             
             EditorGUILayout.EndHorizontal();
             
-            GUILayout.Space(10f);
-            
+            EditorGUILayout.EndVertical();
+        }
+        /// <summary>
+        /// 绘制搜索栏
+        /// </summary>
+        /// <param name="searchText">搜索文本</param>
+        /// <returns>如果搜索文本发生变化返回true</returns>
+        private bool DrawSearchField(ref string searchText)
+        {
+            GUILayout.Space(5f);
             //搜索栏
             EditorGUI.BeginChangeCheck();
             Rect serachRect = EditorGUILayout.GetControlRect(GUILayout.Height(MStyle.labelHeight));
             searchText = SirenixEditorGUI.SearchField(serachRect, searchText);
-            if (EditorGUI.EndChangeCheck())
-            {
-                for (int i = 0; i < audioGUIs.Count; i++)
-                {
-                    //检测名称是否符合筛选结果
-                    CheckFilterText(audioGUIs[i]);
-                }
 
-                for (int i = 0; i < bgmGUIs.Count; i++)
-                {
-                    //检测名称是否符合筛选结果
-                    CheckFilterText(bgmGUIs[i]);
-                }
-            }
+            GUILayout.Space(5f);
             
-
-            GUILayout.Space(MStyle.spacing);
-            
-            EditorGUILayout.EndVertical();
+            return EditorGUI.EndChangeCheck();
         }
         /// <summary>
         /// 绘制选项列表
         /// </summary>
-        private void DrawAudioList()
+        private void DrawAudioGUI()
         {
             
             EditorGUILayout.BeginVertical();
+            
+            //绘制搜索栏
+            if (DrawSearchField(ref audioSearchText))
+            {            
+                //检测名称是否符合筛选结果
+                for (int i = 0; i < audioGUIs.Count; i++)
+                {
+                    CheckFilterText(audioGUIs[i], audioSearchText);
+                }
+            }
             
             //筛选选项            
             EditorGUITool.ShowAClearFoldOut(ref showFilter, "筛选");
@@ -569,11 +593,21 @@ namespace KFrame.Systems
         /// <summary>
         /// 绘制BGM列表
         /// </summary>
-        private void DrawBGMList()
+        private void DrawBGMGUI()
         {
             
             EditorGUILayout.BeginVertical();
-
+            
+            //绘制搜索栏
+            if (DrawSearchField(ref bgmSearchText))
+            {            
+                //检测名称是否符合筛选结果
+                for (int i = 0; i < bgmGUIs.Count; i++)
+                {
+                    CheckFilterText(bgmGUIs[i], bgmSearchText);
+                }
+            }
+            
             bgmScrollPosition = EditorGUILayout.BeginScrollView(bgmScrollPosition);
 
             //遍历绘制每个GUI
@@ -591,7 +625,7 @@ namespace KFrame.Systems
         /// <summary>
         /// 绘制Group列表
         /// </summary>
-        private void DrawGroupList()
+        private void DrawGroupGUI()
         {
             EditorGUILayout.BeginVertical();
             
@@ -611,6 +645,7 @@ namespace KFrame.Systems
             for (int i = 0; i < Library.AudioGroups.Count; i++)
             {
                 EditorGUILayout.LabelField(Library.AudioGroups[i].GroupName);
+                GUILayout.Space(MStyle.spacing);
             }
             
             EditorGUILayout.EndScrollView();
@@ -663,8 +698,7 @@ namespace KFrame.Systems
 
                             if(bgmStack != null)
                             {
-                                BGMClipStack clipStack = bgmStack.Clips[UnityEngine.Random.Range(0, bgmStack.Clips.Count)];
-                                clip = clipStack.Clips[UnityEngine.Random.Range(0, clipStack.Clips.Count)];
+                                clip = bgmStack.GetClip();
                             }
                             break;
                         case AudioGUI audio:

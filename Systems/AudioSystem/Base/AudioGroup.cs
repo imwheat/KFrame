@@ -10,6 +10,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using KFrame.Attributes;
+using UnityEngine.Audio;
 
 namespace KFrame.Systems
 {
@@ -43,17 +44,19 @@ namespace KFrame.Systems
         [KLabelText("子集"), NonSerialized]
         public List<AudioGroup> Children;
         /// <summary>
-        /// 音量
+        /// 自身音量
         /// </summary>
         [KLabelText("音量"), Range(0,1f), NonSerialized]
         public float Volume;
         /// <summary>
-        /// 当前音量
+        /// 当前音量值
+        /// 会受到父级影响
         /// </summary>
         [KLabelText("当前音量"), Range(0, 1f)]
         private float curVolume;
         /// <summary>
-        /// 当前音量
+        /// 当前音量值
+        /// 会受到父级影响
         /// </summary>
         public float CurVolume => curVolume;
         /// <summary>
@@ -87,6 +90,15 @@ namespace KFrame.Systems
             UpdateVolumeAction?.Invoke(CurVolume);
         }
         /// <summary>
+        /// 更新音量
+        /// </summary>
+        /// <param name="v">更新的音量值</param>
+        public void UpdateVolume(float v)
+        {
+            Volume = v;
+            UpdateVolume();
+        }
+        /// <summary>
         /// 获取音量
         /// </summary>
         /// <returns></returns>
@@ -106,7 +118,13 @@ namespace KFrame.Systems
             //返回音量
             return volume;
         }
-
+        /// <summary>
+        /// 获取MixerGroup
+        /// </summary>
+        public AudioMixerGroup GetMixerGroup()
+        {
+            return AudioDic.GetAudioMixerGroup(GroupIndex);
+        }
 #if UNITY_EDITOR
         /// <summary>
         /// 绑定父级group

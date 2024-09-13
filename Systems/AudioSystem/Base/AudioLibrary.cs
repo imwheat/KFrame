@@ -186,6 +186,7 @@ namespace KFrame.Systems
             
             //清空AudioGroup，然后递归查询每个Group的子集
             AudioGroups = new List<AudioGroup>();
+            AudioMixerGroups = new List<AudioMixerGroup>();
             AudioMixerGroup[] groups = AudioMixer.FindMatchingGroups("");
             Dictionary<AudioMixerGroup, AudioGroup> groupDic = new Dictionary<AudioMixerGroup, AudioGroup>();
             foreach (AudioMixerGroup group in groups)
@@ -193,6 +194,7 @@ namespace KFrame.Systems
                 AudioGroup newGroup = new AudioGroup(group.name, AudioGroups.Count);
                 groupDic[group] = newGroup;
                 AudioGroups.Add(newGroup);
+                AudioMixerGroups.Add(group);
             }
             FindChildGroup(groupDic, AudioMixer, AudioGroups[0].GroupName, new HashSet<string>());
                 

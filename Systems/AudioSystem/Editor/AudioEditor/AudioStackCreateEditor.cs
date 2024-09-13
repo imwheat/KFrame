@@ -763,6 +763,9 @@ namespace KFrame.Systems
 
             }
             
+            //更新GroupIndex
+            editData.AudioGroupIndex = AudioDic.GetAudioGroupIndex(editData.AudioMixerGroup);
+            
             //复制数据
             editData.PasteData(stack);
             //设置id

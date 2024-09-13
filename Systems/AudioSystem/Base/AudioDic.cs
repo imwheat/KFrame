@@ -32,6 +32,12 @@ namespace KFrame.Systems
         private static Dictionary<int, AudioGroup> groupDic = new Dictionary<int, AudioGroup>();
 
         /// <summary>
+        /// 音效分组字典
+        /// </summary>
+        private static Dictionary<AudioMixerGroup, AudioGroup>
+            groupDic2 = new Dictionary<AudioMixerGroup, AudioGroup>();
+        
+        /// <summary>
         /// 音效混音器分组字典
         /// </summary>
         private static Dictionary<int, AudioMixerGroup> mixerGroupDic = new Dictionary<int, AudioMixerGroup>();
@@ -52,13 +58,7 @@ namespace KFrame.Systems
         /// 音效Clip对id的字典(编辑器使用)
         /// </summary>
         private static Dictionary<AudioClip, int> clipIndexDic = new Dictionary<AudioClip, int>();
-
         
-        /// <summary>
-        /// 音效分组字典(编辑器使用)
-        /// </summary>
-        private static Dictionary<AudioMixerGroup, AudioGroup>
-            groupDic2 = new Dictionary<AudioMixerGroup, AudioGroup>();
 
         static AudioDic()
         {
@@ -94,11 +94,6 @@ namespace KFrame.Systems
                     audioDic.Add(cp.AudioIndex, cp);
                 }
 
-                foreach (var group in audioLibrary.AudioGroups)
-                {
-                    groupDic.Add(group.GroupIndex, group);
-                }
-
                 foreach (var bgm in audioLibrary.BGMs)
                 {
                     bgmDic.Add(bgm.BGMIndex, bgm);
@@ -123,15 +118,12 @@ namespace KFrame.Systems
                 {
                     bgmClipDic[i] = audioLibrary.BGMClips[i];
                 }
-
-#if UNITY_EDITOR
-
-                foreach (AudioGroup group in audioLibrary.AudioGroups)
+                
+                foreach (var group in audioLibrary.AudioGroups)
                 {
+                    groupDic.Add(group.GroupIndex, group);
                     groupDic2[GetAudioMixerGroup(group.GroupIndex)] = group;
                 }
-
-#endif
 
                 inited = true;
             }
@@ -175,7 +167,7 @@ namespace KFrame.Systems
                 return null;
             }
         }
-
+        
         /// <summary>
         /// 获取音效混音器分组
         /// </summary>
@@ -190,6 +182,22 @@ namespace KFrame.Systems
             else
             {
                 Debug.Log("无法找到对应id的音效分组:" + index);
+                return null;
+            }
+        }
+        /// <summary>
+        /// 查找AudioGroup(通过MixerGroup)
+        /// </summary>
+        public static AudioGroup GetAudioGroup(AudioMixerGroup mixerGroup)
+        {
+            //如果字典中有的话就返回
+            if (groupDic2.ContainsKey(mixerGroup))
+            {
+                return groupDic2[mixerGroup];
+            }
+            else
+            {
+                Debug.Log("无法找到对应的Group:" + mixerGroup.name);
                 return null;
             }
         }
@@ -296,7 +304,7 @@ namespace KFrame.Systems
             if (bgmStack == null) return;
 
             //播放BGM
-            AudioSystem.PlayBGMAudio(bgmStack);
+            AudioSystem.PlayBGM(bgmStack);
         }
 
 
@@ -349,23 +357,6 @@ namespace KFrame.Systems
             audioDic[id] = stack;
         }
         
-        /// <summary>
-        /// 查找AudioGroup(编辑器使用)
-        /// </summary>
-        public static AudioGroup GetAudioGroup(AudioMixerGroup mixerGroup)
-        {
-            //如果字典中有的话就返回
-            if (groupDic2.ContainsKey(mixerGroup))
-            {
-                return groupDic2[mixerGroup];
-            }
-            else
-            {
-                Debug.Log("无法找到对应的Group:" + mixerGroup.name);
-                return null;
-            }
-        }
-
         /// <summary>
         /// 查找AudioGroup(编辑器使用)
         /// </summary>

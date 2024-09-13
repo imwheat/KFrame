@@ -16,9 +16,13 @@ namespace KFrame.Systems
     public class BGMPlay : MonoBehaviour
     {
         [LabelText("播放器")] public AudioSource MyAudioSource;
-        [LabelText("BGMId")] public int BGMIndex;
-        [LabelText("音轨id")] public int SoundTrackIndex;
+        [LabelText("当前在播放的BGMStack")] public BGMStack CurStack;
         [LabelText("循环播放")] public bool Loop;
+        /// <summary>
+        /// 调节音量
+        /// 在淡入淡出的时候会用到
+        /// </summary>
+        [LabelText("调节音量")] public float ModifyVolume;
         private void Awake()
         {
             //防空
@@ -37,58 +41,32 @@ namespace KFrame.Systems
         /// <summary>
         /// 播放BGM
         /// </summary>
-        public void PlayBGM(BGMClipStack bgmClip, AudioMixerGroup group)
+        public void PlayBGM(BGMStack bgmClip, AudioMixerGroup group)
         {
             //防空
-            if (bgmClip==null||bgmClip.Clips.Count == 0) return;
+            if (bgmClip==null) return;
 
             //设置BGMPlay参数
-            BGMIndex = bgmClip.BGMIndex;
-            SoundTrackIndex = bgmClip.SoundTrackIndex;
+            CurStack = bgmClip;
             Loop = bgmClip.Loop;
-
-
-            //获取要播放的BGM的Clip
-            AudioClip clip;
-
-            //如果只有一个
-            if (bgmClip.Clips.Count == 1)
-            {
-                //那就直接获取
-                clip = bgmClip.Clips[0];
-            }
-            //有多个就随机获取
-            else
-            {
-                //防空
-                if (bgmClip.playIndexs == null) 
-                    bgmClip.playIndexs = new List<int>();
-
-                //如果随机播放里边里面的id没了，那就重新生成
-                if(bgmClip.playIndexs.Count==0)
-                {
-                    //添加打乱顺序的id
-                    for (int i = 0; i < bgmClip.Clips.Count; i++)
-                    {
-                        bgmClip.playIndexs.Insert(UnityEngine.Random.Range(0, bgmClip.playIndexs.Count), i);
-                    }
-                }
-
-                //随机抽取一个id
-                int k = UnityEngine.Random.Range(0, bgmClip.playIndexs.Count);
-                clip = bgmClip.Clips[bgmClip.playIndexs[k]];
-                //然后把抽到的去掉
-                bgmClip.playIndexs.RemoveAt(k);
-            }
+            ModifyVolume = 1f;
+            AudioSystem.BGMGroup.UpdateVolumeAction += UpdateVolume;
 
             //播放
-            MyAudioSource.clip = clip;
+            MyAudioSource.clip = bgmClip.GetClip();
             //设置AudioSource参数
             MyAudioSource.outputAudioMixerGroup = group;
-            MyAudioSource.volume = bgmClip.Volume;
+            MyAudioSource.volume = bgmClip.Volume * AudioSystem.BGMGroup.CurVolume;
             MyAudioSource.loop = Loop;
             MyAudioSource.Play();
 
+        }
+        /// <summary>
+        /// 更新音量
+        /// </summary>
+        public void UpdateVolume(float v)
+        {
+            MyAudioSource.volume = v * ModifyVolume;
         }
         /// <summary>
         /// 结束播放然后回到对象池
@@ -97,6 +75,8 @@ namespace KFrame.Systems
         {
             MyAudioSource.Stop();
             MyAudioSource.clip = null;
+            AudioSystem.BGMGroup.UpdateVolumeAction -= UpdateVolume;
+
             PoolSystem.PushGameObject(gameObject);
         }
     }
