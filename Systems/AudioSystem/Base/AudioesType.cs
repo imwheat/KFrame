@@ -11,17 +11,9 @@ namespace KFrame.Systems
         /// </summary>
         None = 0,
         /// <summary>
-        /// BGM
-        /// </summary>
-        BGM = 1,
-        /// <summary>
-        /// 所有音效
-        /// </summary>
-        AllSFX = 2,
-        /// <summary>
         /// 所有
         /// </summary>
-        All = 3,
+        All = 128,
     }
 
 }

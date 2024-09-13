@@ -143,10 +143,6 @@ namespace KFrame.Systems
             /// </summary>
             public bool MatchFilter => MatchFilterText && MatchFilterType;
             /// <summary>
-            /// 获取音效类型
-            /// </summary>
-            public abstract AudioesType GetSFXType();
-            /// <summary>
             /// 获取名称
             /// </summary>
             public abstract string GetName();
@@ -168,7 +164,7 @@ namespace KFrame.Systems
             /// <summary>
             /// 获取音效类型
             /// </summary>
-            public override AudioesType GetSFXType()
+            public AudioesType GetSFXType()
             {
                 return Stack.AudioesType;
             }
@@ -191,13 +187,6 @@ namespace KFrame.Systems
             {
                 Stack = stack;
                 GUIContent = new GUIContent(Stack.BGMName);
-            }
-            /// <summary>
-            /// 获取音效类型
-            /// </summary>
-            public override AudioesType GetSFXType()
-            {
-                return AudioesType.BGM;
             }
             /// <summary>
             /// 获取名称
@@ -355,7 +344,6 @@ namespace KFrame.Systems
             if (checkFilter)
             {
                 CheckFilterText(gui, audioSearchText);
-                CheckFilterType(gui);
             }
         }
         /// <summary>
@@ -445,9 +433,20 @@ namespace KFrame.Systems
         /// <summary>
         /// 检测类型是否符合筛选结果
         /// </summary>
-        private void CheckFilterType(GUIBase gui)
+        private void CheckFilterType(AudioGUI gui)
         {
             gui.MatchFilterType = filterBoolDic[gui.GetSFXType()];
+        }
+        /// <summary>
+        /// 切换编辑模式
+        /// </summary>
+        /// <param name="mode"></param>
+        private void SwitchEditMode(EditMode mode)
+        {
+            //切换模式
+            editMode = mode;
+            //停止播放音效
+            EditorStopPlayAudio();
         }
         /// <summary>
         /// 绘制顶部选项GUI
@@ -462,23 +461,23 @@ namespace KFrame.Systems
 
             if (GUILayout.Button("音效"))
             {
-                editMode = EditMode.SFX;
+                SwitchEditMode(EditMode.SFX);
             }
             if (GUILayout.Button("BGM"))
             {
-                editMode = EditMode.BGM;
+                SwitchEditMode(EditMode.BGM);
             }
             if (GUILayout.Button("AudioClip"))
             {
-                editMode = EditMode.AudioClip;
+                SwitchEditMode(EditMode.AudioClip);
             }
             if (GUILayout.Button("BGMClip"))
             {
-                editMode = EditMode.BGMClip;
+                SwitchEditMode(EditMode.BGMClip);
             }
             if (GUILayout.Button("Group"))
             {
-                editMode = EditMode.Group;
+                SwitchEditMode(EditMode.Group);
             }
             
             EditorGUILayout.EndHorizontal();
@@ -669,11 +668,17 @@ namespace KFrame.Systems
             
             EditorGUILayout.LabelField(option.GUIContent);
 
-            GUILayout.FlexibleSpace();
+            GUILayout.FlexibleSpace();  
 
             //显示播放/暂停按钮
             if(playingAudioIndex == i)
             {
+                //如果播放完了那就更新正在播放的AudioIndex
+                if (!EditorGUITool.IsEditorPlayingAudio())
+                {
+                    playingAudioIndex = -1;
+                }
+                
                 //暂停播放
                 if (GUILayout.Button(EditorIcons.Stop.Raw, GUILayout.Height(MStyle.labelHeight), GUILayout.Width(MStyle.btnWidth)))
                 {
