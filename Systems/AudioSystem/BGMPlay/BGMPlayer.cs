@@ -28,6 +28,7 @@ namespace KFrame.Systems
         [ShowInInspector, LabelText("正在启用播放的音轨List"), TabGroup("逻辑")] private List<BGMPlay> enablingPlayList;
         [ShowInInspector, LabelText("正在禁用播放的音轨List"), TabGroup("逻辑")] private List<BGMPlay> disablingPlayList;
         [SerializeField ,LabelText("bgm切换音量的协程"), TabGroup("逻辑")] private Coroutine bgmTranslationCoroutine;
+        [SerializeField ,LabelText("bgm切换音量的音量"), TabGroup("逻辑")] private float bgmTranslationVolume;
 
         #endregion
 
@@ -176,23 +177,6 @@ namespace KFrame.Systems
             BGMPlayingList.Clear();
 
         }
-        /// <summary>
-        /// 切换当前BGM的Stack换为另一个
-        /// </summary>
-        public void ChangePlayingBGMStack(BGMStack stack)
-        {
-            //如果是空的，或者和现在的一样就返回
-            if(stack == null || stack == PlayingBGMStack) return;
-            PlayingBGMStack = stack;
-
-            //先把先前播放的BGM给关了
-            foreach (var bgmPlay in BGMPlayingList)
-            {
-                bgmPlay.EndPlay();
-            }
-            BGMPlayingList.Clear();
-
-        }
 
         #endregion
 
@@ -242,22 +226,34 @@ namespace KFrame.Systems
         /// <returns></returns>
         private IEnumerator FadeInBGMTranslation()
         {
-            //获取当前音量，要是字典里面没有那就取0f
-            float v = 0f;
+            //获取当前音量，要是差不多为1f那就取0f
+            if (Mathf.Approximately(1f, bgmTranslationVolume))
+            {
+                bgmTranslationVolume = 0f;
+            }
             float speed = 1f / BGMTranslationDuration;
 
-            while(v<1f)
+            while(bgmTranslationVolume<1f)
             {
-                v += speed * Time.fixedDeltaTime;
+                bgmTranslationVolume += speed * Time.fixedDeltaTime;
+                if (bgmTranslationVolume > 1f) bgmTranslationVolume = 1f;
 
                 //更新
-                
+                for (int i = 0; i < enablingPlayList.Count; i++)
+                {
+                    enablingPlayList[i].UpdateModifyVolume(bgmTranslationVolume);
+                }
                 yield return CoroutineTool.WaitForFixedUpdate();
             }
 
             //把v规整为1f后再更新一下音量
-            v = 1f;
-            SetTrackVolume(0, v);
+            bgmTranslationVolume = 1f;
+            //放入正在播放列表
+            for (int i = 0; i < enablingPlayList.Count; i++)
+            {
+                BGMPlayingList.Add(enablingPlayList[i]);
+            }
+            enablingPlayList.Clear();
             yield return CoroutineTool.WaitForFixedUpdate();
 
             //清空协程
@@ -283,22 +279,39 @@ namespace KFrame.Systems
         /// <returns></returns>
         private IEnumerator FadeOutBGMTranslation()
         {
-            //获取当前音量，要是字典里面没有那就取1f
-            float v = 1f;
+            //把正在启用和播放的BGM添加入禁用的列表
+            disablingPlayList.AddRange(enablingPlayList);
+            disablingPlayList.AddRange(BGMPlayingList);
+            BGMPlayingList.Clear();
+            enablingPlayList.Clear();
+            
+            //获取当前音量，要是差不多为0f那就取1f
+            if (Mathf.Approximately(0f, bgmTranslationVolume))
+            {
+                bgmTranslationVolume = 1f;
+            }
             float speed = 1f / BGMTranslationDuration;
 
-            while (v > 0f)
+            while (bgmTranslationVolume > 0f)
             {
-                v -= speed * Time.fixedDeltaTime;
+                bgmTranslationVolume -= speed * Time.fixedDeltaTime;
+                if (bgmTranslationVolume < 0f) bgmTranslationVolume = 0f;
 
                 //更新
-                SetTrackVolume(0, v);
+                for (int i = 0; i < disablingPlayList.Count; i++)
+                {
+                    disablingPlayList[i].UpdateModifyVolume(bgmTranslationVolume);
+                }
                 yield return CoroutineTool.WaitForFixedUpdate();
             }
 
-            //把v规整为0f后再更新一下音量
-            v = 0f;
-            SetTrackVolume(0, v);
+            //结束播放
+            for (int i = 0; i < disablingPlayList.Count; i++)
+            {
+                disablingPlayList[i].EndPlay();
+            }
+            //清空播放列表
+            disablingPlayList.Clear();
             yield return CoroutineTool.WaitForFixedUpdate();
 
             //清空协程
@@ -344,9 +357,9 @@ namespace KFrame.Systems
             //不是空的
             else
             {
-                //切换播放的BGM
-                ChangePlayingBGMStack(stack);
-
+                //添加入正在启用播放的列表
+                enablingPlayList.Add(GetBGMPlay(stack));
+                
                 //开始渐入
                 yield return FadeInBGMTranslation();
 

@@ -23,6 +23,10 @@ namespace KFrame.Systems
         /// 在淡入淡出的时候会用到
         /// </summary>
         [LabelText("调节音量")] public float ModifyVolume;
+        /// <summary>
+        /// 音量
+        /// </summary>
+        [LabelText("调节音量")] public float Volume;
         private void Awake()
         {
             //防空
@@ -50,13 +54,14 @@ namespace KFrame.Systems
             CurStack = bgmClip;
             Loop = bgmClip.Loop;
             ModifyVolume = 1f;
+            Volume = bgmClip.Volume * AudioSystem.BGMGroup.CurVolume;
             AudioSystem.BGMGroup.UpdateVolumeAction += UpdateVolume;
 
             //播放
             MyAudioSource.clip = bgmClip.GetClip();
             //设置AudioSource参数
             MyAudioSource.outputAudioMixerGroup = group;
-            MyAudioSource.volume = bgmClip.Volume * AudioSystem.BGMGroup.CurVolume;
+            MyAudioSource.volume = Volume;
             MyAudioSource.loop = Loop;
             MyAudioSource.Play();
 
@@ -66,7 +71,16 @@ namespace KFrame.Systems
         /// </summary>
         public void UpdateVolume(float v)
         {
-            MyAudioSource.volume = v * ModifyVolume;
+            Volume = v;
+            MyAudioSource.volume = Volume * ModifyVolume;
+        }
+        /// <summary>
+        /// 更新调节音量
+        /// </summary>
+        public void UpdateModifyVolume(float v)
+        {
+            ModifyVolume = v;
+            MyAudioSource.volume = Volume * ModifyVolume;
         }
         /// <summary>
         /// 结束播放然后回到对象池
@@ -75,6 +89,7 @@ namespace KFrame.Systems
         {
             MyAudioSource.Stop();
             MyAudioSource.clip = null;
+            Volume = 0f;
             AudioSystem.BGMGroup.UpdateVolumeAction -= UpdateVolume;
 
             PoolSystem.PushGameObject(gameObject);
