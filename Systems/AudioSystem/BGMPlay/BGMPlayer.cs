@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine.Audio;
 using KFrame.Tools;
+using UnityEngine.Serialization;
 
 namespace KFrame.Systems
 {
@@ -20,7 +21,6 @@ namespace KFrame.Systems
         #region 播放器字段
 
         [LabelText("播放BGM的预制体"), TabGroup("设置")] public GameObject BGMPlayPrefab;
-        [LabelText("混音器"), TabGroup("设置")] public AudioMixer AudioMixer;
         [LabelText("BGM切换所需时间"),TabGroup("设置")] public float BGMTranslationDuration = 5f;
         [LabelText("BGM切换音量曲线"),TabGroup("设置")] public AnimationCurve BGMTranslationVolumeCurve;
         [SerializeField ,LabelText("当前的BGMStack"), TabGroup("逻辑")] public BGMStack PlayingBGMStack;
@@ -28,7 +28,7 @@ namespace KFrame.Systems
         [ShowInInspector, LabelText("正在启用播放的音轨List"), TabGroup("逻辑")] private List<BGMPlay> enablingPlayList;
         [ShowInInspector, LabelText("正在禁用播放的音轨List"), TabGroup("逻辑")] private List<BGMPlay> disablingPlayList;
         [SerializeField ,LabelText("bgm切换音量的协程"), TabGroup("逻辑")] private Coroutine bgmTranslationCoroutine;
-        [SerializeField ,LabelText("bgm切换音量的音量"), TabGroup("逻辑")] private float bgmTranslationVolume;
+        [SerializeField ,LabelText("bgm切换音量的进度"), TabGroup("逻辑")] private float bgmTranslationProgress;
 
         #endregion
 
@@ -41,11 +41,6 @@ namespace KFrame.Systems
             if(BGMPlayPrefab == null)
             {
                 BGMPlayPrefab = ResSystem.LoadAsset<GameObject>("BGMPlay");
-            }
-            //混音器
-            if(AudioMixer == null)
-            {
-                AudioMixer = ResSystem.LoadAsset<AudioMixer>("AudioMixer");
             }
 
             //列表初始化
@@ -180,29 +175,6 @@ namespace KFrame.Systems
 
         #endregion
 
-        #region 调参
-
-        /// <summary>
-        /// 将0~1的音量换算成对应的音量
-        /// </summary>
-        /// <param name="x">0~1的音量</param>
-        /// <returns>-80f~0f的音量</returns>
-        public float GetVolume(float x)
-        {
-            if(BGMTranslationVolumeCurve==null)
-            {
-                return Mathf.Clamp(- Mathf.Pow(x - 1, 2) * 80f, -80f, 0f);
-            }
-            else
-            {
-                x = Mathf.Clamp01(x);
-                return BGMTranslationVolumeCurve.Evaluate(x);
-
-            }
-        }
-
-        #endregion
-
         #region 协程
 
         /// <summary>
@@ -227,27 +199,27 @@ namespace KFrame.Systems
         private IEnumerator FadeInBGMTranslation()
         {
             //获取当前音量，要是差不多为1f那就取0f
-            if (Mathf.Approximately(1f, bgmTranslationVolume))
+            if (Mathf.Approximately(1f, bgmTranslationProgress))
             {
-                bgmTranslationVolume = 0f;
+                bgmTranslationProgress = 0f;
             }
             float speed = 1f / BGMTranslationDuration;
 
-            while(bgmTranslationVolume<1f)
+            while(bgmTranslationProgress<1f)
             {
-                bgmTranslationVolume += speed * Time.fixedDeltaTime;
-                if (bgmTranslationVolume > 1f) bgmTranslationVolume = 1f;
+                bgmTranslationProgress += speed * Time.fixedDeltaTime;
+                if (bgmTranslationProgress > 1f) bgmTranslationProgress = 1f;
 
                 //更新
                 for (int i = 0; i < enablingPlayList.Count; i++)
                 {
-                    enablingPlayList[i].UpdateModifyVolume(bgmTranslationVolume);
+                    enablingPlayList[i].UpdateModifyVolume(BGMTranslationVolumeCurve.Evaluate(bgmTranslationProgress));
                 }
                 yield return CoroutineTool.WaitForFixedUpdate();
             }
 
             //把v规整为1f后再更新一下音量
-            bgmTranslationVolume = 1f;
+            bgmTranslationProgress = 1f;
             //放入正在播放列表
             for (int i = 0; i < enablingPlayList.Count; i++)
             {
@@ -286,21 +258,21 @@ namespace KFrame.Systems
             enablingPlayList.Clear();
             
             //获取当前音量，要是差不多为0f那就取1f
-            if (Mathf.Approximately(0f, bgmTranslationVolume))
+            if (Mathf.Approximately(0f, bgmTranslationProgress))
             {
-                bgmTranslationVolume = 1f;
+                bgmTranslationProgress = 1f;
             }
             float speed = 1f / BGMTranslationDuration;
 
-            while (bgmTranslationVolume > 0f)
+            while (bgmTranslationProgress > 0f)
             {
-                bgmTranslationVolume -= speed * Time.fixedDeltaTime;
-                if (bgmTranslationVolume < 0f) bgmTranslationVolume = 0f;
+                bgmTranslationProgress -= speed * Time.fixedDeltaTime;
+                if (bgmTranslationProgress < 0f) bgmTranslationProgress = 0f;
 
                 //更新
                 for (int i = 0; i < disablingPlayList.Count; i++)
                 {
-                    disablingPlayList[i].UpdateModifyVolume(bgmTranslationVolume);
+                    disablingPlayList[i].UpdateModifyVolume(BGMTranslationVolumeCurve.Evaluate(bgmTranslationProgress));
                 }
                 yield return CoroutineTool.WaitForFixedUpdate();
             }
@@ -352,7 +324,6 @@ namespace KFrame.Systems
             {
                 //结束
                 bgmTranslationCoroutine = null;
-                yield break;
             }
             //不是空的
             else
