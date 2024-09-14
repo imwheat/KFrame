@@ -10,7 +10,7 @@ using Sirenix.OdinInspector;
 namespace KFrame.Systems
 {
     [UIWindowData(typeof(SaveGameHintUI), true, "SaveGameHintUI", 6)]
-    public class SaveGameHintUI : UI_WindowBase
+    public class SaveGameHintUI : UI_Base
     {
         [LabelText("最短存在时间")]
         public float MinLastTime = 2f;

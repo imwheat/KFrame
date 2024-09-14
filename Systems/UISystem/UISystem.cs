@@ -22,7 +22,7 @@ namespace KFrame.Systems
             instance = FrameRoot.RootTransform.GetComponentInChildren<UISystem>();
             
             //初始化参数
-            activeWindowsDic = new Dictionary<string, List<UI_WindowBase>>();
+            activeWindowsDic = new Dictionary<string, List<UI_Base>>();
             
             //加载UI配置
             LoadUISettings();
@@ -34,8 +34,8 @@ namespace KFrame.Systems
             SaveUISettings();
         }
 
-        private static Dictionary<string, UIWindowData> UIWindowDataDic => FrameRoot.Setting.UIWindowDataDic;
-        private static Dictionary<string, List<UI_WindowBase>> activeWindowsDic;
+        private static Dictionary<string, UIData> UIDataDic => FrameRoot.Setting.UIDataDic;
+        private static Dictionary<string, List<UI_Base>> activeWindowsDic;
 
         [SerializeField, ShowInInspector] private UILayerBase[] uiLayers;
         [SerializeField] private RectTransform dragLayer;
@@ -54,41 +54,41 @@ namespace KFrame.Systems
         /// <summary>
         /// 初始化UI元素数据
         /// </summary>
-        /// <param name="windowKey">自定义的名称，可以是资源路径或类型名称或其他自定义</param>
-        /// <param name="windowData">窗口的重要数据</param>
-        public static void AddUIWindowData(string windowKey, UIWindowData windowData)
+        /// <param name="uiKey">自定义的名称，可以是资源路径或类型名称或其他自定义</param>
+        /// <param name="data">窗口的重要数据</param>
+        public static void AddUIData(string uiKey, UIData data)
         {
-            UIWindowDataDic.TryAdd(windowKey, windowData);
+            UIDataDic.TryAdd(uiKey, data);
         }
 
         /// <summary>
         /// 初始化UI元素数据
         /// </summary>
         /// <param name="type">对象类型</param>
-        /// <param name="windowData">UI数据</param>
-        public static void AddUIWindowData(Type type, UIWindowData windowData)
+        /// <param name="data">UI数据</param>
+        public static void AddUIData(Type type, UIData data)
         {
-            AddUIWindowData(type.GetNiceName(), windowData);
+            AddUIData(type.GetNiceName(), data);
         }
 
         /// <summary>
         /// 初始化UI元素数据
         /// </summary>
         /// <typeparam name="T">对象类型</typeparam>
-        /// <param name="windowData">UI数据</param>
-        public static void AddUIWindowData<T>(UIWindowData windowData)
+        /// <param name="data">UI数据</param>
+        public static void AddUIData<T>(UIData data)
         {
-            AddUIWindowData(typeof(T), windowData);
+            AddUIData(typeof(T), data);
         }
 
         /// <summary>
         /// 获取UI窗口数据
         /// </summary>
-        /// <param name="windowKey"></param>
+        /// <param name="uiKey"></param>
         /// <returns>可能为Null</returns>
-        public static UIWindowData GetUIWindowData(string windowKey)
+        public static UIData GetUIData(string uiKey)
         {
-            if (UIWindowDataDic.TryGetValue(windowKey, out UIWindowData windowData))
+            if (UIDataDic.TryGetValue(uiKey, out UIData windowData))
             {
                 return windowData;
             }
@@ -96,53 +96,136 @@ namespace KFrame.Systems
             return null;
         }
 
-        public static UIWindowData GetUIWindowData(Type windowType)
+        public static UIData GetUIData(Type Type)
         {
-            return GetUIWindowData(windowType.GetNiceName());
+            return GetUIData(Type.GetNiceName());
         }
 
-        public static UIWindowData GetUIWindowData<T>()
+        public static UIData GetUIData<T>()
         {
-            return GetUIWindowData(typeof(T));
+            return GetUIData(typeof(T));
         }
 
         /// <summary>
         /// 尝试获取UI窗口数据
         /// </summary>
-        /// <param name="windowKey"></param>
-        public static bool TryGetUIWindowData(string windowKey, out UIWindowData windowData)
+        /// <param name="uiKey"></param>
+        public static bool TryGetUIData(string uiKey, out UIData data)
         {
-            return UIWindowDataDic.TryGetValue(windowKey, out windowData);
+            return UIDataDic.TryGetValue(uiKey, out data);
         }
 
         /// <summary>
         /// 移除UI窗口数据,
         /// </summary>
-        /// <param name="windowKey"></param>
+        /// <param name="uiKey"></param>
         /// <returns></returns>
-        public static bool RemoveUIWindowData(string windowKey)
+        public static bool RemoveUIData(string uiKey)
         {
-            return UIWindowDataDic.Remove(windowKey);
+            return UIDataDic.Remove(uiKey);
         }
 
         /// <summary>
         /// 清除所有UI窗口数据
         /// </summary>
-        public static void ClearUIWindowData()
+        public static void ClearUIData()
         {
-            UIWindowDataDic.Clear();
+            UIDataDic.Clear();
         }
 
         #endregion
 
-        #region UI窗口生命周期管理
+        #region 打开UI
+        
+        /// <summary>
+        /// 显示UI
+        /// </summary>
+        /// <param name="base">要显示的UI</param>
+        public static void Show(UI_Base @base)
+        {
+            //设置父级，然后激活Gameobject
+            @base.transform.SetParent(UILayers[@base.CurrentLayer].Root);
+            @base.transform.SetAsLastSibling();
+            @base.gameObject.SetActive(true);
+            
+            //放入激活的UI列表
+            if (!activeWindowsDic.TryGetValue(@base.UIKey, out var list))
+            {
+                list = new List<UI_Base>();
+                activeWindowsDic[@base.UIKey] = list;
+            }
+            list.Add(@base);
+        }
+        /// <summary>
+        /// 显示UI
+        /// </summary>
+        /// <param name="data">UI数据</param>
+        /// <param name="uiKey">UI的key</param>
+        /// <param name="layer">层级</param>
+        /// <returns>UI</returns>
+        private static UI_Base ShowWindow(UIData data, string uiKey, int layer = -1)
+        {
+            //获取layer
+            int layerNum = layer == -1 ? data.LayerNum : layer;
+            //获取预制体
+            if (data.Prefab == null)
+            {
+                data.Prefab = ResSystem.LoadAsset<GameObject>(data.AssetPath);
+            }
+            
+            //尝试从对象池里面获取Gameobject，并放到对应的层级
+            GameObject windowObj = PoolSystem.GetOrNewGameObject(data.Prefab, UILayers[layerNum].Root);
+            //然后获取UI组件，再进行初始化
+            UI_Base window = windowObj.GetComponent<UI_Base>();
+            windowObj.transform.SetAsLastSibling();
+            window.Init();
+            window.ShowGeneralLogic(layerNum);
+            //然后把window放入Active的列表里面
+            if (!activeWindowsDic.TryGetValue(uiKey, out List<UI_Base> windowList))
+            {
+                windowList = new List<UI_Base>();
+                activeWindowsDic[uiKey] = windowList;
+            }
+            windowList.Add(window);
+            
+            //更新层级然后显示
+            data.LayerNum = layerNum;
+            UILayers[layerNum].OnWindowShow();
+            return window;
+        }
 
+        /// <summary>
+        /// 显示窗口
+        /// </summary>
+        /// <param name="uiKey">窗口的key</param>
+        /// <param name="layer">层级 -1等于不设置</param>
+        public static UI_Base Show(string uiKey, int layer = -1)
+        {
+            if (UIDataDic.TryGetValue(uiKey, out UIData windowData))
+            {
+                return ShowWindow(windowData, uiKey, layer);
+            }
+
+            // 资源库中没有意味着不允许显示
+            Debug.Log($"GameFrame:不存在{uiKey}的UIData");
+            return null;
+        }
+        /// <summary>
+        /// 显示窗口
+        /// </summary>
+        /// <typeparam name="T">要返回的窗口类型</typeparam>
+        /// <param name="uiKey">窗口的Key</param>
+        /// <param name="layer">层级 -1等于不设置</param>
+        public static T Show<T>(string uiKey, int layer = -1) where T : UI_Base
+        {
+            return Show(uiKey, layer) as T;
+        }
         /// <summary>
         /// 显示窗口
         /// </summary>
         /// <typeparam name="T">窗口类型</typeparam>
         /// <param name="layer">层级 -1等于不设置</param>
-        public static T Show<T>(int layer = -1) where T : UI_WindowBase
+        public static T Show<T>(int layer = -1) where T : UI_Base
         {
             return Show(typeof(T), layer) as T;
         }
@@ -152,32 +235,23 @@ namespace KFrame.Systems
         /// </summary>
         /// <typeparam name="T">窗口类型</typeparam>
         /// <param name="layer">层级 -1等于不设置</param>
-        public static void ShowAsync<T>(Action<T> callback = null, int layer = -1) where T : UI_WindowBase
+        public static void ShowAsync<T>(Action<T> callback = null, int layer = -1) where T : UI_Base
         {
             ShowAsync(typeof(T), (window) => { callback?.Invoke((T)window); }, layer);
         }
 
-        /// <summary>
-        /// 显示窗口
-        /// </summary>
-        /// <typeparam name="T">要返回的窗口类型</typeparam>
-        /// <param name="windowKey">窗口的Key</param>
-        /// <param name="layer">层级 -1等于不设置</param>
-        public static T Show<T>(string windowKey, int layer = -1) where T : UI_WindowBase
-        {
-            return Show(windowKey, layer) as T;
-        }
+
 
         /// <summary>
         /// 显示窗口 异步
         /// </summary>
         /// <typeparam name="T">要返回的窗口类型</typeparam>
-        /// <param name="windowKey">窗口的Key</param>
+        /// <param name="uiKey">窗口的Key</param>
         /// <param name="layer">层级 -1等于不设置</param>
-        public static T ShowAsync<T>(string windowKey, Action<T> callback = null, int layer = -1)
-            where T : UI_WindowBase
+        public static T ShowAsync<T>(string uiKey, Action<T> callback = null, int layer = -1)
+            where T : UI_Base
         {
-            return ShowAsync(windowKey, callback, layer) as T;
+            return ShowAsync(uiKey, callback, layer) as T;
         }
 
         /// <summary>
@@ -185,9 +259,9 @@ namespace KFrame.Systems
         /// </summary>
         /// <param name="type">窗口类型</param>
         /// <param name="layer">层级 -1等于不设置</param>
-        public static UI_WindowBase Show(Type type, int layer = -1)
+        public static UI_Base Show(Type type, int layer = -1)
         {
-            return Show(type.FullName, layer);
+            return Show(type.GetNiceName(), layer);
         }
 
         /// <summary>
@@ -195,85 +269,39 @@ namespace KFrame.Systems
         /// </summary>
         /// <param name="type">窗口类型</param>
         /// <param name="layer">层级 -1等于不设置</param>
-        public static void ShowAsync(Type type, Action<UI_WindowBase> callback = null, int layer = -1)
+        public static void ShowAsync(Type type, Action<UI_Base> callback = null, int layer = -1)
         {
             ShowAsync(type.FullName, callback, layer);
         }
 
-        /// <summary>
-        /// 显示窗口
-        /// </summary>
-        /// <param name="windowKey">窗口的key</param>
-        /// <param name="layer">层级 -1等于不设置</param>
-        public static UI_WindowBase Show(string windowKey, int layer = -1)
-        {
-            if (UIWindowDataDic.TryGetValue(windowKey, out UIWindowData windowData))
-            {
-                return ShowWindow(windowData, windowKey, layer);
-            }
 
-            // 资源库中没有意味着不允许显示
-            Debug.Log($"GameFrame:不存在{windowKey}的UIWindowData");
-            return null;
-        }
 
         /// <summary>
         /// 异步显示窗口
         /// </summary>
-        /// <param name="windowKey">窗口的key</param>
+        /// <param name="uiKey">窗口的key</param>
         /// <param name="layer">层级 -1等于不设置</param>
-        public static void ShowAsync(string windowKey, Action<UI_WindowBase> callback = null, int layer = -1)
+        public static void ShowAsync(string uiKey, Action<UI_Base> callback = null, int layer = -1)
         {
-            if (UIWindowDataDic.TryGetValue(windowKey, out UIWindowData windowData))
+            if (UIDataDic.TryGetValue(uiKey, out UIData windowData))
             {
-                //ShowAsync(windowData, windowKey, callback, layer);
+                //ShowAsync(windowData, uiKey, callback, layer);
             }
-            else Debug.Log($"JKFrame:不存在{windowKey}的UIWindowData"); // 资源库中没有意味着不允许显示
+            else Debug.Log($"JKFrame:不存在{uiKey}的UIWindowData"); // 资源库中没有意味着不允许显示
         }
-
-        private static UI_WindowBase ShowWindow(UIWindowData windowData, string windowKey, int layer = -1)
-        {
-            //获取layer
-            int layerNum = layer == -1 ? windowData.LayerNum : layer;
-            //获取预制体
-            if (windowData.Prefab == null)
-            {
-                windowData.Prefab = ResSystem.LoadAsset<GameObject>(windowData.AssetPath);
-            }
-            
-            //尝试从对象池里面获取Gameobject，并放到对应的层级
-            GameObject windowObj = PoolSystem.GetOrNewGameObject(windowData.Prefab, UILayers[layerNum].Root);
-            //然后获取UI组件，再进行初始化
-            UI_WindowBase window = windowObj.GetComponent<UI_WindowBase>();
-            windowObj.transform.SetAsLastSibling();
-            window.Init();
-            window.ShowGeneralLogic(layerNum);
-            //然后把window放入Active的列表里面
-            if (!activeWindowsDic.TryGetValue(windowKey, out List<UI_WindowBase> windowList))
-            {
-                windowList = new List<UI_WindowBase>();
-                activeWindowsDic[windowKey] = windowList;
-            }
-            windowList.Add(window);
-            
-            //更新层级然后显示
-            windowData.LayerNum = layerNum;
-            UILayers[layerNum].OnWindowShow();
-            return window;
-        }
-
+        
         #endregion
 
-        #region 获取与销毁窗口
+        #region 获取与销毁UI
 
         /// <summary>
         /// 获取窗口(单个)
         /// </summary>
-        /// <param name="windowKey">窗口Key</param>
+        /// <param name="uiKey">窗口Key</param>
         /// <returns>没找到会为Null</returns>
-        public static UI_WindowBase GetWindow(string windowKey)
+        public static UI_Base GetUI(string uiKey)
         {
-            if (activeWindowsDic.TryGetValue(windowKey, out List<UI_WindowBase> windowList))
+            if (activeWindowsDic.TryGetValue(uiKey, out List<UI_Base> windowList) && windowList.Count > 0)
             {
                 return windowList[0];
             }
@@ -284,39 +312,39 @@ namespace KFrame.Systems
         /// <summary>
         /// 获取窗口(单个)
         /// </summary>
-        /// <param name="windowKey">窗口Key</param>
+        /// <param name="uiKey">窗口Key</param>
         /// <returns>没找到会为Null</returns>
-        public static T GetWindow<T>(string windowKey) where T : UI_WindowBase
+        public static T GetUI<T>(string uiKey) where T : UI_Base
         {
-            return GetWindow(windowKey) as T;
+            return GetUI(uiKey) as T;
         }
 
         /// <summary>
         /// 获取窗口(单个)
         /// </summary>
         /// <returns>没找到会为Null</returns>
-        public static UI_WindowBase GetWindow(Type windowType)
+        public static UI_Base GetUI(Type windowType)
         {
-            return GetWindow(windowType.GetNiceName());
+            return GetUI(windowType.GetNiceName());
         }
         
         /// <summary>
         /// 获取窗口(单个)
         /// </summary>
         /// <returns>没找到会为Null</returns>
-        public static T GetWindow<T>() where T : UI_WindowBase
+        public static T GetUI<T>() where T : UI_Base
         {
-            return GetWindow(typeof(T)) as T;
+            return GetUI(typeof(T)) as T;
         }
         
         /// <summary>
         /// 获取窗口(所有)
         /// </summary>
-        /// <param name="windowKey">窗口Key</param>
+        /// <param name="uiKey">窗口Key</param>
         /// <returns>没找到会为Null</returns>
-        public static List<UI_WindowBase> GetWindowAll(string windowKey)
+        public static List<UI_Base> GetUIAll(string uiKey)
         {
-            if (activeWindowsDic.TryGetValue(windowKey, out List<UI_WindowBase> windowList))
+            if (activeWindowsDic.TryGetValue(uiKey, out List<UI_Base> windowList))
             {
                 return windowList;
             }
@@ -327,57 +355,57 @@ namespace KFrame.Systems
         /// 获取窗口(所有)
         /// </summary>
         /// <returns>没找到会为Null</returns>
-        public static List<UI_WindowBase> GetWindowAll(Type windowType)
+        public static List<UI_Base> GetUIAll(Type windowType)
         {
-            return GetWindowAll(windowType.GetNiceName());
+            return GetUIAll(windowType.GetNiceName());
         }
         /// <summary>
         /// 获取窗口(所有)
         /// </summary>
-        /// <param name="windowKey">窗口Key</param>
+        /// <param name="uiKey">窗口Key</param>
         /// <returns>没找到会为Null</returns>
-        public static List<T> GetWindowAll<T>(string windowKey) where T : UI_WindowBase
+        public static List<T> GetUIAll<T>(string uiKey) where T : UI_Base
         {
-            return GetWindowAll(windowKey) as List<T>;
+            return GetUIAll(uiKey) as List<T>;
         }
         /// <summary>
         /// 获取窗口(所有)
         /// </summary>
         /// <returns>没找到会为Null</returns>
-        public static List<T> GetWindowAll<T>() where T : UI_WindowBase
+        public static List<T> GetUIAll<T>() where T : UI_Base
         {
-            return GetWindowAll(typeof(T)) as List<T>;
+            return GetUIAll(typeof(T)) as List<T>;
         }
 
 
         /// <summary>
         /// 尝试获取窗口
         /// </summary>
-        /// <param name="windowKey"></param>
-        public static bool TryGetWindow(string windowKey, out UI_WindowBase window)
+        /// <param name="uiKey"></param>
+        public static bool TryGetUI(string uiKey, out UI_Base window)
         {
-            window = GetWindow(windowKey);
+            window = GetUI(uiKey);
             return window != null;
         }
 
         /// <summary>
         /// 尝试获取窗口
         /// </summary>
-        /// <param name="windowKey"></param>
-        public static bool TryGetWindow<T>(string windowKey, out T window) where T : UI_WindowBase
+        /// <param name="uiKey"></param>
+        public static bool TryGetUI<T>(string uiKey, out T window) where T : UI_Base
         {
-            window = GetWindow<T>(windowKey);
+            window = GetUI<T>(uiKey);
             return window != null;
         }
 
         /// <summary>
         /// 销毁窗口(单个)
         /// </summary>
-        public static void DestroyWindow(string windowKey)
+        public static void DestroyUI(string uiKey)
         {
-            if (activeWindowsDic.TryGetValue(windowKey, out var windowList))
+            if (activeWindowsDic.TryGetValue(uiKey, out var windowList))
             {
-                UI_WindowBase window = windowList[0];
+                UI_Base window = windowList[0];
                 windowList.RemoveAt(0);
                 Destroy(window.gameObject);
             }
@@ -385,9 +413,9 @@ namespace KFrame.Systems
         /// <summary>
         /// 销毁窗口(所有)
         /// </summary>
-        public static void DestroyWindowAll(string windowKey)
+        public static void DestroyAllUI(string uiKey)
         {
-            if (activeWindowsDic.TryGetValue(windowKey, out var windowList))
+            if (activeWindowsDic.TryGetValue(uiKey, out var windowList))
             {
                 //遍历删除每个窗口
                 for (int i = windowList.Count - 1; i >= 0; i--)
@@ -400,31 +428,31 @@ namespace KFrame.Systems
 
         #endregion
 
-        #region 关闭窗口
+        #region 关闭UI
 
         /// <summary>
         /// 关闭窗口
         /// </summary>
-        /// <param name="windowBase">要关闭的窗口</param>
-        public static void Close(UI_WindowBase windowBase)
+        /// <param name="base">要关闭的窗口</param>
+        public static void Close(UI_Base @base)
         {
             //从Active列表里面去除，然后推进对象池
-            List<UI_WindowBase> windowList = GetWindowAll(windowBase.Type);
-            windowList.Remove(windowBase);
-            PoolSystem.PushGameObject(windowBase.gameObject);
+            List<UI_Base> windowList = GetUIAll(@base.Type);
+            windowList.Remove(@base);
+            PoolSystem.PushGameObject(@base.gameObject);
         }
 
         /// <summary>
         /// 关闭窗口
         /// </summary>
-        /// <param name="windowKey">窗口key</param>
-        public static void Close(string windowKey)
+        /// <param name="uiKey">窗口key</param>
+        public static void Close(string uiKey)
         {
-            if (TryGetWindow(windowKey, out UI_WindowBase windowBase))
+            if (TryGetUI(uiKey, out UI_Base windowBase))
             {
                 Close(windowBase);
             }
-            else Debug.Log($"GameFrame:找不到激活的{windowKey}");
+            else Debug.Log($"GameFrame:找不到激活的{uiKey}");
         }
         /// <summary>
         /// 关闭窗口
@@ -446,11 +474,11 @@ namespace KFrame.Systems
         /// <summary>
         /// 关闭全部窗口
         /// </summary>
-        public static void CloseAllWindow(string windowKey)
+        public static void CloseAllUI(string uiKey)
         {
-            List<UI_WindowBase> windowList = GetWindowAll(windowKey);
+            List<UI_Base> windowList = GetUIAll(uiKey);
             
-            if(windowList == null) Debug.Log($"GameFrame:找不到激活的{windowKey}");
+            if(windowList == null) Debug.Log($"GameFrame:找不到激活的{uiKey}");
             else
             {
                 for (int i = windowList.Count - 1; i >= 0; i--)
@@ -462,16 +490,16 @@ namespace KFrame.Systems
         /// <summary>
         /// 关闭全部窗口
         /// </summary>
-        public static void CloseAllWindow(Type type)
+        public static void CloseAllUI(Type type)
         {
-            CloseAllWindow(type.GetNiceName());
+            CloseAllUI(type.GetNiceName());
         }
         /// <summary>
         /// 关闭全部窗口
         /// </summary>
-        public static void CloseAllWindow<T>()
+        public static void CloseAllUI<T>()
         {
-            CloseAllWindow(typeof(T));
+            CloseAllUI(typeof(T));
         }
         
         #endregion

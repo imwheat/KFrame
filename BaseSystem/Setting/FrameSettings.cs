@@ -42,7 +42,7 @@ namespace KFrame
         #region UI
 
         [LabelText("UI窗口数据(无需手动填写)")]
-        public Dictionary<string, UIWindowData> UIWindowDataDic = new Dictionary<string, UIWindowData>();
+        public Dictionary<string, UIData> UIDataDic = new Dictionary<string, UIData>();
 
         #endregion
 
@@ -141,10 +141,10 @@ namespace KFrame
 
         private void InitUIWindowDataDicOnEditor()
         {
-            UIWindowDataDic.Clear();
+            UIDataDic.Clear();
             // 获取所有程序集
             System.Reflection.Assembly[] asms = AppDomain.CurrentDomain.GetAssemblies();
-            Type baseType = typeof(UI_WindowBase);
+            Type baseType = typeof(UI_Base);
             // 遍历程序集
             foreach (System.Reflection.Assembly assembly in asms)
             {
@@ -158,8 +158,8 @@ namespace KFrame
                         var attributes = type.GetCustomAttributes<UIWindowDataAttribute>();
                         foreach (var attribute in attributes)
                         {
-                            UIWindowDataDic.Add(attribute.windowKey,
-                                new UIWindowData(attribute.isCache, attribute.assetPath, attribute.layerNum));
+                            UIDataDic.Add(attribute.windowKey,
+                                new UIData(attribute.isCache, attribute.assetPath, attribute.layerNum));
                         }
                     }
                 }
