@@ -267,13 +267,12 @@ namespace KFrame.Systems
         #region 获取与销毁窗口
 
         /// <summary>
-        /// 获取窗口
+        /// 获取窗口(单个)
         /// </summary>
         /// <param name="windowKey">窗口Key</param>
         /// <returns>没找到会为Null</returns>
         public static UI_WindowBase GetWindow(string windowKey)
         {
-            //从
             if (activeWindowsDic.TryGetValue(windowKey, out List<UI_WindowBase> windowList))
             {
                 return windowList[0];
@@ -283,7 +282,7 @@ namespace KFrame.Systems
         }
 
         /// <summary>
-        /// 获取窗口
+        /// 获取窗口(单个)
         /// </summary>
         /// <param name="windowKey">窗口Key</param>
         /// <returns>没找到会为Null</returns>
@@ -292,34 +291,64 @@ namespace KFrame.Systems
             return GetWindow(windowKey) as T;
         }
 
-
         /// <summary>
-        /// 获取窗口
-        /// </summary>
-        /// <returns>没找到会为Null</returns>
-        public static T GetWindow<T>() where T : UI_WindowBase
-        {
-            return GetWindow(typeof(T).FullName) as T;
-        }
-
-        /// <summary>
-        /// 获取窗口
+        /// 获取窗口(单个)
         /// </summary>
         /// <returns>没找到会为Null</returns>
         public static UI_WindowBase GetWindow(Type windowType)
         {
-            return GetWindow(windowType.FullName);
+            return GetWindow(windowType.GetNiceName());
         }
-
+        
         /// <summary>
-        /// 获取窗口
+        /// 获取窗口(单个)
+        /// </summary>
+        /// <returns>没找到会为Null</returns>
+        public static T GetWindow<T>() where T : UI_WindowBase
+        {
+            return GetWindow(typeof(T)) as T;
+        }
+        
+        /// <summary>
+        /// 获取窗口(所有)
         /// </summary>
         /// <param name="windowKey">窗口Key</param>
         /// <returns>没找到会为Null</returns>
-        public static T GetWindow<T>(Type windowType) where T : UI_WindowBase
+        public static List<UI_WindowBase> GetWindowAll(string windowKey)
         {
-            return GetWindow(windowType.GetNiceName()) as T;
+            if (activeWindowsDic.TryGetValue(windowKey, out List<UI_WindowBase> windowList))
+            {
+                return windowList;
+            }
+
+            return null;
         }
+        /// <summary>
+        /// 获取窗口(所有)
+        /// </summary>
+        /// <returns>没找到会为Null</returns>
+        public static List<UI_WindowBase> GetWindowAll(Type windowType)
+        {
+            return GetWindowAll(windowType.GetNiceName());
+        }
+        /// <summary>
+        /// 获取窗口(所有)
+        /// </summary>
+        /// <param name="windowKey">窗口Key</param>
+        /// <returns>没找到会为Null</returns>
+        public static List<T> GetWindowAll<T>(string windowKey) where T : UI_WindowBase
+        {
+            return GetWindowAll(windowKey) as List<T>;
+        }
+        /// <summary>
+        /// 获取窗口(所有)
+        /// </summary>
+        /// <returns>没找到会为Null</returns>
+        public static List<T> GetWindowAll<T>() where T : UI_WindowBase
+        {
+            return GetWindowAll(typeof(T)) as List<T>;
+        }
+
 
         /// <summary>
         /// 尝试获取窗口
@@ -327,7 +356,6 @@ namespace KFrame.Systems
         /// <param name="windowKey"></param>
         public static bool TryGetWindow(string windowKey, out UI_WindowBase window)
         {
-            UIWindowDataDic.TryGetValue(windowKey, out UIWindowData windowData);
             window = GetWindow(windowKey);
             return window != null;
         }
@@ -338,7 +366,6 @@ namespace KFrame.Systems
         /// <param name="windowKey"></param>
         public static bool TryGetWindow<T>(string windowKey, out T window) where T : UI_WindowBase
         {
-            UIWindowDataDic.TryGetValue(windowKey, out UIWindowData windowData);
             window = GetWindow<T>(windowKey);
             return window != null;
         }
@@ -378,19 +405,13 @@ namespace KFrame.Systems
         /// <summary>
         /// 关闭窗口
         /// </summary>
-        /// <typeparam name="T">窗口类型</typeparam>
-        public static void Close<T>()
+        /// <param name="windowBase">要关闭的窗口</param>
+        public static void Close(UI_WindowBase windowBase)
         {
-            Close(typeof(T));
-        }
-
-        /// <summary>
-        /// 关闭窗口
-        /// </summary>
-        /// <typeparam name="Type">窗口类型</typeparam>
-        public static void Close(Type type)
-        {
-            Close(type.FullName);
+            //从Active列表里面去除，然后推进对象池
+            List<UI_WindowBase> windowList = GetWindowAll(windowBase.Type);
+            windowList.Remove(windowBase);
+            PoolSystem.PushGameObject(windowBase.gameObject);
         }
 
         /// <summary>
@@ -399,67 +420,60 @@ namespace KFrame.Systems
         /// <param name="windowKey">窗口key</param>
         public static void Close(string windowKey)
         {
-            if (TryGetUIWindowData(windowKey, out UIWindowData windowData))
+            if (TryGetWindow(windowKey, out UI_WindowBase windowBase))
             {
-                if (windowData.instance != null && CloseWindow(windowData))
-                {
-                    UILayers[windowData.LayerNum].OnWindowClose();
-                }
-                else Debug.Log("GameFrame:您需要关闭的窗口不存在或已经关闭");
+                Close(windowBase);
             }
-            else Debug.LogWarning("GameFrame:未查询到UIWindowData");
+            else Debug.Log($"GameFrame:找不到激活的{windowKey}");
         }
-
-
-        private static bool CloseWindow(UIWindowData windowData)
+        /// <summary>
+        /// 关闭窗口
+        /// </summary>
+        /// <typeparam name="Type">窗口类型</typeparam>
+        public static void Close(Type type)
         {
-            if (windowData.instance.UIEnable)
-            {
-                windowData.instance.CloseGeneralLogic();
-                // 缓存则隐藏
-                if (windowData.IsCache)
-                {
-                    windowData.instance.transform.SetAsFirstSibling();
-                    windowData.instance.gameObject.SetActive(false);
-                }
-                // 不缓存则销毁
-                else
-                {
-#if ENABLE_ADDRESSABLES
-                    ResSystem.UnloadInstance(windowData.instance.gameObject);
-#endif
-                    DestroyImmediate(windowData.instance.gameObject);
-                    windowData.instance = null;
-                }
-
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            Close(type.GetNiceName());
+        }
+        /// <summary>
+        /// 关闭窗口
+        /// </summary>
+        /// <typeparam name="T">窗口类型</typeparam>
+        public static void Close<T>()
+        {
+            Close(typeof(T));
         }
 
         /// <summary>
         /// 关闭全部窗口
         /// </summary>
-        public static void CloseAllWindow()
+        public static void CloseAllWindow(string windowKey)
         {
-            // 处理缓存中所有状态的逻辑
-            foreach (var item in UIWindowDataDic.Values)
+            List<UI_WindowBase> windowList = GetWindowAll(windowKey);
+            
+            if(windowList == null) Debug.Log($"GameFrame:找不到激活的{windowKey}");
+            else
             {
-                if (item.instance != null && item.instance.gameObject.activeInHierarchy == true)
+                for (int i = windowList.Count - 1; i >= 0; i--)
                 {
-                    CloseWindow(item);
+                    Close(windowList[i]);
                 }
             }
-
-            for (int i = 0; i < UILayers.Length; i++)
-            {
-                UILayers[i].Reset();
-            }
         }
-
+        /// <summary>
+        /// 关闭全部窗口
+        /// </summary>
+        public static void CloseAllWindow(Type type)
+        {
+            CloseAllWindow(type.GetNiceName());
+        }
+        /// <summary>
+        /// 关闭全部窗口
+        /// </summary>
+        public static void CloseAllWindow<T>()
+        {
+            CloseAllWindow(typeof(T));
+        }
+        
         #endregion
 
         #region 工具

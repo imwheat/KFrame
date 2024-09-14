@@ -20,8 +20,10 @@ namespace KFrame.Systems
         /// </summary>
         public static bool SaveFinished;
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
+            
             lastTime = 0;
             SaveFinished = false;
         }
