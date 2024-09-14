@@ -1,8 +1,8 @@
 //****************** 代码文件申明 ************************
 //* 文件：LocalizationSystem                      
 //* 作者：wheat
-//* 创建时间：2023年08月22日 星期二 17:03
-//* 功能：
+//* 创建时间：2024年09月14日 星期六 10:34
+//* 功能：管理游戏本地化
 //*****************************************************
 
 
@@ -14,7 +14,7 @@ namespace KFrame.Systems
     public class LocalizationSystem : MonoBehaviour
     {
         private static LocalizationSystem instance;
-        private const string OnUpdaterLanguage = "OnUpdaterLanguage";
+        private const string OnUpdateLanguage = "OnUpdateLanguage";
 
         /// <summary>
         /// 访问或设置语言类型，设置时会自动分发语言修改事件
@@ -58,7 +58,7 @@ namespace KFrame.Systems
         public static void OnLanguageValueChanged()
         {
             if (instance == null) return; // 应该没有运行
-            EventBroadCastSystem.EventTrigger(OnUpdaterLanguage, instance.languageType);
+            EventBroadCastSystem.EventTrigger(OnUpdateLanguage, instance.languageType);
         }
 
         /// <summary>
@@ -110,12 +110,12 @@ namespace KFrame.Systems
 
         public static void RegisterLanguageEvent(Action<LanguageType> action)
         {
-            EventBroadCastSystem.AddEventListener(OnUpdaterLanguage, action);
+            EventBroadCastSystem.AddEventListener(OnUpdateLanguage, action);
         }
 
         public static void UnregisterLanguageEvent(Action<LanguageType> action)
         {
-            EventBroadCastSystem.RemoveEventListener(OnUpdaterLanguage, action);
+            EventBroadCastSystem.RemoveEventListener(OnUpdateLanguage, action);
         }
     }
 }

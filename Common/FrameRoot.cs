@@ -50,22 +50,7 @@ namespace KFrame
             RootTransform = transform;
             DontDestroyOnLoad(gameObject);
             Init();
-#if UNITY_EDITOR
-            //如果是UI测试场景
-            if (SceneManager.GetActiveScene().name == "UIFrameTest")
-            {
-                if (EditorApplication.isPlaying)
-                {
-                    //执行一次初始化
-                    UI_WindowBase[] window = instance.transform.GetComponentsInChildren<UI_WindowBase>();
-                    foreach (UI_WindowBase win in window)
-                    {
-                        win.Init();
-                    }
-                }
-            }
 
-#endif
         }
 
         /// <summary>
@@ -87,7 +72,6 @@ namespace KFrame
             SaveSystem.Init();
             GameSaveSystem.Init();
             LocalizationSystem.Init();
-            InputMgrSystem.Init();
             UISystem.Init();
             AudioSystem.Init();
         }
