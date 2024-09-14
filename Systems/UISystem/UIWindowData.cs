@@ -7,34 +7,20 @@ namespace KFrame.Systems
     /// </summary>
     public class UIWindowData
     {
-        [LabelText("是否需要缓存")] public bool isCache;
-        [LabelText("预制体Path或AssetKey")] public string assetPath;
-        [LabelText("UI层级")] public int layerNum;
+        [LabelText("是否需要缓存")] public bool IsCache;
+        [LabelText("预制体Path或AssetKey")] public string AssetPath;
+        [LabelText("UI层级")] public int LayerNum;
         /// <summary>
-        /// 这个元素的窗口对象
+        /// 这个窗口对象的预制体
         /// </summary>
-        [LabelText("窗口实例")] public UI_WindowBase instance;
+        [LabelText("窗口预制体")] public GameObject Prefab;
 
         public UIWindowData(bool isCache, string assetPath, int layerNum)
         {
-            this.isCache = isCache;
-            this.assetPath = assetPath;
-            this.layerNum = layerNum;
-            instance = null;
+            this.IsCache = isCache;
+            this.AssetPath = assetPath;
+            this.LayerNum = layerNum;
         }
     }
-
-	//public class CharacterUIWindowData : UIWindowData
-	//{
-	//	public ICharacter owner;
-
-	//	public UIWindowData(bool isCache, string assetPath, int layerNum)
-	//	{
-	//		this.isCache = isCache;
-	//		this.assetPath = assetPath;
-	//		this.layerNum = layerNum;
-	//		instance = null;
-	//	}
-	//}
 
 }

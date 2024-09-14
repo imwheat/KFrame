@@ -2,6 +2,7 @@ using Sirenix.OdinInspector;
 using System;
 using System.Collections.Generic;
 using KFrame;
+using KFrame.Utilities;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -17,7 +18,12 @@ namespace KFrame.Systems
 
         public static void Init()
         {
+            //获取实例
             instance = FrameRoot.RootTransform.GetComponentInChildren<UISystem>();
+            
+            //初始化参数
+            activeWindowsDic = new Dictionary<string, List<UI_WindowBase>>();
+            
             //加载UI配置
             LoadUISettings();
         }
@@ -29,83 +35,50 @@ namespace KFrame.Systems
         }
 
         private static Dictionary<string, UIWindowData> UIWindowDataDic => FrameRoot.Setting.UIWindowDataDic;
+        private static Dictionary<string, List<UI_WindowBase>> activeWindowsDic;
 
         [SerializeField, ShowInInspector] private UILayerBase[] uiLayers;
         [SerializeField] private RectTransform dragLayer;
-        [SerializeField] private Camera uiCamera;
 
         /// <summary>
         /// 拖拽层，位于所有UI的最上层
         /// </summary>
         public static RectTransform DragLayer => instance.dragLayer;
-
         private static UILayerBase[] UILayers => instance.uiLayers;
-
-        [SerializeField] GameObject UITipsItemPrefab;
-        [SerializeField] private RectTransform UITipsItemParent;
-
-        public static Camera UICamera => instance.uiCamera;
 
         #region 动态加载/移除窗口数据
 
         // UI系统的窗口数据中主要包含：预制体路径、是否缓存、当前窗口对象实例等重要信息
         // 为了方便使用，所以窗口数据必须先存放于UIWindowDataDic中，才能通过UI系统显示、关闭等
-        //instantiateAtOnce指明窗口对象及其类是否要进行实例化，默认为null，会在窗口打开时加载资源进行实例化且设置为不激活，若窗口资源较大，可以提前在动态加载时就进行实例化
 
         /// <summary>
         /// 初始化UI元素数据
-        /// 只执行OnInit，不执行OnShow
-        /// 会自动SetActive(false)
         /// </summary>
         /// <param name="windowKey">自定义的名称，可以是资源路径或类型名称或其他自定义</param>
         /// <param name="windowData">窗口的重要数据</param>
-        /// <param name="instantiateAtOnce">是否立刻实例化，前提是有缓存必要</param>
-        public static void AddUIWindowData(string windowKey, UIWindowData windowData, bool instantiateAtOnce = false)
+        public static void AddUIWindowData(string windowKey, UIWindowData windowData)
         {
-            if (!UIWindowDataDic.TryAdd(windowKey, windowData)) return; //已经有了就直接返回
-            if (!instantiateAtOnce) return;                             //不提前实例化也直接返回
-            if (windowData.isCache)
-            {
-                UI_WindowBase window = ResSystem.InstantiateGameObject<UI_WindowBase>(windowData.assetPath,
-                    UILayers[windowData.layerNum].Root, windowKey);
-                windowData.instance = window;
-                window.Init();
-                window.gameObject.SetActive(false);
-            }
-            else
-            {
-                Debug.LogWarning("GameFrame:UIWindowData中的isCache=false，但instantiateAtOnce=true!提前实例化对于不需要缓存的窗口来说没有意义");
-            }
+            UIWindowDataDic.TryAdd(windowKey, windowData);
         }
 
         /// <summary>
         /// 初始化UI元素数据
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="windowData"></param>
-        /// <param name="instantiateAtOnce">
-        /// 立刻实例化，但是：
-        /// 只执行OnInit，不执行OnShow
-        /// 会自动SetActive(false)
-        /// </param>
-        public static void AddUIWindowData(Type type, UIWindowData windowData, bool instantiateAtOnce = false)
+        /// <param name="type">对象类型</param>
+        /// <param name="windowData">UI数据</param>
+        public static void AddUIWindowData(Type type, UIWindowData windowData)
         {
-            AddUIWindowData(type.FullName, windowData, instantiateAtOnce);
+            AddUIWindowData(type.GetNiceName(), windowData);
         }
 
         /// <summary>
         /// 初始化UI元素数据
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="windowData"></param>
-        /// <param name="instantiateAtOnce">
-        /// 立刻实例化，但是：
-        /// 只执行OnInit，不执行OnShow
-        /// 会自动SetActive(false)
-        /// </param>
-        public static void AddUIWindowData<T>(UIWindowData windowData, bool instantiateAtOnce = false)
+        /// <typeparam name="T">对象类型</typeparam>
+        /// <param name="windowData">UI数据</param>
+        public static void AddUIWindowData<T>(UIWindowData windowData)
         {
-            AddUIWindowData(typeof(T), windowData, instantiateAtOnce);
+            AddUIWindowData(typeof(T), windowData);
         }
 
         /// <summary>
@@ -125,7 +98,7 @@ namespace KFrame.Systems
 
         public static UIWindowData GetUIWindowData(Type windowType)
         {
-            return GetUIWindowData(windowType.FullName);
+            return GetUIWindowData(windowType.GetNiceName());
         }
 
         public static UIWindowData GetUIWindowData<T>()
@@ -143,20 +116,12 @@ namespace KFrame.Systems
         }
 
         /// <summary>
-        /// 移除UI窗口数据,已存在的窗口会被强行删除
+        /// 移除UI窗口数据,
         /// </summary>
         /// <param name="windowKey"></param>
         /// <returns></returns>
         public static bool RemoveUIWindowData(string windowKey)
         {
-            if (TryGetUIWindowData(windowKey, out UIWindowData windowData))
-            {
-                if (windowData.instance != null)
-                {
-                    Destroy(windowData.instance.gameObject);
-                }
-            }
-
             return UIWindowDataDic.Remove(windowKey);
         }
 
@@ -165,12 +130,6 @@ namespace KFrame.Systems
         /// </summary>
         public static void ClearUIWindowData()
         {
-            var enumerator = UIWindowDataDic.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                Destroy(enumerator.Current.Value.instance.gameObject);
-            }
-
             UIWindowDataDic.Clear();
         }
 
@@ -187,12 +146,6 @@ namespace KFrame.Systems
         {
             return Show(typeof(T), layer) as T;
         }
-
-        //public static T ShowAndBindCharacter<T>(ICharacter owner, int layer = -1) where T : UI_WindowBase, ICharacterBasePanel<ICharacter>
-        //{
-        //	//return ShowAndBindCharacter(typeof(T), layer) as T;
-        //}
-
 
         /// <summary>
         /// 显示窗口 异步
@@ -273,78 +226,40 @@ namespace KFrame.Systems
         {
             if (UIWindowDataDic.TryGetValue(windowKey, out UIWindowData windowData))
             {
-                ShowAsync(windowData, windowKey, callback, layer);
+                //ShowAsync(windowData, windowKey, callback, layer);
             }
             else Debug.Log($"JKFrame:不存在{windowKey}的UIWindowData"); // 资源库中没有意味着不允许显示
         }
 
         private static UI_WindowBase ShowWindow(UIWindowData windowData, string windowKey, int layer = -1)
         {
-            int layerNum = layer == -1 ? windowData.layerNum : layer;
-            // 实例化实例或者获取到实例，保证窗口实例存在
-            if (windowData.instance != null)
+            //获取layer
+            int layerNum = layer == -1 ? windowData.LayerNum : layer;
+            //获取预制体
+            if (windowData.Prefab == null)
             {
-                // 原本就激活使用状态，避免内部计数问题，进行一次层关闭
-                if (windowData.instance.UIEnable)
-                {
-                    UILayers[windowData.layerNum].OnWindowClose();
-                }
-
-                windowData.instance.gameObject.SetActive(true);
-                windowData.instance.transform.SetParent(UILayers[layerNum].Root);
-                //移动transform到末尾 [Move the transform to the end of the local transform list]
-                windowData.instance.transform.SetAsLastSibling();
-                windowData.instance.ShowGeneralLogic(layerNum);
+                windowData.Prefab = ResSystem.LoadAsset<GameObject>(windowData.AssetPath);
             }
-            else
+            
+            //尝试从对象池里面获取Gameobject，并放到对应的层级
+            GameObject windowObj = PoolSystem.GetOrNewGameObject(windowData.Prefab, UILayers[layerNum].Root);
+            //然后获取UI组件，再进行初始化
+            UI_WindowBase window = windowObj.GetComponent<UI_WindowBase>();
+            windowObj.transform.SetAsLastSibling();
+            window.Init();
+            window.ShowGeneralLogic(layerNum);
+            //然后把window放入Active的列表里面
+            if (!activeWindowsDic.TryGetValue(windowKey, out List<UI_WindowBase> windowList))
             {
-                UI_WindowBase window =
-                    ResSystem.InstantiateGameObject<UI_WindowBase>(windowData.assetPath, UILayers[layerNum].Root,
-                        windowKey);
-                windowData.instance = window;
-                window.Init();
-                window.ShowGeneralLogic(layerNum);
+                windowList = new List<UI_WindowBase>();
+                activeWindowsDic[windowKey] = windowList;
             }
-
-            windowData.layerNum = layerNum;
+            windowList.Add(window);
+            
+            //更新层级然后显示
+            windowData.LayerNum = layerNum;
             UILayers[layerNum].OnWindowShow();
-            return windowData.instance;
-        }
-
-        private static void ShowAsync(UIWindowData windowData, string windowKey, Action<UI_WindowBase> callback = null,
-            int layer = -1)
-        {
-            int layerNum = layer == -1 ? windowData.layerNum : layer;
-            // 实例化实例或者获取到实例，保证窗口实例存在
-            if (windowData.instance != null)
-            {
-                // 原本就激活使用状态，避免内部计数问题，进行一次层关闭
-                if (windowData.instance.UIEnable)
-                {
-                    UILayers[windowData.layerNum].OnWindowClose();
-                }
-
-                windowData.instance.gameObject.SetActive(true);
-                windowData.instance.transform.SetParent(UILayers[layerNum].Root);
-                windowData.instance.transform.SetAsLastSibling();
-                windowData.instance.ShowGeneralLogic(layerNum);
-                callback?.Invoke(windowData.instance);
-            }
-            else
-            {
-                ResSystem.InstantiateGameObjectAsync<UI_WindowBase>(windowData.assetPath,
-                    (window) =>
-                    {
-                        windowData.instance = window;
-                        window.Init();
-                        window.ShowGeneralLogic(layerNum);
-                        callback?.Invoke(window);
-                    }
-                    , UILayers[layerNum].Root, windowKey);
-            }
-
-            windowData.layerNum = layerNum;
-            UILayers[layerNum].OnWindowShow();
+            return window;
         }
 
         #endregion
@@ -358,9 +273,10 @@ namespace KFrame.Systems
         /// <returns>没找到会为Null</returns>
         public static UI_WindowBase GetWindow(string windowKey)
         {
-            if (UIWindowDataDic.TryGetValue(windowKey, out UIWindowData windowData))
+            //从
+            if (activeWindowsDic.TryGetValue(windowKey, out List<UI_WindowBase> windowList))
             {
-                return windowData.instance;
+                return windowList[0];
             }
 
             return null;
@@ -402,7 +318,7 @@ namespace KFrame.Systems
         /// <returns>没找到会为Null</returns>
         public static T GetWindow<T>(Type windowType) where T : UI_WindowBase
         {
-            return GetWindow(windowType.FullName) as T;
+            return GetWindow(windowType.GetNiceName()) as T;
         }
 
         /// <summary>
@@ -412,7 +328,7 @@ namespace KFrame.Systems
         public static bool TryGetWindow(string windowKey, out UI_WindowBase window)
         {
             UIWindowDataDic.TryGetValue(windowKey, out UIWindowData windowData);
-            window = windowData?.instance;
+            window = GetWindow(windowKey);
             return window != null;
         }
 
@@ -423,20 +339,35 @@ namespace KFrame.Systems
         public static bool TryGetWindow<T>(string windowKey, out T window) where T : UI_WindowBase
         {
             UIWindowDataDic.TryGetValue(windowKey, out UIWindowData windowData);
-            window = windowData?.instance as T;
+            window = GetWindow<T>(windowKey);
             return window != null;
         }
 
         /// <summary>
-        /// 销毁窗口
+        /// 销毁窗口(单个)
         /// </summary>
         public static void DestroyWindow(string windowKey)
         {
-            UI_WindowBase window = GetWindow(windowKey);
-            if (window != null)
+            if (activeWindowsDic.TryGetValue(windowKey, out var windowList))
             {
-                //立即销毁窗口 如果不立即销毁 可能会延迟几个
-                DestroyImmediate(window.gameObject);
+                UI_WindowBase window = windowList[0];
+                windowList.RemoveAt(0);
+                Destroy(window.gameObject);
+            }
+        }
+        /// <summary>
+        /// 销毁窗口(所有)
+        /// </summary>
+        public static void DestroyWindowAll(string windowKey)
+        {
+            if (activeWindowsDic.TryGetValue(windowKey, out var windowList))
+            {
+                //遍历删除每个窗口
+                for (int i = windowList.Count - 1; i >= 0; i--)
+                {
+                    Destroy(windowList[i].gameObject);
+                }
+                windowList.Clear();
             }
         }
 
@@ -472,7 +403,7 @@ namespace KFrame.Systems
             {
                 if (windowData.instance != null && CloseWindow(windowData))
                 {
-                    UILayers[windowData.layerNum].OnWindowClose();
+                    UILayers[windowData.LayerNum].OnWindowClose();
                 }
                 else Debug.Log("GameFrame:您需要关闭的窗口不存在或已经关闭");
             }
@@ -486,7 +417,7 @@ namespace KFrame.Systems
             {
                 windowData.instance.CloseGeneralLogic();
                 // 缓存则隐藏
-                if (windowData.isCache)
+                if (windowData.IsCache)
                 {
                     windowData.instance.transform.SetAsFirstSibling();
                     windowData.instance.gameObject.SetActive(false);
@@ -601,55 +532,6 @@ namespace KFrame.Systems
         }
 
 
-        // RectTransformUtility.WorldToScreenPoint
-        // RectTransformUtility.ScreenPointToWorldPointInRectangle
-        // RectTransformUtility.ScreenPointToLocalPointInRectangle
-        // 上面三个坐标转换的方法使用 Camera 的地方
-        // 当 Canvas renderMode 为 RenderMode.ScreenSpaceCamera、RenderMode.WorldSpace 时 传递参数 canvas.worldCamera
-        // 当 Canvas renderMode 为 RenderMode.ScreenSpaceOverlay 时 传递参数 null
-
-        // UI 坐标转换为屏幕坐标
-        public Vector2 UIPointToScreenPoint(Vector3 point)
-        {
-            Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(UICamera, point);
-            return screenPoint;
-        }
-
-        //UI坐标转换为世界坐标
-        public Vector2 UIPointToWorldPoint(Vector3 point)
-        {
-            Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(UICamera, point);
-            var pos = Camera.main.ScreenToWorldPoint(screenPoint);
-            return pos;
-        }
-
-        // 屏幕坐标转换为 UGUI 坐标
-        public static Vector3 ScreenPointToUIPoint(RectTransform rectTransform, Vector2 screenPoint)
-        {
-            Vector3 globalMousePos;
-
-            // 当 Canvas renderMode 为 RenderMode.ScreenSpaceCamera、RenderMode.WorldSpace 时 uiCamera 不能为空
-            // 当 Canvas renderMode 为 RenderMode.ScreenSpaceOverlay 时 uiCamera 可以为空
-            RectTransformUtility.ScreenPointToWorldPointInRectangle(rectTransform, screenPoint, UICamera,
-                out globalMousePos);
-            // 转换后的 globalMousePos 使用下面方法赋值
-            // target 为需要使用的 UI RectTransform
-            // rt 可以是 target.GetComponent<RectTransform>(), 也可以是 target.parent.GetComponent<RectTransform>()
-            // target.transform.position = globalMousePos;
-            return globalMousePos;
-        }
-
-        // 屏幕坐标转换为 UGUI RectTransform 的 anchoredPosition
-        public static Vector2 ScreenPointToUILocalPoint(RectTransform parentRectTransform, Vector2 screenPoint)
-        {
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRectTransform, screenPoint, UICamera,
-                out var localPoint);
-            // 转换后的 localPos 使用下面方法赋值
-            // target 为需要使用的 UI RectTransform
-            // parentRT 是 target.parent.GetComponent<RectTransform>()
-            // 最后赋值 target.anchoredPosition = localPos;
-            return localPoint;
-        }
 
         #endregion
     }
