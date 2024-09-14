@@ -161,12 +161,13 @@ namespace KFrame.Systems
         /// </summary>
         /// <param name="data">UI数据</param>
         /// <param name="uiKey">UI的key</param>
-        /// <param name="layer">层级</param>
         /// <returns>UI</returns>
-        private static UI_Base ShowWindow(UIData data, string uiKey, int layer = -1)
+        private static UI_Base ShowWindow(UIData data)
         {
-            //获取layer
-            int layerNum = layer == -1 ? data.LayerNum : layer;
+            //获取layer和UIKey
+            int layerNum = data.LayerNum;
+            string uiKey = data.UIKey;
+            
             //获取预制体
             if (data.Prefab == null)
             {
@@ -178,8 +179,8 @@ namespace KFrame.Systems
             //然后获取UI组件，再进行初始化
             UI_Base window = windowObj.GetComponent<UI_Base>();
             windowObj.transform.SetAsLastSibling();
-            window.Init();
-            window.ShowGeneralLogic(layerNum);
+            window.Init(data);
+            
             //然后把window放入Active的列表里面
             if (!activeWindowsDic.TryGetValue(uiKey, out List<UI_Base> windowList))
             {
@@ -189,7 +190,6 @@ namespace KFrame.Systems
             windowList.Add(window);
             
             //更新层级然后显示
-            data.LayerNum = layerNum;
             UILayers[layerNum].OnWindowShow();
             return window;
         }
@@ -198,12 +198,12 @@ namespace KFrame.Systems
         /// 显示窗口
         /// </summary>
         /// <param name="uiKey">窗口的key</param>
-        /// <param name="layer">层级 -1等于不设置</param>
-        public static UI_Base Show(string uiKey, int layer = -1)
+        public static UI_Base Show(string uiKey)
         {
+            //获取数据，然后显示UI
             if (UIDataDic.TryGetValue(uiKey, out UIData windowData))
             {
-                return ShowWindow(windowData, uiKey, layer);
+                return ShowWindow(windowData);
             }
 
             // 资源库中没有意味着不允许显示
@@ -213,81 +213,28 @@ namespace KFrame.Systems
         /// <summary>
         /// 显示窗口
         /// </summary>
+        /// <param name="type">窗口类型</param>
+        public static UI_Base Show(Type type)
+        {
+            return Show(type.GetNiceName());
+        }
+        /// <summary>
+        /// 显示窗口
+        /// </summary>
         /// <typeparam name="T">要返回的窗口类型</typeparam>
         /// <param name="uiKey">窗口的Key</param>
-        /// <param name="layer">层级 -1等于不设置</param>
-        public static T Show<T>(string uiKey, int layer = -1) where T : UI_Base
+        public static T Show<T>(string uiKey) where T : UI_Base
         {
-            return Show(uiKey, layer) as T;
+            return Show(uiKey) as T;
         }
         /// <summary>
         /// 显示窗口
         /// </summary>
         /// <typeparam name="T">窗口类型</typeparam>
         /// <param name="layer">层级 -1等于不设置</param>
-        public static T Show<T>(int layer = -1) where T : UI_Base
+        public static T Show<T>() where T : UI_Base
         {
-            return Show(typeof(T), layer) as T;
-        }
-
-        /// <summary>
-        /// 显示窗口 异步
-        /// </summary>
-        /// <typeparam name="T">窗口类型</typeparam>
-        /// <param name="layer">层级 -1等于不设置</param>
-        public static void ShowAsync<T>(Action<T> callback = null, int layer = -1) where T : UI_Base
-        {
-            ShowAsync(typeof(T), (window) => { callback?.Invoke((T)window); }, layer);
-        }
-
-
-
-        /// <summary>
-        /// 显示窗口 异步
-        /// </summary>
-        /// <typeparam name="T">要返回的窗口类型</typeparam>
-        /// <param name="uiKey">窗口的Key</param>
-        /// <param name="layer">层级 -1等于不设置</param>
-        public static T ShowAsync<T>(string uiKey, Action<T> callback = null, int layer = -1)
-            where T : UI_Base
-        {
-            return ShowAsync(uiKey, callback, layer) as T;
-        }
-
-        /// <summary>
-        /// 显示窗口
-        /// </summary>
-        /// <param name="type">窗口类型</param>
-        /// <param name="layer">层级 -1等于不设置</param>
-        public static UI_Base Show(Type type, int layer = -1)
-        {
-            return Show(type.GetNiceName(), layer);
-        }
-
-        /// <summary>
-        /// 显示窗口
-        /// </summary>
-        /// <param name="type">窗口类型</param>
-        /// <param name="layer">层级 -1等于不设置</param>
-        public static void ShowAsync(Type type, Action<UI_Base> callback = null, int layer = -1)
-        {
-            ShowAsync(type.FullName, callback, layer);
-        }
-
-
-
-        /// <summary>
-        /// 异步显示窗口
-        /// </summary>
-        /// <param name="uiKey">窗口的key</param>
-        /// <param name="layer">层级 -1等于不设置</param>
-        public static void ShowAsync(string uiKey, Action<UI_Base> callback = null, int layer = -1)
-        {
-            if (UIDataDic.TryGetValue(uiKey, out UIData windowData))
-            {
-                //ShowAsync(windowData, uiKey, callback, layer);
-            }
-            else Debug.Log($"JKFrame:不存在{uiKey}的UIWindowData"); // 资源库中没有意味着不允许显示
+            return Show(typeof(T)) as T;
         }
         
         #endregion

@@ -76,8 +76,11 @@ namespace KFrame.Systems
         /// <summary>
         /// 初始化在创建额时候执行一次
         /// </summary>
-        public virtual void Init()
+        public virtual void Init(UIData data)
         {
+            currentLayer = data.LayerNum;
+            uiKey = data.UIKey;
+            
             RegisterEventListener();
             // 绑定本地化事件
             LocalizationSystem.RegisterLanguageEvent(UpdateLanguageGeneralLogic);
@@ -120,16 +123,6 @@ namespace KFrame.Systems
 
         #endregion
 
-        #region UI基础设置
-
-        public void SetInitData(UIData data)
-        {
-            currentLayer = data.LayerNum;
-            uiKey = data.UIKey;
-        }
-
-        #endregion
-        
         public void ShowGeneralLogic(int layerNum)
         {
             this.currentLayer = layerNum;

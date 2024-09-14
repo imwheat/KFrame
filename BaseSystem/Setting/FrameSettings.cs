@@ -155,11 +155,11 @@ namespace KFrame
                     if (baseType.IsAssignableFrom(type)
                         && !type.IsAbstract)
                     {
-                        var attributes = type.GetCustomAttributes<UIWindowDataAttribute>();
+                        var attributes = type.GetCustomAttributes<UIDataAttribute>();
                         foreach (var attribute in attributes)
                         {
-                            UIDataDic.Add(attribute.windowKey,
-                                new UIData(attribute.isCache, attribute.assetPath, attribute.layerNum));
+                            UIDataDic.Add(attribute.UIKey,
+                                new UIData(attribute.UIKey, attribute.AssetPath, attribute.IsCache, attribute.LayerNum));
                         }
                     }
                 }
