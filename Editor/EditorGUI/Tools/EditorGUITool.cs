@@ -170,6 +170,14 @@ namespace KFrame.Editor
             }
         }
         /// <summary>
+        /// 显示一个粗体的Label
+        /// </summary>
+        /// <param name="label">显示内容</param>
+        public static void BoldLabelField(string label, params GUILayoutOption[] options)
+        {
+            EditorGUILayout.LabelField(label, EditorStyles.boldLabel, options);
+        }
+        /// <summary>
         /// 显示一个明显的foldout
         /// </summary>
         /// <param name="foldout">bool折叠传参</param>

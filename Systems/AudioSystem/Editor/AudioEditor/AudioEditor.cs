@@ -40,6 +40,9 @@ namespace KFrame.Systems
             }
         }
 
+        private static List<AudioClip> audioClips => Library.AudioClips;
+        private static List<AudioClip> bgmClips => Library.BGMClips;
+
         #endregion
 
         #region GUI操作相关
@@ -388,8 +391,12 @@ namespace KFrame.Systems
                     DrawBGMGUI();
                     break;
                 case EditMode.AudioClip:
+                    //绘制AudioClipGUI
+                    DrawAudioClipGUI();
                     break;
                 case EditMode.BGMClip:
+                    //绘制BGMClipGUI
+                    DrawBGMClipGUI();
                     break;
                 case EditMode.Group:
                     //绘制Group列表
@@ -445,8 +452,13 @@ namespace KFrame.Systems
         {
             //切换模式
             editMode = mode;
-            //停止播放音效
-            EditorStopPlayAudio();
+            
+            //如果正在播放音效
+            if (playingAudioIndex != -1)
+            {
+                //那就停止播放音效
+                EditorStopPlayAudio();
+            }
         }
         /// <summary>
         /// 绘制顶部选项GUI
@@ -495,7 +507,7 @@ namespace KFrame.Systems
             //搜索栏
             EditorGUI.BeginChangeCheck();
             Rect serachRect = EditorGUILayout.GetControlRect(GUILayout.Height(MStyle.labelHeight));
-            searchText = SirenixEditorGUI.SearchField(serachRect, searchText);
+            searchText = KEditorGUI.SearchTextField(serachRect, searchText);
 
             GUILayout.Space(5f);
             
@@ -629,6 +641,201 @@ namespace KFrame.Systems
 
             
             EditorGUILayout.EndScrollView();
+            
+            EditorGUILayout.EndVertical();
+        }
+        /// <summary>
+        /// 绘制拖拽放入的BOX
+        /// </summary>
+        private void DrawDragAudioClipBox(List<AudioClip> editClips)
+        {
+            EditorGUILayout.BeginVertical();
+	        
+            //获取当前事件
+            Event currentEvent = Event.current;
+                        
+            //画出一个拖拽区域
+            Rect dropArea = GUILayoutUtility.GetRect(0f, 50f, GUILayout.ExpandWidth(true));
+            GUI.Box(dropArea, "把Clip丢进这里批量添加");
+                        
+            switch (currentEvent.type)
+            {
+                case EventType.DragUpdated:
+                case EventType.DragPerform:
+                    //如果鼠标不在拖拽区域就返回
+                    if (!dropArea.Contains(currentEvent.mousePosition))
+                        break;
+                        
+                    //把鼠标的显示改为Copy的样子
+                    DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
+                        
+                    //如果放下了鼠标
+                    if (currentEvent.type == EventType.DragPerform)
+                    {
+                        //那就完成拖拽
+                        DragAndDrop.AcceptDrag();
+                        
+                        //然后遍历选中的物品
+                        foreach (UnityEngine.Object draggedObject in DragAndDrop.objectReferences)
+                        {
+                            //如果是AudioClip
+                            if (draggedObject is AudioClip)
+                            {
+                                //那就获取添加到列表里面
+                                AudioClip clip = (AudioClip)draggedObject;
+                                editClips.Add(clip);
+								
+                            }
+                        }
+                    }
+                    Event.current.Use();
+                    break;
+            }
+	        
+            EditorGUILayout.EndVertical();
+	        
+        }
+        /// <summary>
+        /// 绘制AudioCLip的GUI
+        /// </summary>
+        private void DrawAudioClipGUI()
+        {
+            EditorGUILayout.BeginVertical();
+            
+            EditorGUITool.BoldLabelField("AudioClip列表");
+            GUILayout.Space(10f);
+
+            audioClipScrollPosition = EditorGUILayout.BeginScrollView(audioClipScrollPosition);
+            
+            //遍历进行绘制
+            for (int i = 0; i < audioClips.Count; i++)
+            {
+                AudioClip clip = audioClips[i];
+                if (clip == null) continue;
+
+                EditorGUILayout.BeginHorizontal();
+                
+                EditorGUILayout.LabelField(i.ToString(), GUILayout.Width(36f), GUILayout.Height(MStyle.labelHeight));
+                
+                EditorGUILayout.LabelField(clip.name, GUILayout.Height(MStyle.labelHeight));
+                
+                //显示播放/暂停按钮
+                if(playingAudioIndex == i)
+                {
+                    //如果播放完了那就更新正在播放的AudioIndex
+                    if (!EditorGUITool.IsEditorPlayingAudio())
+                    {
+                        playingAudioIndex = -1;
+                    }
+                
+                    //暂停播放
+                    if (GUILayout.Button(EditorIcons.Stop.Raw, GUILayout.Height(MStyle.labelHeight), GUILayout.Width(MStyle.btnWidth)))
+                    {
+                        EditorStopPlayAudio();
+                    }
+                }
+                else
+                {
+                    //开始播放
+                    if (GUILayout.Button(EditorIcons.Play.Raw, GUILayout.Height(MStyle.labelHeight), GUILayout.Width(MStyle.btnWidth)))
+                    {
+                        //更新正在播放的下标
+                        playingAudioIndex = i;
+                    
+                        //播放音效
+                        EditorPlayAudio(clip);
+                    }
+                }
+                
+                //删除
+                if (GUILayout.Button("删除", GUILayout.Height(MStyle.labelHeight), GUILayout.Width(MStyle.btnWidth)))
+                {
+                    audioClips[i] = null;
+                    Repaint();
+                }
+
+                EditorGUILayout.EndHorizontal();
+            }
+            
+            EditorGUILayout.EndScrollView();
+            
+            GUILayout.Space(10f);
+            //绘制拖拽添加AudioClip的区域
+            DrawDragAudioClipBox(audioClips);
+            
+            GUILayout.Space(10f);
+            
+            EditorGUILayout.EndVertical();
+        }
+        /// <summary>
+        /// 绘制BGMClip的GUI
+        /// </summary>
+        private void DrawBGMClipGUI()
+        {
+            EditorGUILayout.BeginVertical();
+            
+            EditorGUITool.BoldLabelField("BGMClip列表");
+            GUILayout.Space(10f);
+
+            bgmClipScrollPosition = EditorGUILayout.BeginScrollView(bgmClipScrollPosition);
+            
+            //遍历进行绘制
+            for (int i = 0; i < bgmClips.Count; i++)
+            {
+                AudioClip clip = bgmClips[i];
+                if (clip == null) continue;
+
+                EditorGUILayout.BeginHorizontal();
+                
+                EditorGUILayout.LabelField(i.ToString(), GUILayout.Width(36f), GUILayout.Height(MStyle.labelHeight));
+                
+                EditorGUILayout.LabelField(clip.name, GUILayout.Height(MStyle.labelHeight));
+                
+                //显示播放/暂停按钮
+                if(playingAudioIndex == i)
+                {
+                    //如果播放完了那就更新正在播放的AudioIndex
+                    if (!EditorGUITool.IsEditorPlayingAudio())
+                    {
+                        playingAudioIndex = -1;
+                    }
+                
+                    //暂停播放
+                    if (GUILayout.Button(EditorIcons.Stop.Raw, GUILayout.Height(MStyle.labelHeight), GUILayout.Width(MStyle.btnWidth)))
+                    {
+                        EditorStopPlayAudio();
+                    }
+                }
+                else
+                {
+                    //开始播放
+                    if (GUILayout.Button(EditorIcons.Play.Raw, GUILayout.Height(MStyle.labelHeight), GUILayout.Width(MStyle.btnWidth)))
+                    {
+                        //更新正在播放的下标
+                        playingAudioIndex = i;
+                    
+                        //播放音效
+                        EditorPlayAudio(clip);
+                    }
+                }
+                
+                //删除
+                if (GUILayout.Button("删除", GUILayout.Height(MStyle.labelHeight), GUILayout.Width(MStyle.btnWidth)))
+                {
+                    bgmClips[i] = null;
+                    Repaint();
+                }
+
+                EditorGUILayout.EndHorizontal();
+            }
+            
+            EditorGUILayout.EndScrollView();
+            
+            GUILayout.Space(10f);
+            //绘制拖拽添加AudioClip的区域
+            DrawDragAudioClipBox(bgmClips);
+            
+            GUILayout.Space(10f);
             
             EditorGUILayout.EndVertical();
         }
