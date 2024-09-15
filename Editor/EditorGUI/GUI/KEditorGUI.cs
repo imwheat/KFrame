@@ -439,7 +439,37 @@ namespace KFrame.Editor
             //返回结果
             return result;
         }
+        
+        /// <summary>
+        /// 开始Editor垂直分布附带空格
+        /// </summary>
+        /// <param name="leftSpace">左边空格</param>
+        public static void BeginVerticleWithSpace(float leftSpace)
+        {
+            EditorGUILayout.BeginHorizontal();
 
+            if (leftSpace > 0f)
+            {
+                GUILayout.Space(leftSpace);
+            }
+
+            EditorGUILayout.BeginVertical();
+        }
+        /// <summary>
+        /// 开始Editor垂直分布附带空格
+        /// </summary>
+        /// <param name="rightSpace">右边空格</param>
+        public static void EndVerticleWithSpace(float rightSpace)
+        {
+            EditorGUILayout.EndVertical();
+            
+            if (rightSpace > 0f)
+            {
+                GUILayout.Space(rightSpace);
+            }
+            
+            EditorGUILayout.EndHorizontal();
+        }
         #endregion
 
         #region 绘制GUI

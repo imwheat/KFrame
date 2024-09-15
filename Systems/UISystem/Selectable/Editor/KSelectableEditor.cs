@@ -19,6 +19,15 @@ namespace KFrame.Systems
     public class KSelectableEditor : UnityEditor.Editor
     {
         /// <summary>
+        /// 自动绘制排除的属性
+        /// </summary>
+        private string[] propertyToExclude = new[]
+        {
+            "m_Script","m_Navigation", "m_Transition", "m_Colors", "m_SpriteState", "m_AnimationTriggers", "m_TargetGraphic",
+            "m_TargetGraphics", "m_Interactable"
+        };
+        
+        /// <summary>
         /// 导航FoldOut
         /// </summary>
         private bool navigationFoldOut;
@@ -50,6 +59,7 @@ namespace KFrame.Systems
         protected SerializedProperty disableTrigger;
         
         protected SerializedProperty targetGraphic;
+        protected SerializedProperty targetGraphics;
         protected SerializedProperty interactable;
 
         private void OnEnable()
@@ -93,6 +103,7 @@ namespace KFrame.Systems
             
             //目标图片
             targetGraphic = serializedObject.FindProperty("m_TargetGraphic");
+            targetGraphics = serializedObject.FindProperty("m_TargetGraphics");
             
             //能否交互
             interactable = serializedObject.FindProperty("m_Interactable");
@@ -113,27 +124,28 @@ namespace KFrame.Systems
             EditorGUITool.ShowAClearFoldOut(ref navigationFoldOut, "导航");
             if (navigationFoldOut)
             {
+                KEditorGUI.BeginVerticleWithSpace(20f);
+                
                 KEditorGUI.PropertyField(selectOnUp, "向上");
                 KEditorGUI.PropertyField(selectOnDown, "向下");
                 KEditorGUI.PropertyField(selectOnLeft, "向左");
                 KEditorGUI.PropertyField(selectOnRight, "向右");
+                
+                KEditorGUI.EndVerticleWithSpace(0f);
             }
             
             GUILayout.Space(10f);
 
             KEditorGUI.PropertyField(transition, "切换类型");
 
-            EditorGUILayout.BeginHorizontal();
+            KEditorGUI.BeginVerticleWithSpace(20f);
             
-            GUILayout.Space(20f);
-
-            EditorGUILayout.BeginVertical();
-             
             switch (transition.intValue)
             {
                 //颜色切换
                 case 1:
-                    KEditorGUI.PropertyField(targetGraphic, "目标图片");
+                    KEditorGUI.PropertyField(targetGraphic, "目标图像");
+                    KEditorGUI.PropertyField(targetGraphics, "目标图像列表");
                     KEditorGUI.PropertyField(normalColor,"普通状态");
                     KEditorGUI.PropertyField(pressColor,"按下状态");
                     KEditorGUI.PropertyField(selectedlColor,"选择状态");
@@ -143,7 +155,8 @@ namespace KFrame.Systems
                     break;
                 //图片切换
                 case 2:
-                    KEditorGUI.PropertyField(targetGraphic, "目标图片");
+                    KEditorGUI.PropertyField(targetGraphic, "目标图像");
+                    KEditorGUI.PropertyField(targetGraphics, "目标图像列表");
                     KEditorGUI.PropertyField(pressSprite,"按下状态");
                     KEditorGUI.PropertyField(selectedlSprite,"选择状态");
                     KEditorGUI.PropertyField(disableSprite,"禁用状态");
@@ -157,14 +170,17 @@ namespace KFrame.Systems
                     break;
             }
             
-            EditorGUILayout.EndVertical();
-            
-            EditorGUILayout.EndHorizontal();
+            KEditorGUI.EndVerticleWithSpace(0f);
             
             GUILayout.Space(10f);
             
             EditorGUILayout.EndVertical();
 
+            EditorGUILayout.Space();
+
+            //绘制剩余的属性
+            DrawPropertiesExcluding(serializedObject, propertyToExclude);
+            
             serializedObject.ApplyModifiedProperties();
         }
     }
