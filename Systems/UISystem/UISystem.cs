@@ -40,10 +40,6 @@ namespace KFrame.Systems
         [SerializeField, ShowInInspector] private UILayerBase[] uiLayers;
         [SerializeField] private RectTransform dragLayer;
 
-        /// <summary>
-        /// 拖拽层，位于所有UI的最上层
-        /// </summary>
-        public static RectTransform DragLayer => instance.dragLayer;
         private static UILayerBase[] UILayers => instance.uiLayers;
 
         #region 动态加载/移除窗口数据

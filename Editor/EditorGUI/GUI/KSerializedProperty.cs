@@ -78,6 +78,7 @@ namespace KFrame.Editor
             {
                 return;
             }
+            
             //子集为空
             children = null;
             //判断是否为数组
@@ -106,6 +107,11 @@ namespace KFrame.Editor
             //判断是不是Array的子Property
             isArrayProperty = children.Parent != null && children.Parent.Property.isArray;
 
+            if (FieldInfo == null)
+            {
+                return;
+            }
+            
             //处理信息
             ProcessBuiltInData();
             ProcessKGUIData();

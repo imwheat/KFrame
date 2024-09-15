@@ -257,6 +257,20 @@ namespace KFrame.Editor
 
         #endregion
 
+        #region 绘制SerializedProperty
+        
+        /// <summary>
+        /// 绘制SerializedProperty
+        /// </summary>
+        /// <param name="property">要绘制的Property</param>
+        /// <param name="label">标签</param>
+        public static void PropertyField(SerializedProperty property, string label)
+        {
+            EditorGUILayout.PropertyField(property, KGUIHelper.TempContent(label));
+        }
+
+        #endregion
+
         #region 绘制GUI工具
         /// <summary>
         /// 这个字段有没有被忽略
@@ -286,6 +300,8 @@ namespace KFrame.Editor
         /// <returns>如果被忽略了就返回true</returns>
         internal static bool IsSerializedPropertyIgnored(SerializedProperty property)
         {
+            if (property.name == "m_Script") return true;
+            
             return false;
         }
         /// <summary>
@@ -360,8 +376,13 @@ namespace KFrame.Editor
             SerializedProperty tmp = serializedObject.GetIterator();
             SerializedPropertyPack result = null;
             Dictionary<int, SerializedPropertyPack> parentDic = new Dictionary<int, SerializedPropertyPack>();
-            bool find = false; // 是否找到目标了
+            bool find = string.IsNullOrEmpty(propertyPath); // 是否找到目标了
             int targetDepth = 0; // 目标的深度
+            if (find)
+            {
+                targetDepth = tmp.depth;
+                result = new SerializedPropertyPack(tmp.Copy());
+            }
             //遍历获取目标的子Property
             while (tmp.NextVisible(true))
             {
@@ -414,7 +435,7 @@ namespace KFrame.Editor
                     result = new SerializedPropertyPack(tmp.Copy());
                 }
             }
-
+            
             //返回结果
             return result;
         }

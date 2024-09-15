@@ -86,6 +86,8 @@ namespace KFrame.Editor
             //初始化每个Property
             foreach (var pack in serializedPack.Children)
             {
+                //如果不符合那就跳过
+                if(KEditorGUI.IsSerializedPropertyIgnored(pack.Property)) continue;
                 this.serializedProperties.Add(new KSerializedProperty(pack, this));
             }
 
