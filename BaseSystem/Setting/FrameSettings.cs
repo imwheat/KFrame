@@ -144,7 +144,7 @@ namespace KFrame
             UIDataDic.Clear();
             // 获取所有程序集
             System.Reflection.Assembly[] asms = AppDomain.CurrentDomain.GetAssemblies();
-            Type baseType = typeof(UI_Base);
+            Type baseType = typeof(UIBase);
             // 遍历程序集
             foreach (System.Reflection.Assembly assembly in asms)
             {

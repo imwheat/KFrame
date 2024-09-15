@@ -31,7 +31,7 @@ namespace KFrame.Systems
 
         private void Reset()
         {
-            UI_Base window = GetComponent<UI_Base>();
+            UIBase window = GetComponent<UIBase>();
             if (window != null && window.localizationOdinConfig != null)
             {
                 localizationOdinConfig = window.localizationOdinConfig;

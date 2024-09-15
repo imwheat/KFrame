@@ -1,5 +1,5 @@
 //****************** 代码文件申明 ************************
-//* 文件：UI_Base                                       
+//* 文件：UIBase                                       
 //* 作者：wheat
 //* 创建时间：2024/09/14 17:56:35 星期六
 //* 描述：UI的基类
@@ -17,7 +17,7 @@ namespace KFrame.Systems
     /// <summary>
     /// 窗口基类
     /// </summary>
-    public class UI_Base : MonoBehaviour
+    public class UIBase : MonoBehaviour
     {
         #region 参数
 
@@ -67,6 +67,12 @@ namespace KFrame.Systems
         protected virtual void OnDisable()
         {
             OnClose();
+        }
+
+        protected virtual void OnDestroy()
+        {
+            UnRegisterEventListener();
+            LocalizationSystem.UnregisterLanguageEvent(UpdateLanguageGeneralLogic);
         }
 
         #endregion
@@ -122,25 +128,6 @@ namespace KFrame.Systems
         }
 
         #endregion
-
-        public void ShowGeneralLogic(int layerNum)
-        {
-            this.currentLayer = layerNum;
-
-
-            OnShow();
-        }
-
-        /// <summary>
-        /// 关闭的基本逻辑
-        /// </summary>
-        public void CloseGeneralLogic()
-        {
-            UnRegisterEventListener();
-            LocalizationSystem.UnregisterLanguageEvent(UpdateLanguageGeneralLogic);
-            OnClose();
-        }
-
 
         /// <summary>
         /// 注册事件

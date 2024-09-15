@@ -84,6 +84,17 @@ namespace KFrame.Editor
         //代码生成结束标识FrameClass
 
 
+        
+        //代码生成开始标识UISystem
+
+        [MenuItem("Assets/Frame C#/SystemMono", false, 0)]
+        public static void CreatUISystem()
+        {
+            ScriptsTemplatesHelper.CreateMyScript("SystemMono.cs", "SystemMono.cs");
+        }
+
+        //代码生成结束标识UISystem
+
         #endregion 代码生成结束标识
     }
 }

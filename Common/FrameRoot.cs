@@ -121,12 +121,6 @@ namespace KFrame
                     return;
                 }
 
-                // 场景的所有窗口都进行一次Show
-                UI_Base[] window = instance.transform.GetComponentsInChildren<UI_Base>();
-                foreach (UI_Base win in window)
-                {
-                    win.ShowGeneralLogic(-1);
-                }
             }
         }
 #endif
