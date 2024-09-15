@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using KFrame;
 using KFrame.Tools;
 
-namespace KFrame.Systems
+namespace KFrame.UI
 {
     [System.Serializable]
     public class InputSetSaveData

@@ -12,7 +12,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace KFrame.Systems
+namespace KFrame.UI
 {
     [AddComponentMenu("KUI/Selectable", 35)]
     public class KSelectable : Selectable
@@ -28,7 +28,13 @@ namespace KFrame.Systems
         public List<Graphic> TargetGraphics
         {
             get => m_TargetGraphics;
-            set => m_TargetGraphics = value;
+            set
+            {
+                if (UISetPropertyUtility.SetClass<List<Graphic>>(ref m_TargetGraphics, value))
+                {
+                    OnSetProperty();
+                }
+            }
         }
 
         /// <summary>
@@ -41,8 +47,32 @@ namespace KFrame.Systems
         public SelectState SelectState
         {
             get => m_SelectState;
+            set
+            {
+                if (UISetPropertyUtility.SetStruct<SelectState>(ref m_SelectState, value))
+                {
+                    OnSetProperty();
+                }
+            }
         }
 
+        #region 方法重写
+
+        /// <summary>
+        /// 当设置参数的时候调用
+        /// </summary>
+        protected virtual void OnSetProperty()
+        {
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+                DoStateTransition(currentSelectionState, true);
+            else
+#endif
+                DoStateTransition(currentSelectionState, false);
+        }
+
+        #endregion
+        
         #region 状态切换
 
         /// <summary>

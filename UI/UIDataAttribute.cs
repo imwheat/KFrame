@@ -7,7 +7,7 @@
 using System;
 using KFrame.Utilities;
 
-namespace KFrame.Systems
+namespace KFrame.UI
 {
     /// <summary>
     /// UI窗口特性设置

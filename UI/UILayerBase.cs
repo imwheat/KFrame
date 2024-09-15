@@ -9,7 +9,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace KFrame.Systems
+namespace KFrame.UI
 {
     [Serializable]
     public class UILayerBase

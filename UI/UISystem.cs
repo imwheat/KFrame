@@ -2,11 +2,12 @@ using Sirenix.OdinInspector;
 using System;
 using System.Collections.Generic;
 using KFrame;
+using KFrame.Systems;
 using KFrame.Utilities;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace KFrame.Systems
+namespace KFrame.UI
 {
     /// <summary>
     /// UI根节点

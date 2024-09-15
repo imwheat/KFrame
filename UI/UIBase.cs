@@ -6,13 +6,14 @@
 //*****************************************************
 using System;
 using System.Collections.Generic;
+using KFrame.Systems;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-namespace KFrame.Systems
+namespace KFrame.UI
 {
     /// <summary>
     /// 窗口基类

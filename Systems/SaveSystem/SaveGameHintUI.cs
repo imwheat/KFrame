@@ -4,6 +4,8 @@
 //* 创建时间：2024/02/28 14:16:35 星期三
 //* 描述：保存游戏提醒UI
 //*****************************************************
+
+using KFrame.UI;
 using UnityEngine;
 using Sirenix.OdinInspector;
 

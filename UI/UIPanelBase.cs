@@ -12,7 +12,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace KFrame.Systems
+namespace KFrame.UI
 {
 
     public class UIPanelBase : UIBase

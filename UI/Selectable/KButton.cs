@@ -2,7 +2,7 @@
 //* 文件：KButton
 //* 作者：wheat
 //* 创建时间：2024/09/15 18:18:39 星期日
-//* 描述：
+//* 描述：按钮
 //*******************************************************
 using System;
 using System.Collections;
@@ -13,7 +13,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
-namespace KFrame.Systems
+namespace KFrame.UI
 {
     [AddComponentMenu("KUI/Button", 50)]
     public class KButton : KSelectable, IPointerClickHandler, ISubmitHandler

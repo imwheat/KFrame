@@ -8,7 +8,7 @@ using System;
 using KFrame.Utilities;
 using Sirenix.OdinInspector;
 using UnityEngine;
-namespace KFrame.Systems
+namespace KFrame.UI
 {
     /// <summary>
     /// UI元素数据

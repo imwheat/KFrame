@@ -9,9 +9,10 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using KFrame;
+using KFrame.Systems;
 using Sirenix.OdinInspector;
 
-namespace KFrame.Systems
+namespace KFrame.UI
 {
     [System.Serializable]
     public class UISettingsSave

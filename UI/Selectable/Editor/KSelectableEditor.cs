@@ -13,7 +13,7 @@ using UnityEngine.EventSystems;
 using UnityEditor;
 using UnityEngine.UI;
 
-namespace KFrame.Systems
+namespace KFrame.UI
 {
     [CustomEditor(typeof(KSelectable), true)]
     public class KSelectableEditor : UnityEditor.Editor

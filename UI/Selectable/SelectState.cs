@@ -6,7 +6,7 @@
 //*******************************************************
 
 
-namespace KFrame.Systems
+namespace KFrame.UI
 {
 
     /// <summary>
