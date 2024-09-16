@@ -17,11 +17,11 @@ namespace KFrame.UI
     internal static class UIMultipleDisplayUtilities
     {
         /// <summary>
-        /// Converts the current drag position into a relative position for the display.
+        /// 转化相对当前分辨率的拖拽位移
         /// </summary>
         /// <param name="eventData"></param>
         /// <param name="position"></param>
-        /// <returns>Returns true except when the drag operation is not on the same display as it originated</returns>
+        /// <returns>如果拖拽到另一个屏幕的话会返回false</returns>
         public static bool GetRelativeMousePositionForDrag(PointerEventData eventData, ref Vector2 position)
         {
             #if UNITY_EDITOR
@@ -42,9 +42,7 @@ namespace KFrame.UI
         }
 
         /// <summary>
-        /// A version of Display.RelativeMouseAt that scales the position when the main display has a different rendering resolution to the system resolution.
-        /// By default, the mouse position is relative to the main render area, we need to adjust this so it is relative to the system resolution
-        /// in order to correctly determine the position on other displays.
+        /// 为不同分辨率的屏幕适配相同的拖拽位移
         /// </summary>
         /// <returns></returns>
         public static Vector3 RelativeMouseAtScaled(Vector2 position)

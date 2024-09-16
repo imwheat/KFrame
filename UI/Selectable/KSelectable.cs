@@ -80,7 +80,7 @@ namespace KFrame.UI
         /// </summary>
         /// <param name="targetColor">目标颜色</param>
         /// <param name="instant">立刻变化</param>
-        protected new void StartColorTween(Color targetColor, bool instant)
+        protected void StartColorTween(Color targetColor, bool instant)
         {
             if (targetGraphic == null)
                 return;
@@ -99,7 +99,7 @@ namespace KFrame.UI
         /// 图片切换
         /// </summary>
         /// <param name="newSprite">要切换的图片</param>
-        protected new void DoSpriteSwap(Sprite newSprite)
+        protected void DoSpriteSwap(Sprite newSprite)
         {
             if (image == null)
                 return;
@@ -110,7 +110,7 @@ namespace KFrame.UI
         /// 触发动画
         /// </summary>
         /// <param name="triggername"></param>
-        protected new void TriggerAnimation(string triggername)
+        protected void TriggerAnimation(string triggername)
         {
 #if PACKAGE_ANIMATION
             if (transition != Transition.Animation || animator == null || !animator.isActiveAndEnabled || !animator.hasBoundPlayables || string.IsNullOrEmpty(triggername))

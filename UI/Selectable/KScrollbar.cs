@@ -109,13 +109,16 @@ namespace KFrame.UI
         {
             Set(input, false);
         }
-
+        
+        /// <summary>
+        /// 把手尺寸
+        /// </summary>
         [Range(0f, 1f)]
         [SerializeField]
         private float m_Size = 0.2f;
 
         /// <summary>
-        /// The size of the scrollbar handle where 1 means it fills the entire scrollbar.
+        /// 把手尺寸
         /// </summary>
         public float size { get { return m_Size; } set { if (UISetPropertyUtility.SetStruct(ref m_Size, Mathf.Clamp01(value))) UpdateVisuals(); } }
 
@@ -128,17 +131,16 @@ namespace KFrame.UI
         /// </summary>
         public int numberOfSteps { get { return m_NumberOfSteps; } set { if (UISetPropertyUtility.SetStruct(ref m_NumberOfSteps, value)) { Set(m_Value); UpdateVisuals(); } } }
 
+        /// <summary>
+        /// 滚轮值变化的时候调用事件
+        /// </summary>
         [Space(6)]
-
         [SerializeField]
         private ScrollEvent m_OnValueChanged = new ScrollEvent();
 
         /// <summary>
-        /// Handling for when the scrollbar value is changed.
+        /// 滚轮值变化的时候调用事件
         /// </summary>
-        /// <remarks>
-        /// Allow for delegate-based subscriptions for faster events than 'eventReceiver', and allowing for multiple receivers.
-        /// </remarks>
         public ScrollEvent onValueChanged { get { return m_OnValueChanged; } set { m_OnValueChanged = value; } }
 
         // Private fields
@@ -168,7 +170,7 @@ namespace KFrame.UI
 
             m_Size = Mathf.Clamp01(m_Size);
 
-            //This can be invoked before OnEnabled is called. So we shouldn't be accessing other objects, before OnEnable is called.
+            //如果没有激活Gameobject就不用调用
             if (IsActive())
             {
                 UpdateCachedReferences();
@@ -242,12 +244,11 @@ namespace KFrame.UI
         void Set(float input, bool sendCallback = true)
         {
             float currentValue = m_Value;
+            
+            m_Value = Mathf.Clamp01(input);
 
-            // bugfix (case 802330) clamp01 input in callee before calling this function, this allows inertia from dragging content to go past extremities without being clamped
-            m_Value = input;
-
-            // If the stepped value doesn't match the last one, it's time to update
-            if (currentValue == value)
+            //如果新的值和之前的一样就不用更新
+            if (Mathf.Approximately(currentValue, m_Value))
                 return;
 
             UpdateVisuals();
@@ -278,7 +279,9 @@ namespace KFrame.UI
         Axis axis { get { return (m_Direction == Direction.LeftToRight || m_Direction == Direction.RightToLeft) ? Axis.Horizontal : Axis.Vertical; } }
         bool reverseValue { get { return m_Direction == Direction.RightToLeft || m_Direction == Direction.TopToBottom; } }
 
-        // Force-update the scroll bar. Useful if you've changed the properties and want it to update visually.
+        /// <summary>
+        /// 更新UI视效
+        /// </summary>
         private void UpdateVisuals()
         {
 #if UNITY_EDITOR
@@ -310,7 +313,10 @@ namespace KFrame.UI
             }
         }
 
-        // Update the scroll bar's position based on the mouse.
+        /// <summary>
+        /// 更新鼠标拖拽
+        /// </summary>
+        /// <param name="eventData"></param>
         void UpdateDrag(PointerEventData eventData)
         {
             if (eventData.button != PointerEventData.InputButton.Left)
