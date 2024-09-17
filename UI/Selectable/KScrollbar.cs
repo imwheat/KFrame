@@ -19,7 +19,10 @@ namespace KFrame.UI
     [AddComponentMenu("KUI/Scrollbar", 36)]
     public class KScrollbar : KSelectable, IBeginDragHandler, IDragHandler, IInitializePotentialDragHandler, ICanvasElement
     {
-        /// <summary>
+
+        #region 参数
+
+         /// <summary>
         /// 设置滚动条的滚动方向
         /// </summary>
         public enum Direction
@@ -60,7 +63,7 @@ namespace KFrame.UI
         /// <summary>
         /// 滚动条的把手
         /// </summary>
-        public RectTransform handleRect { get { return m_HandleRect; } set { if (UISetPropertyUtility.SetClass(ref m_HandleRect, value)) { UpdateCachedReferences(); UpdateVisuals(); } } }
+        public RectTransform HandleRect { get { return m_HandleRect; } set { if (UISetPropertyUtility.SetClass(ref m_HandleRect, value)) { UpdateCachedReferences(); UpdateVisuals(); } } }
 
         /// <summary>
         /// 滚动方向
@@ -86,7 +89,7 @@ namespace KFrame.UI
         /// <summary>
         /// 当前滚动条的值，范围是[0,1f]
         /// </summary>
-        public float value
+        public float Value
         {
             get
             {
@@ -102,15 +105,6 @@ namespace KFrame.UI
         }
 
         /// <summary>
-        /// 设置滚动条的值不调用回调函数
-        /// </summary>
-        /// <param name="input">要设置的滚动条的值</param>
-        public virtual void SetValueWithoutNotify(float input)
-        {
-            Set(input, false);
-        }
-        
-        /// <summary>
         /// 把手尺寸
         /// </summary>
         [Range(0f, 1f)]
@@ -122,12 +116,12 @@ namespace KFrame.UI
         /// </summary>
         public float size { get { return m_Size; } set { if (UISetPropertyUtility.SetStruct(ref m_Size, Mathf.Clamp01(value))) UpdateVisuals(); } }
 
-        [Range(0, 11)]
+        [Range(0, 20)]
         [SerializeField]
         private int m_NumberOfSteps = 0;
 
         /// <summary>
-        /// The number of steps to use for the value. A value of 0 disables use of steps.
+        /// 从0刀1所需要的步数
         /// </summary>
         public int numberOfSteps { get { return m_NumberOfSteps; } set { if (UISetPropertyUtility.SetStruct(ref m_NumberOfSteps, value)) { Set(m_Value); UpdateVisuals(); } } }
 
@@ -143,25 +137,33 @@ namespace KFrame.UI
         /// </summary>
         public ScrollEvent onValueChanged { get { return m_OnValueChanged; } set { m_OnValueChanged = value; } }
 
-        // Private fields
-
+        /// <summary>
+        /// 滚动条的容器的Rect
+        /// </summary>
         private RectTransform m_ContainerRect;
 
-        // The offset from handle position to mouse down position
+        /// <summary>
+        /// 把手的位移偏量
+        /// </summary>
         private Vector2 m_Offset = Vector2.zero;
 
-        // Size of each step.
-        float stepSize { get { return (m_NumberOfSteps > 1) ? 1f / (m_NumberOfSteps - 1) : 0.1f; } }
+        /// <summary>
+        /// 每一次移动的步值
+        /// </summary>
+        float stepSize { get { return (m_NumberOfSteps > 1) ? 1f / (m_NumberOfSteps - 1) : 0.05f; } }
 
         // field is never assigned warning
-        #pragma warning disable 649
+#pragma warning disable 649
         private DrivenRectTransformTracker m_Tracker;
-        #pragma warning restore 649
+#pragma warning restore 649
         private Coroutine m_PointerDownRepeat;
         private bool isPointerDownAndNotDragging = false;
 
         // This "delayed" mechanism is required for case 1037681.
         private bool m_DelayedUpdateVisuals = false;
+
+        #endregion
+        
 
 #if UNITY_EDITOR
         protected override void OnValidate()
@@ -175,7 +177,7 @@ namespace KFrame.UI
             {
                 UpdateCachedReferences();
                 Set(m_Value, false);
-                // Update rects (in next update) since other things might affect them even if value didn't change.
+                //延迟更新，有些东西需要推迟到下一次update更新，某些东西可能影响到他们更新
                 m_DelayedUpdateVisuals = true;
             }
 
@@ -189,19 +191,21 @@ namespace KFrame.UI
         {
 #if UNITY_EDITOR
             if (executing == CanvasUpdate.Prelayout)
-                onValueChanged.Invoke(value);
+                onValueChanged.Invoke(Value);
 #endif
         }
 
         /// <summary>
-        /// See ICanvasElement.LayoutComplete.
+        /// 详见 ICanvasElement.LayoutComplete.
         /// </summary>
+        /// <see cref="ICanvasElement.LayoutComplete"/>
         public virtual void LayoutComplete()
         {}
 
         /// <summary>
-        /// See ICanvasElement.GraphicUpdateComplete.
+        /// 详见 ICanvasElement.GraphicUpdateComplete.
         /// </summary>
+        /// <see cref="ICanvasElement.GraphicUpdateComplete"/>
         public virtual void GraphicUpdateComplete()
         {}
 
@@ -210,7 +214,7 @@ namespace KFrame.UI
             base.OnEnable();
             UpdateCachedReferences();
             Set(m_Value, false);
-            // Update rects since they need to be initialized correctly.
+            // 更新视效
             UpdateVisuals();
         }
 
@@ -221,8 +225,7 @@ namespace KFrame.UI
         }
 
         /// <summary>
-        /// Update the rect based on the delayed update visuals.
-        /// Got around issue of calling sendMessage from onValidate.
+        /// Update用于执行某些延迟更新
         /// </summary>
         protected virtual void Update()
         {
@@ -232,7 +235,10 @@ namespace KFrame.UI
                 UpdateVisuals();
             }
         }
-
+        
+        /// <summary>
+        /// 用来更新缓存的引用对象
+        /// </summary>
         void UpdateCachedReferences()
         {
             if (m_HandleRect && m_HandleRect.parent != null)
@@ -240,8 +246,12 @@ namespace KFrame.UI
             else
                 m_ContainerRect = null;
         }
-
-        void Set(float input, bool sendCallback = true)
+        /// <summary>
+        /// 设置值
+        /// </summary>
+        /// <param name="input">新的值</param>
+        /// <param name="sendCallback">是否调用回调</param>
+        private void Set(float input, bool sendCallback = true)
         {
             float currentValue = m_Value;
             
@@ -255,27 +265,39 @@ namespace KFrame.UI
             if (sendCallback)
             {
                 UISystemProfilerApi.AddMarker("Scrollbar.value", this);
-                m_OnValueChanged.Invoke(value);
+                m_OnValueChanged.Invoke(Value);
             }
         }
-
+        /// <summary>
+        /// 设置滚动条的值不调用回调函数
+        /// </summary>
+        /// <param name="input">要设置的滚动条的值</param>
+        public virtual void SetValueWithoutNotify(float input)
+        {
+            Set(input, false);
+        }
+        /// <summary>
+        /// 当Rect发生变化
+        /// </summary>
         protected override void OnRectTransformDimensionsChange()
         {
             base.OnRectTransformDimensionsChange();
 
-            //This can be invoked before OnEnabled is called. So we shouldn't be accessing other objects, before OnEnable is called.
+            //如果Gameobject没有激活那就不用调用
             if (!IsActive())
                 return;
-
+            //更新视效
             UpdateVisuals();
         }
+
+        #region 视觉
 
         enum Axis
         {
             Horizontal = 0,
             Vertical = 1
         }
-
+        
         Axis axis { get { return (m_Direction == Direction.LeftToRight || m_Direction == Direction.RightToLeft) ? Axis.Horizontal : Axis.Vertical; } }
         bool reverseValue { get { return m_Direction == Direction.RightToLeft || m_Direction == Direction.TopToBottom; } }
 
@@ -296,7 +318,7 @@ namespace KFrame.UI
                 Vector2 anchorMin = Vector2.zero;
                 Vector2 anchorMax = Vector2.one;
 
-                float movement = Mathf.Clamp01(value) * (1 - size);
+                float movement = Mathf.Clamp01(Value) * (1 - size);
                 if (reverseValue)
                 {
                     anchorMin[(int)axis] = 1 - movement - size;
@@ -313,7 +335,12 @@ namespace KFrame.UI
             }
         }
 
-        /// <summary>
+
+        #endregion
+        
+        #region 拖拽操作
+
+         /// <summary>
         /// 更新鼠标拖拽
         /// </summary>
         /// <param name="eventData"></param>
@@ -344,7 +371,9 @@ namespace KFrame.UI
             DoUpdateDrag(handleCorner, remainingSize);
         }
 
-        //this function is testable, it is found using reflection in ScrollbarClamp test
+        /// <summary>
+        /// 更新鼠标拖拽
+        /// </summary>
         private void DoUpdateDrag(Vector2 handleCorner, float remainingSize)
         {
             switch (m_Direction)
@@ -363,14 +392,17 @@ namespace KFrame.UI
                     break;
             }
         }
-
+        /// <summary>
+        /// 判断能不能拖拽
+        /// </summary>
+        /// <returns>不能拖拽返回false</returns>
         private bool MayDrag(PointerEventData eventData)
         {
             return IsActive() && IsInteractable() && eventData.button == PointerEventData.InputButton.Left;
         }
 
         /// <summary>
-        /// Handling for when the scrollbar value is begin being dragged.
+        /// 在开始拖拽前处理滚轮的初始值
         /// </summary>
         public virtual void OnBeginDrag(PointerEventData eventData)
         {
@@ -392,7 +424,7 @@ namespace KFrame.UI
         }
 
         /// <summary>
-        /// Handling for when the scrollbar value is dragged.
+        /// 处理滚轮的值
         /// </summary>
         public virtual void OnDrag(PointerEventData eventData)
         {
@@ -404,7 +436,7 @@ namespace KFrame.UI
         }
 
         /// <summary>
-        /// Event triggered when pointer is pressed down on the scrollbar.
+        /// 当滚轮条被按下的时候触发
         /// </summary>
         public override void OnPointerDown(PointerEventData eventData)
         {
@@ -435,13 +467,13 @@ namespace KFrame.UI
                     {
                         var axisCoordinate = axis == 0 ? localMousePos.x : localMousePos.y;
 
-                        // modifying value depending on direction, fixes (case 925824)
+                        // 根据方向处理值
 
                         float change = axisCoordinate < 0 ? size : -size;
-                        value += reverseValue ? change : -change;
-                        value = Mathf.Clamp01(value);
-                        // Only keep 4 decimals of precision
-                        value = Mathf.Round(value * 10000f) / 10000f;
+                        Value += reverseValue ? change : -change;
+                        Value = Mathf.Clamp01(Value);
+                        // 只保证4位小数精确
+                        Value = Mathf.Round(Value * 10000f) / 10000f;
                     }
                 }
                 yield return new WaitForEndOfFrame();
@@ -450,7 +482,7 @@ namespace KFrame.UI
         }
 
         /// <summary>
-        /// Event triggered when pointer is released after pressing on the scrollbar.
+        /// 当鼠标放开的时候触发
         /// </summary>
         public override void OnPointerUp(PointerEventData eventData)
         {
@@ -459,7 +491,7 @@ namespace KFrame.UI
         }
 
         /// <summary>
-        /// Handling for movement events.
+        /// 处理移动
         /// </summary>
         public override void OnMove(AxisEventData eventData)
         {
@@ -473,33 +505,38 @@ namespace KFrame.UI
             {
                 case MoveDirection.Left:
                     if (axis == Axis.Horizontal && FindSelectableOnLeft() == null)
-                        Set(Mathf.Clamp01(reverseValue ? value + stepSize : value - stepSize));
+                        Set(Mathf.Clamp01(reverseValue ? Value + stepSize : Value - stepSize));
                     else
                         base.OnMove(eventData);
                     break;
                 case MoveDirection.Right:
                     if (axis == Axis.Horizontal && FindSelectableOnRight() == null)
-                        Set(Mathf.Clamp01(reverseValue ? value - stepSize : value + stepSize));
+                        Set(Mathf.Clamp01(reverseValue ? Value - stepSize : Value + stepSize));
                     else
                         base.OnMove(eventData);
                     break;
                 case MoveDirection.Up:
                     if (axis == Axis.Vertical && FindSelectableOnUp() == null)
-                        Set(Mathf.Clamp01(reverseValue ? value - stepSize : value + stepSize));
+                        Set(Mathf.Clamp01(reverseValue ? Value - stepSize : Value + stepSize));
                     else
                         base.OnMove(eventData);
                     break;
                 case MoveDirection.Down:
                     if (axis == Axis.Vertical && FindSelectableOnDown() == null)
-                        Set(Mathf.Clamp01(reverseValue ? value + stepSize : value - stepSize));
+                        Set(Mathf.Clamp01(reverseValue ? Value + stepSize : Value - stepSize));
                     else
                         base.OnMove(eventData);
                     break;
             }
         }
 
+
+        #endregion
+       
+        #region 导航重写
+
         /// <summary>
-        /// Prevents selection if we we move on the Horizontal axis. See Selectable.FindSelectableOnLeft.
+        /// 寻找左边的可选项
         /// </summary>
         public override Selectable FindSelectableOnLeft()
         {
@@ -509,7 +546,7 @@ namespace KFrame.UI
         }
 
         /// <summary>
-        /// Prevents selection if we we move on the Horizontal axis.  See Selectable.FindSelectableOnRight.
+        /// 寻找右边的可选项
         /// </summary>
         public override Selectable FindSelectableOnRight()
         {
@@ -519,7 +556,7 @@ namespace KFrame.UI
         }
 
         /// <summary>
-        /// Prevents selection if we we move on the Vertical axis. See Selectable.FindSelectableOnUp.
+        /// 寻找上边的可选项
         /// </summary>
         public override Selectable FindSelectableOnUp()
         {
@@ -529,7 +566,7 @@ namespace KFrame.UI
         }
 
         /// <summary>
-        /// Prevents selection if we we move on the Vertical axis. See Selectable.FindSelectableOnDown.
+        /// 寻找下边的可选项
         /// </summary>
         public override Selectable FindSelectableOnDown()
         {
@@ -537,20 +574,22 @@ namespace KFrame.UI
                 return null;
             return base.FindSelectableOnDown();
         }
-
+        #endregion
+        
         /// <summary>
-        /// See: IInitializePotentialDragHandler.OnInitializePotentialDrag
+        /// 详见: IInitializePotentialDragHandler.OnInitializePotentialDrag
         /// </summary>
+        /// <see cref="IInitializePotentialDragHandler.OnInitializePotentialDrag"/>
         public virtual void OnInitializePotentialDrag(PointerEventData eventData)
         {
             eventData.useDragThreshold = false;
         }
 
         /// <summary>
-        /// Set the direction of the scrollbar, optionally setting the layout as well.
+        /// 更新UI的方向
         /// </summary>
-        /// <param name="direction">The direction of the scrollbar.</param>
-        /// <param name="includeRectLayouts">Should the layout be flipped together with the direction?</param>
+        /// <param name="direction">方向</param>
+        /// <param name="includeRectLayouts">是否要更新Rect布局</param>
         public void SetDirection(Direction direction, bool includeRectLayouts)
         {
             Axis oldAxis = axis;

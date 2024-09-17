@@ -198,10 +198,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbb30f3b2dee08c42acb0054a0c1cf6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bgmPlayer: {fileID: 0}
-  masterMixerGroup: {fileID: 0}
-  bgmMixerGroup: {fileID: 0}
-  sfxMixerGroup: {fileID: 0}
+  bgmPlayer: {fileID: 978783127876630038}
+  masterMixerGroup: {fileID: 24300002, guid: 96598e9a8444ddb429c766161c0af201, type: 2}
+  bgmMixerGroup: {fileID: 8024287094261967831, guid: 96598e9a8444ddb429c766161c0af201, type: 2}
+  sfxMixerGroup: {fileID: -2697891055904758130, guid: 96598e9a8444ddb429c766161c0af201, type: 2}
   masterGroup:
     GroupName: 
     GroupIndex: 0
@@ -214,10 +214,10 @@ MonoBehaviour:
     GroupName: 
     GroupIndex: 0
     ChildrenIndexes: 
-  effectAudioPlayPrefab2D: {fileID: 0}
-  effectAudioPlayPrefab3D: {fileID: 0}
+  effectAudioPlayPrefab2D: {fileID: 818331845989744977, guid: c9b94ff7233e24c4a92866b06899b9b6, type: 3}
+  effectAudioPlayPrefab3D: {fileID: 818331845989744977, guid: a7737ddca6e00ac479858c3510042262, type: 3}
   effectAudioDefaultQuantity: 20
-  _AudioMixer: {fileID: 0}
+  _AudioMixer: {fileID: 24100000, guid: 96598e9a8444ddb429c766161c0af201, type: 2}
 --- !u!82 &2367165831541945047
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1685,3 +1685,14 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4061642522275437766, guid: 864386b0626ca60479951092421cfc47, type: 3}
   m_PrefabInstance: {fileID: 3875501734879177431}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &978783127876630038 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4061642522275437761, guid: 864386b0626ca60479951092421cfc47, type: 3}
+  m_PrefabInstance: {fileID: 3875501734879177431}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24015a95cffa3154a9e228879229debb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
