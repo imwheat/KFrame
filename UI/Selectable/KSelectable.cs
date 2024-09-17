@@ -70,6 +70,152 @@ namespace KFrame.UI
 #endif
                 DoStateTransition(currentSelectionState, false);
         }
+        
+        /// <summary>
+        /// 当被选择的时候调用
+        /// </summary>
+        public override void OnSelect(BaseEventData eventData)
+        {
+            base.OnSelect(eventData);
+            
+            //选择当前UI
+            UISelectSystem.SelectUI(this);
+        }
+        /// <summary>
+        /// 当被取消选择的时候调用
+        /// </summary>
+        public override void OnDeselect(BaseEventData eventData)
+        {
+            base.OnDeselect(eventData);
+            
+            //取消选择当前UI
+            UISelectSystem.DeselectUI(this);
+        }
+
+        #endregion
+
+        #region 导航
+        
+        /// <summary>
+        /// 寻找上方的可选项
+        /// </summary>
+        public override Selectable FindSelectableOnUp()
+        {
+            //如果是指定的
+            if (navigation.mode == Navigation.Mode.Explicit)
+            {
+                //如果上方选项为空，那就返回空
+                if (navigation.selectOnUp == null)
+                {
+                    return null;
+                }
+                //如果上方选项不可以选那就找上方选项的上方选项
+                else if (!navigation.selectOnUp.IsActive() || !navigation.selectOnUp.interactable)
+                {
+                    return navigation.selectOnUp.FindSelectableOnUp();
+                }
+                //上方选项可选那就选上方选项
+                else
+                {
+                    return navigation.selectOnUp;
+                }
+            }
+            //否则就用原来的
+            else
+            {
+                return base.FindSelectableOnUp();
+            }
+        }
+        /// <summary>
+        /// 寻找下方的可选项
+        /// </summary>
+        public override Selectable FindSelectableOnDown()
+        {
+            //如果是指定的
+            if (navigation.mode == Navigation.Mode.Explicit)
+            {
+                //如果下方选项为空，那就返回空
+                if (navigation.selectOnDown == null)
+                {
+                    return null;
+                }
+                //如果下方选项不可以选那就找下方选项的下方选项
+                else if (!navigation.selectOnDown.IsActive() || !navigation.selectOnDown.interactable)
+                {
+                    return navigation.selectOnDown.FindSelectableOnDown();
+                }
+                //下方选项可选那就选下方选项
+                else
+                {
+                    return navigation.selectOnDown;
+                }
+            }
+            //否则就用原来的
+            else
+            {
+                return base.FindSelectableOnDown();
+            }
+        }
+        /// <summary>
+        /// 寻找左方的可选项
+        /// </summary>
+        public override Selectable FindSelectableOnLeft()
+        {
+            //如果是指定的
+            if (navigation.mode == Navigation.Mode.Explicit)
+            {
+                //如果左边选项为空，那就返回空
+                if (navigation.selectOnLeft == null)
+                {
+                    return null;
+                }
+                //如果左边选项不可以选那就找左边选项的左边选项
+                else if (!navigation.selectOnLeft.IsActive() || !navigation.selectOnLeft.interactable)
+                {
+                    return navigation.selectOnLeft.FindSelectableOnLeft();
+                }
+                //左边选项可选那就选左边选项
+                else
+                {
+                    return navigation.selectOnLeft;
+                }
+            }
+            //否则就用原来的
+            else
+            {
+                return base.FindSelectableOnLeft();
+            }
+        }
+        /// <summary>
+        /// 寻找右方的可选项
+        /// </summary>
+        public override Selectable FindSelectableOnRight()
+        {
+            //如果是指定的
+            if (navigation.mode == Navigation.Mode.Explicit)
+            {
+                //如果右边选项为空，那就返回空
+                if (navigation.selectOnRight == null)
+                {
+                    return null;
+                }
+                //如果右边选项不可以选那就找右边选项的右边选项
+                else if (!navigation.selectOnRight.IsActive() || !navigation.selectOnRight.interactable)
+                {
+                    return navigation.selectOnRight.FindSelectableOnRight();
+                }
+                //右边选项可选那就选右边选项
+                else
+                {
+                    return navigation.selectOnRight;
+                }
+            }
+            //否则就用原来的
+            else
+            {
+                return base.FindSelectableOnRight();
+            }
+        }
 
         #endregion
         

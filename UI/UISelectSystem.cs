@@ -55,23 +55,21 @@ namespace KFrame.UI
         /// <summary>
         /// 当前选择的UI
         /// </summary>
-        public static Selectable CurSelectUI;
+        private static Selectable curSelectUI;
+        /// <summary>
+        /// 当前选择的UI
+        /// </summary>
+        public static Selectable CurSelectUI => curSelectUI;
         /// <summary>
         /// 当前选择的UI面板
         /// </summary>
-        public static UIPanelBase CurUIPanel;
-        
+        private static UIPanelBase curUIPanel;
+
         /// <summary>
-        /// 选择当前选项
+        /// 当前选择的UI面板
         /// </summary>
-        public static void SelectPanel(UIPanelBase panel)
-        {
-            //如果已经选择这个面板了就返回
-            if (CurUIPanel == panel) return;
-
-            CurUIPanel = panel;
-
-        }
+        public static UIPanelBase CurUIPanel => curUIPanel;
+        
         /// <summary>
         /// 在进入UI界面的时候调用
         /// </summary>
@@ -86,5 +84,65 @@ namespace KFrame.UI
         {
             inTheUIPanel = false;
         }
+
+        #region 选择
+        
+        /// <summary>
+        /// 选择当前面板的默认选项
+        /// </summary>
+        private static void SelectDefaultUI()
+        {
+            if(curUIPanel == null) return;
+            
+            curUIPanel.SelectDefaultUI();
+        }
+        /// <summary>
+        /// 选择UI面板
+        /// </summary>
+        /// <param name="panel">UI面板</param>
+        public static void SelectPanel(UIPanelBase panel)
+        {
+            //如果已经选择这个面板了就返回
+            if (curUIPanel == panel) return;
+
+            curUIPanel = panel;
+
+        }
+        /// <summary>
+        /// 取消UI面板
+        /// </summary>
+        /// <param name="panel">UI面板</param>
+        public static void DeselectPanel(UIPanelBase panel)
+        {
+            //如果选择的不是这个UI面板了就返回
+            if (curUIPanel != panel) return;
+
+            curUIPanel = null;
+        }
+        /// <summary>
+        /// 选择UI
+        /// </summary>
+        /// <param name="selectable">可选项</param>
+        public static void SelectUI(Selectable selectable)
+        {
+            //如果已经选择了这个UI那就返回
+            if(curSelectUI == selectable) return;
+
+            curSelectUI = selectable;
+        }
+        /// <summary>
+        /// 选择UI
+        /// </summary>
+        /// <param name="selectable">可选项</param>
+        public static void DeselectUI(Selectable selectable)
+        {
+            //如果选择的不是这个UI那就返回
+            if(curSelectUI != selectable) return;
+
+            curSelectUI = null;
+        }
+
+        #endregion
+        
     }
 }

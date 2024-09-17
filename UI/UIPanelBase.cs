@@ -86,7 +86,15 @@ namespace KFrame.UI
             base.OnClose();
             
             //如果要切换的面板不为空，那就显示
-            SwitchPanel?.Show();
+            if (SwitchPanel != null)
+            {
+                SwitchPanel.Show();
+            }
+            //没有要切换的面板的话，那就取消选择面板
+            else
+            {
+                UISelectSystem.DeselectPanel(this);
+            }
             
             //可见UI面板数量减一
             UISelectSystem.VisibleUIPanelCount--;
@@ -95,6 +103,33 @@ namespace KFrame.UI
         #endregion
 
         #region UI面板操作
+        
+        /// <summary>
+        /// 选择面板的UI默认选项
+        /// </summary>
+        public void SelectDefaultUI()
+        {
+            //如果默认选项不为空并且可以交互，那集选择
+            if (defaultSelection != null && (!defaultSelection.IsActive() || !defaultSelection.interactable))
+            {
+                defaultSelection.Select();
+            }
+            else
+            {
+                //获取子集所有可以交互的选项
+                Selectable[] selectables = transform.GetComponentsInChildren<Selectable>();
+                
+                //遍历每一个可选项
+                foreach (Selectable selectable in selectables)
+                {
+                    //如果不能交互那就跳过
+                    if (!defaultSelection.IsActive() || !defaultSelection.interactable) continue;
+                    //找到可以选择的那就选择，然后停止遍历
+                    selectable.Select();
+                    break;
+                }
+            }
+        }
         
         /// <summary>
         /// 关闭当前面板
