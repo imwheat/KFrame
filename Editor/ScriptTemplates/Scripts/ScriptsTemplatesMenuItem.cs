@@ -95,6 +95,17 @@ namespace KFrame.Editor
 
         //代码生成结束标识UISystem
 
+        
+        //代码生成开始标识KUI
+
+        [MenuItem("Assets/Frame C#/KUI", false, 0)]
+        public static void CreatKSelectable()
+        {
+            ScriptsTemplatesHelper.CreateMyScript("KUI.cs", "KUI.cs");
+        }
+
+        //代码生成结束标识KUI
+
         #endregion 代码生成结束标识
     }
 }
