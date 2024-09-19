@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using KFrame.Systems;
 using KFrame.UI;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -20,8 +21,8 @@ namespace KFrame.UI
     /// </summary>
     public class UILocalizationCollector : SerializedMonoBehaviour
     {
-        [FormerlySerializedAs("localizationOdinConfig")] [LabelText("局部配置信息"), Tooltip("如果局部配置信息为空,会自动读取全局本地化信息")]
-        public LocalizationConfig localizationConfig;
+        [LabelText("局部配置信息"), Tooltip("如果局部配置信息为空,会自动读取全局本地化信息")]
+        public LocalizationConfig localizationConfig => LocalizationConfig.Instance;
 
         [LabelText("当前语言"),SerializeField]
         private LanguageType currentLanguage;
@@ -30,15 +31,6 @@ namespace KFrame.UI
         public List<UILocalizationData> localizationDataList = new List<UILocalizationData>();
 
         private Action<object, string> analyzer;
-
-        private void Reset()
-        {
-            UIBase window = GetComponent<UIBase>();
-            if (window != null && window.localizationConfig != null)
-            {
-                localizationConfig = window.localizationConfig;
-            }
-        }
 
         private void OnEnable()
         {
@@ -53,18 +45,12 @@ namespace KFrame.UI
 
         private void OnUpdateLanguage(LanguageType type)
         {
-            //如果没有局部配置，那就取全局配置
-            if(localizationConfig ==null)
-            {
-                localizationConfig = LocalizationSystem.GetGlobalConfig();
-            }
-
             //如果当前语言已经是该语言了就返回
             if(currentLanguage== type) return;
 
             foreach (UILocalizationData item in localizationDataList)
             {
-                Analysis(item.component, item.key, type);
+                Analysis(item.Component, item.Key, type);
             }
 
             currentLanguage = type;
@@ -84,7 +70,7 @@ namespace KFrame.UI
         /// 优先采用外部传进来的解析器
         /// 如果没有则采用内部简单解析器，优先在本地配置中寻找，如果没有则在全局配置中寻找
         /// </summary>
-        public void Analysis(MaskableGraphic component, string key, LanguageType languageType)
+        public void Analysis(Graphic component, string key, LanguageType languageType)
         {
             if (component == null) return;
             if (analyzer != null)
@@ -103,6 +89,29 @@ namespace KFrame.UI
                 if (data != null)
                 {
                     Text _text = (Text)component;
+                    _text.text = data.content;
+
+                    if (localizationConfig != null)
+                    {
+                        //如果有配置字体大小
+                        if (localizationConfig.LanguageFontSize.TryGetValue(currentLanguage, out var curSize) &&
+                            localizationConfig.LanguageFontSize.TryGetValue(languageType, out var fontSize))
+                        {
+                            //那就调整一下字体大小
+                            _text.fontSize = Mathf.RoundToInt((float)_text.fontSize / curSize * fontSize);
+                        }
+                    }
+                }
+            }
+            else if (component is TMP_Text)
+            {
+                LocalizationStringData data = null;
+                if (localizationConfig != null)
+                    data = localizationConfig.GetContent<LocalizationStringData>(key, languageType);
+                if (data == null) data = LocalizationSystem.GetContent<LocalizationStringData>(key, languageType);
+                if (data != null)
+                {
+                    TMP_Text _text = (TMP_Text)component;
                     _text.text = data.content;
 
                     if (localizationConfig != null)
@@ -164,8 +173,8 @@ namespace KFrame.UI
                 //新建一个设置
                 UILocalizationData data = new UILocalizationData();
                 MaskableGraphic component = ui.GetComponent<MaskableGraphic>();
-                data.component = component;
-                data.key = ui.Key;
+                data.Component = component;
+                data.Key = ui.Key;
 
                 // 将配置存放到SO文件中
                 if (component is Text)
@@ -336,9 +345,4 @@ namespace KFrame.UI
 
     }
 
-    public class UILocalizationData
-    {
-        public MaskableGraphic component;
-        public string key;
-    }
 }

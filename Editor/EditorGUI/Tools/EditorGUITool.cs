@@ -14,7 +14,9 @@ using System.Reflection;
 using UnityEditor.AddressableAssets.Settings;
 using Object = UnityEngine.Object;
 using System.Collections.Generic;
+using KFrame.Attributes;
 using KFrame.UI;
+using Sirenix.OdinInspector;
 
 namespace KFrame.Editor
 {
@@ -47,13 +49,9 @@ namespace KFrame.Editor
         #endregion
 
         /// <summary>
-        /// 存储本地化信息的路径
+        /// 暂时使用的枚举的label字典
         /// </summary>
-        private static string localizationPath = "Assets/8.Data/Library/EditorLocalizaitionConfig.asset";
-        /// <summary>
-        /// 本地化库
-        /// </summary>
-        private static LocalizationConfig localizationConfig;
+        private static Dictionary<string, string> tempEnumLabelDic = new Dictionary<string, string>();
         /// <summary>
         /// AB包配置路径
         /// </summary>
@@ -106,14 +104,38 @@ namespace KFrame.Editor
             }
 
 
-            //更新按钮的Label，从本地化文本里面查找一下
-            string key = typeof(TEnum).Name + "_" + btnLabel;
-            string value = GetEditorLocalizationText(key);
-            //要是有的话就更新
-            if (key != value)
+            //更新按钮的Label
+            if (tempEnumLabelDic.ContainsKey(btnLabel))
             {
-                btnLabel = value;
+                btnLabel = tempEnumLabelDic[btnLabel];
             }
+            else
+            {
+                //尝试搜索Attribute然后获取LabelText
+                string newLabel = btnLabel;
+                FieldInfo fieldInfo = typeof(TEnum).GetField(btnLabel);
+                if (fieldInfo != null)
+                {
+                    KLabelTextAttribute labelAttribute = fieldInfo.GetCustomAttribute<KLabelTextAttribute>();
+                    if (labelAttribute != null)
+                    {
+                        newLabel = labelAttribute.Text;
+                    }
+                    else
+                    {
+                        LabelTextAttribute odinLabelTextAttribute = fieldInfo.GetCustomAttribute<LabelTextAttribute>();
+                        if (odinLabelTextAttribute != null)
+                        {
+                            newLabel = odinLabelTextAttribute.Text;
+                        }
+                    }
+                }
+            
+                //更新记录label
+                tempEnumLabelDic[btnLabel] = newLabel;
+                btnLabel = newLabel;
+            }
+
 
             //显示按钮
             if (options != null && options.Length != 0)
@@ -137,39 +159,7 @@ namespace KFrame.Editor
                 EditorGUILayout.EndHorizontal();
             }
         }
-        /// <summary>
-        /// 获取Editor本地化文本
-        /// </summary>
-        /// <param name="text">原文本</param>
-        /// <returns></returns>
-        public static string GetEditorLocalizationText(string text)
-        {
-            //防空
-            if (localizationConfig == null)
-            {
-                localizationConfig = AssetDatabase.LoadAssetAtPath(localizationPath, typeof(LocalizationConfig)) as LocalizationConfig;
-            }
 
-            //如果还是为空那就直接返回原文
-            if (localizationConfig == null)
-            {
-                return text;
-            }
-
-            //尝试从本地化配置中获取data
-            LocalizationStringData data = localizationConfig.GetContent<LocalizationStringData>(text, LanguageType.SimplifiedChinese);
-
-            //如果没有那就返回原文
-            if (data == null)
-            {
-                return text;
-            }
-            //有的话那就返回data中的文本
-            else
-            {
-                return data.content;
-            }
-        }
         /// <summary>
         /// 显示一个粗体的Label
         /// </summary>
