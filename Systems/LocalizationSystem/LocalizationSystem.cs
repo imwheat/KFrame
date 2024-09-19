@@ -7,6 +7,7 @@
 
 
 using System;
+using KFrame.UI;
 using UnityEngine;
 
 namespace KFrame.Systems
@@ -32,8 +33,10 @@ namespace KFrame.Systems
             }
             set
             {
-                instance.languageType = value;
-                OnLanguageValueChanged();
+                if (UISetPropertyUtility.SetStruct<LanguageType>(ref instance.languageType, value))
+                {
+                    OnLanguageValueChanged();
+                }
             }
         }
 

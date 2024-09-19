@@ -5,10 +5,6 @@
 //* 描述：按键设置配置
 //*****************************************************
 
-using UnityEngine;
-using System;
-using System.Collections.Generic;
-using KFrame;
 using KFrame.Tools;
 
 namespace KFrame.UI
