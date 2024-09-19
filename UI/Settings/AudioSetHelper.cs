@@ -6,6 +6,8 @@
 //*******************************************************
 
 
+using KFrame.Systems;
+
 namespace KFrame.UI
 {
     public class AudioSetHelper
@@ -29,6 +31,30 @@ namespace KFrame.UI
 
                 return curSettingsData;
             }
+        }
+        /// <summary>
+        /// 设置主音量
+        /// </summary>
+        public static void SetMasterVolume(float value)
+        {
+            AudioSystem.MasterVolume = value;
+            CurSettingsData.MasterVolume = value;
+        }
+        /// <summary>
+        /// 设置音乐音量
+        /// </summary>
+        public static void SetBGMVolume(float value)
+        {
+            AudioSystem.BGMVolume = value;
+            CurSettingsData.BGMVolume = value;
+        }
+        /// <summary>
+        /// 设置音效音量
+        /// </summary>
+        public static void SetSFXVolume(float value)
+        {
+            AudioSystem.SFXVolume = value;
+            CurSettingsData.SFXVolume = value;
         }
     }
 }

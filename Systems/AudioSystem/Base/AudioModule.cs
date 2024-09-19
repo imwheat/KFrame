@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 using KFrame.Tools;
+using KFrame.UI;
 using UnityEngine.Serialization;
 
 namespace KFrame.Systems
@@ -80,8 +81,10 @@ namespace KFrame.Systems
             get => masterGroup.CurVolume;
             set
             {
-                if (masterGroup.Volume == value) return;
-                masterGroup.UpdateVolume(value);
+                if (UISetPropertyUtility.SetStruct<float>(ref masterGroup.Volume, value))
+                {
+                    masterGroup.UpdateVolume(value);
+                }
             }
         }
         /// <summary>
@@ -92,8 +95,10 @@ namespace KFrame.Systems
             get => bgmGroup.CurVolume;
             set
             {
-                if (bgmGroup.Volume == value) return;
-                bgmGroup.UpdateVolume(value);
+                if (UISetPropertyUtility.SetStruct<float>(ref bgmGroup.Volume, value))
+                {
+                    bgmGroup.UpdateVolume(value);
+                }
             }
         }
 
@@ -102,8 +107,10 @@ namespace KFrame.Systems
             get => sfxGroup.CurVolume;
             set
             {
-                if (sfxGroup.Volume == value) return;
-                sfxGroup.UpdateVolume(value);
+                if (UISetPropertyUtility.SetStruct<float>(ref sfxGroup.Volume, value))
+                {
+                    sfxGroup.UpdateVolume(value);
+                }
             }
         }
 

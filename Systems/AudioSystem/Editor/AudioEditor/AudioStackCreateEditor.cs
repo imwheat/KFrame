@@ -219,7 +219,7 @@ namespace KFrame.Systems
         /// <param name="v">要更改的值</param>
         private void DrawObjectField<T>(ref T v, string label) where T: Object
         {
-            v = (T)EditorGUILayout.ObjectField(label, v, typeof(T), GUILayout.Height(MStyle.labelHeight));
+            v = (T)EditorGUILayout.ObjectField(label, v, typeof(T),false, GUILayout.Height(MStyle.labelHeight));
             GUILayout.Space(MStyle.spacing);
         }
         /// <summary>

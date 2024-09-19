@@ -178,7 +178,7 @@ namespace KFrame.Systems
 	        {
 		        EditorGUILayout.BeginHorizontal();
 		        
-		        editClips[i] = (AudioClip)EditorGUILayout.ObjectField(editClips[i], typeof(AudioClip),
+		        editClips[i] = (AudioClip)EditorGUILayout.ObjectField(editClips[i], typeof(AudioClip), false,
 			        GUILayout.Height(MStyle.labelHeight), GUILayout.Width(labelWidth));
 		        if (GUILayout.Button("删除", GUILayout.Width(btnWidth), GUILayout.Height(MStyle.labelHeight)))
 		        {
