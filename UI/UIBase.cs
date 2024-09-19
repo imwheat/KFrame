@@ -147,8 +147,8 @@ namespace KFrame.UI
         /// <summary>
         /// 当本地化配置中不包含指定key时，会自动在全局配置中尝试
         /// </summary>
-        [SerializeField, LabelText("局部本地化配置"), InfoBox("如果局部配置中没有key 或者没有局部设置 会去GameRoot的全局设置中找Key")]
-        public LocalizationOdinConfig localizationOdinConfig;
+        [FormerlySerializedAs("localizationOdinConfig")] [SerializeField, LabelText("局部本地化配置"), InfoBox("如果局部配置中没有key 或者没有局部设置 会去GameRoot的全局设置中找Key")]
+        public LocalizationConfig localizationConfig;
 
         protected void UpdateLanguageGeneralLogic(LanguageType languageType)
         {

@@ -7,10 +7,12 @@
 
 
 using System;
+using KFrame.Systems;
 using KFrame.UI;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-namespace KFrame.Systems
+namespace KFrame.UI
 {
     public class LocalizationSystem : MonoBehaviour
     {
@@ -49,7 +51,7 @@ namespace KFrame.Systems
         /// 全局的配置
         /// 可以运行时修改此配置
         /// </summary>
-        [SerializeField] private LocalizationOdinConfig globalOdinConfig;
+        [FormerlySerializedAs("globalOdinConfig")] [SerializeField] private LocalizationConfig globalConfig;
 
         [SerializeField] private LanguageType languageType;
 
@@ -73,20 +75,20 @@ namespace KFrame.Systems
 
         public T GetContentByKey<T>(string key, LanguageType languageType) where T : LocalizationDataBase
         {
-            if (globalOdinConfig == null)
+            if (globalConfig == null)
             {
                 Debug.LogWarning("缺少globalConfig");
                 return null;
             }
 
-            return globalOdinConfig.GetContent<T>(key, languageType);
+            return globalConfig.GetContent<T>(key, languageType);
         }
 
-        public static LocalizationOdinConfig GetGlobalConfig()
+        public static LocalizationConfig GetGlobalConfig()
         {
             if (instance != null)
             {
-                return instance.globalOdinConfig;
+                return instance.globalConfig;
             }
             else
             {
@@ -102,13 +104,13 @@ namespace KFrame.Systems
             //如果实例为空直接返回
             if (instance == null) return key;
             //如果不存在key直接返回
-            if (!instance.globalOdinConfig.config.ContainsKey(key)) return key;
+            if (!instance.globalConfig.config.ContainsKey(key)) return key;
             //如果不是文本data直接返回
-            if (!(instance.globalOdinConfig.config[key][LanguageType.SimplifiedChinese] is LocalizationStringData))
+            if (!(instance.globalConfig.config[key][LanguageType.SimplifiedChinese] is LocalizationStringData))
                 return key;
 
             //如果条件都符合就返回当前语言的文本内容
-            return ((LocalizationStringData)instance.globalOdinConfig.config[key][instance.languageType]).content;
+            return ((LocalizationStringData)instance.globalConfig.config[key][instance.languageType]).content;
         }
 
         public static void RegisterLanguageEvent(Action<LanguageType> action)

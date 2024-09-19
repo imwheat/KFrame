@@ -1,26 +1,27 @@
 using Sirenix.OdinInspector;
 using System;
 using System.Collections.Generic;
+using KFrame.Systems;
 using KFrame.UI;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 #if UNITY_EDITOR
-
+using KFrame.Tools;
 using UnityEditor;
 
 #endif
 
-namespace KFrame.Systems
+namespace KFrame.UI
 {
     /// <summary>
     /// 本地化收集者
     /// </summary>
     public class UILocalizationCollector : SerializedMonoBehaviour
     {
-        [FormerlySerializedAs("localizationConfig")] [LabelText("局部配置信息"), Tooltip("如果局部配置信息为空,会自动读取全局本地化信息")]
-        public LocalizationOdinConfig localizationOdinConfig;
+        [FormerlySerializedAs("localizationOdinConfig")] [LabelText("局部配置信息"), Tooltip("如果局部配置信息为空,会自动读取全局本地化信息")]
+        public LocalizationConfig localizationConfig;
 
         [LabelText("当前语言"),SerializeField]
         private LanguageType currentLanguage;
@@ -33,9 +34,9 @@ namespace KFrame.Systems
         private void Reset()
         {
             UIBase window = GetComponent<UIBase>();
-            if (window != null && window.localizationOdinConfig != null)
+            if (window != null && window.localizationConfig != null)
             {
-                localizationOdinConfig = window.localizationOdinConfig;
+                localizationConfig = window.localizationConfig;
             }
         }
 
@@ -53,9 +54,9 @@ namespace KFrame.Systems
         private void OnUpdateLanguage(LanguageType type)
         {
             //如果没有局部配置，那就取全局配置
-            if(localizationOdinConfig ==null)
+            if(localizationConfig ==null)
             {
-                localizationOdinConfig = LocalizationSystem.GetGlobalConfig();
+                localizationConfig = LocalizationSystem.GetGlobalConfig();
             }
 
             //如果当前语言已经是该语言了就返回
@@ -96,19 +97,19 @@ namespace KFrame.Systems
             if (component is Text)
             {
                 LocalizationStringData data = null;
-                if (localizationOdinConfig != null)
-                    data = localizationOdinConfig.GetContent<LocalizationStringData>(key, languageType);
+                if (localizationConfig != null)
+                    data = localizationConfig.GetContent<LocalizationStringData>(key, languageType);
                 if (data == null) data = LocalizationSystem.GetContent<LocalizationStringData>(key, languageType);
                 if (data != null)
                 {
                     Text _text = (Text)component;
                     _text.text = data.content;
 
-                    if (localizationOdinConfig != null)
+                    if (localizationConfig != null)
                     {
                         //如果有配置字体大小
-                        if (localizationOdinConfig.LanguageFontSize.TryGetValue(currentLanguage, out var curSize) &&
-                            localizationOdinConfig.LanguageFontSize.TryGetValue(languageType, out var fontSize))
+                        if (localizationConfig.LanguageFontSize.TryGetValue(currentLanguage, out var curSize) &&
+                            localizationConfig.LanguageFontSize.TryGetValue(languageType, out var fontSize))
                         {
                             //那就调整一下字体大小
                             _text.fontSize = Mathf.RoundToInt((float)_text.fontSize / curSize * fontSize);
@@ -119,8 +120,8 @@ namespace KFrame.Systems
             else if (component is Image)
             {
                 LocalizationImageData data = null;
-                if (localizationOdinConfig != null)
-                    data = localizationOdinConfig.GetContent<LocalizationImageData>(key, languageType);
+                if (localizationConfig != null)
+                    data = localizationConfig.GetContent<LocalizationImageData>(key, languageType);
                 if (data == null) data = LocalizationSystem.GetContent<LocalizationImageData>(key, languageType);
                 if (data != null) ((Image)component).sprite = data.content;
             }
@@ -139,22 +140,22 @@ namespace KFrame.Systems
             LocalizationUITag[] uis = GetComponentsInChildren<LocalizationUITag>();
 
             //获取本地化设置
-            LocalizationOdinConfig odinConfig;
+            LocalizationConfig config;
             //如果没有局部设置那就取全局的
-            if(localizationOdinConfig==null)
+            if(localizationConfig==null)
             {
-                odinConfig = ResSystem.LoadAsset<LocalizationOdinConfig>("GlobalLocalizationConfig");
+                config = ResSystem.LoadAsset<LocalizationConfig>("GlobalLocalizationConfig");
             }
             //有的话就取局部的
             else
             {
-                odinConfig = localizationOdinConfig;
+                config = localizationConfig;
             }
 
             //防空
-            if(odinConfig.config==null)
+            if(config.config==null)
             {
-                odinConfig.config = new Dictionary<string, Dictionary<LanguageType, LocalizationDataBase>>();
+                config.config = new Serialized_Dic<string, Serialized_Dic<LanguageType, LocalizationDataBase>>();
             }
 
             //遍历每一个UI
@@ -171,15 +172,15 @@ namespace KFrame.Systems
                 {
                     if(ui.CNstring!=string.Empty)
                     {
-                        Dictionary<LanguageType, LocalizationDataBase> dic;
-                        if (odinConfig.config.ContainsKey(ui.Key))
+                        Serialized_Dic<LanguageType, LocalizationDataBase> dic;
+                        if (config.config.ContainsKey(ui.Key))
                         {
-                            dic = odinConfig.config[ui.Key];
+                            dic = config.config[ui.Key];
                         }
                         else
                         {
-                            dic = new Dictionary<LanguageType, LocalizationDataBase>();
-                            odinConfig.config[ui.Key] = dic;
+                            dic = new Serialized_Dic<LanguageType, LocalizationDataBase>();
+                            config.config[ui.Key] = dic;
                         }
 
                         LocalizationStringData cn = new LocalizationStringData();
@@ -202,15 +203,15 @@ namespace KFrame.Systems
                 {
                     if (ui.CNimg != null)
                     {
-                        Dictionary<LanguageType, LocalizationDataBase> dic;
-                        if (odinConfig.config.ContainsKey(ui.Key))
+                        Serialized_Dic<LanguageType, LocalizationDataBase> dic;
+                        if (config.config.ContainsKey(ui.Key))
                         {
-                            dic = odinConfig.config[ui.Key];
+                            dic = config.config[ui.Key];
                         }
                         else
                         {
-                            dic = new Dictionary<LanguageType, LocalizationDataBase>();
-                            odinConfig.config[ui.Key] = dic;
+                            dic = new Serialized_Dic<LanguageType, LocalizationDataBase>();
+                            config.config[ui.Key] = dic;
                         }
 
                         LocalizationImageData cn = new LocalizationImageData();
@@ -234,7 +235,7 @@ namespace KFrame.Systems
 
             //保存
             EditorUtility.SetDirty(this);
-            EditorUtility.SetDirty(odinConfig);
+            EditorUtility.SetDirty(config);
         }
         /// <summary>
         /// 只是同步一下配置中的数据
@@ -246,29 +247,29 @@ namespace KFrame.Systems
             LocalizationUITag[] uis = GetComponentsInChildren<LocalizationUITag>();
 
             //获取本地化设置
-            LocalizationOdinConfig odinConfig;
+            LocalizationConfig config;
             //如果没有局部设置那就取全局的
-            if (localizationOdinConfig == null)
+            if (localizationConfig == null)
             {
-                odinConfig = ResSystem.LoadAsset<LocalizationOdinConfig>("GlobalLocalizationConfig");
+                config = ResSystem.LoadAsset<LocalizationConfig>("GlobalLocalizationConfig");
             }
             //有的话就取局部的
             else
             {
-                odinConfig = localizationOdinConfig;
+                config = localizationConfig;
             }
 
             //防空
-            if (odinConfig.config == null)
+            if (config.config == null)
             {
-                odinConfig.config = new Dictionary<string, Dictionary<LanguageType, LocalizationDataBase>>();
+                config.config = new Serialized_Dic<string, Serialized_Dic<LanguageType, LocalizationDataBase>>();
             }
 
             //遍历每个UI
             foreach (var ui in uis)
             {
 
-                if(odinConfig.config.TryGetValue(ui.Key,out Dictionary<LanguageType,LocalizationDataBase> dic))
+                if(config.config.TryGetValue(ui.Key,out Serialized_Dic<LanguageType,LocalizationDataBase> dic))
                 {
                     //简体中文
                     if (dic.TryGetValue(LanguageType.SimplifiedChinese,out LocalizationDataBase dataCN))

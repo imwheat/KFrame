@@ -14,6 +14,7 @@ using System.Reflection;
 using UnityEditor.AddressableAssets.Settings;
 using Object = UnityEngine.Object;
 using System.Collections.Generic;
+using KFrame.UI;
 
 namespace KFrame.Editor
 {
@@ -52,7 +53,7 @@ namespace KFrame.Editor
         /// <summary>
         /// 本地化库
         /// </summary>
-        private static LocalizationOdinConfig _localizationOdinConfig;
+        private static LocalizationConfig localizationConfig;
         /// <summary>
         /// AB包配置路径
         /// </summary>
@@ -144,19 +145,19 @@ namespace KFrame.Editor
         public static string GetEditorLocalizationText(string text)
         {
             //防空
-            if (_localizationOdinConfig == null)
+            if (localizationConfig == null)
             {
-                _localizationOdinConfig = AssetDatabase.LoadAssetAtPath(localizationPath, typeof(LocalizationOdinConfig)) as LocalizationOdinConfig;
+                localizationConfig = AssetDatabase.LoadAssetAtPath(localizationPath, typeof(LocalizationConfig)) as LocalizationConfig;
             }
 
             //如果还是为空那就直接返回原文
-            if (_localizationOdinConfig == null)
+            if (localizationConfig == null)
             {
                 return text;
             }
 
             //尝试从本地化配置中获取data
-            LocalizationStringData data = _localizationOdinConfig.GetContent<LocalizationStringData>(text, LanguageType.SimplifiedChinese);
+            LocalizationStringData data = localizationConfig.GetContent<LocalizationStringData>(text, LanguageType.SimplifiedChinese);
 
             //如果没有那就返回原文
             if (data == null)

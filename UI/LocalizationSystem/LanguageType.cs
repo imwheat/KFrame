@@ -1,4 +1,4 @@
-namespace KFrame.Systems
+namespace KFrame.UI
 {
     /// <summary>
     /// 语言类型

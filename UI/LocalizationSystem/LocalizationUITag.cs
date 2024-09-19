@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 
-namespace KFrame.Systems
+namespace KFrame.UI
 {
     [ExecuteInEditMode]
     public class LocalizationUITag : MonoBehaviour

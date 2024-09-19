@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 using System.IO;
+using KFrame.Attributes;
 
 #if UNITY_EDITOR
 
@@ -17,10 +18,10 @@ using UnityEditor;
 
 #endif
 
-namespace KFrame.Systems
+namespace KFrame.UI
 {
-    [CreateAssetMenu(menuName = "KFrame/LocalizationConfig")]
-    public class LocalizationOdinConfig : LocalizationOdinConfigBase<LanguageType>
+    [CreateAssetMenu(menuName = "KFrame/LocalizationConfig", fileName = "LocalizationConfig")]
+    public class LocalizationConfig : LocalizationConfigBase<LanguageType>
     {
 
     }

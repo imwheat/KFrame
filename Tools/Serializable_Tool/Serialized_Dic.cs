@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using UnityEngine;
@@ -11,7 +12,7 @@ namespace KFrame.Tools
 	/// <typeparam name="K">字典Key</typeparam>
 	/// <typeparam name="V">字典Value</typeparam>
 	[System.Serializable]
-	public class Serialized_Dic<K, V> : ISerializationCallbackReceiver
+	public class Serialized_Dic<K, V> : ISerializationCallbackReceiver, IDictionary<K,V>
 	{
 		[SerializeField] private List<K> keyList;
 		[SerializeField] private List<V> valueList;
@@ -33,6 +34,88 @@ namespace KFrame.Tools
 			this.dictionary = dictionary;
 		}
 
+		#region 操作字典方法
+
+		public bool TryGetValue(K key, out V value)
+		{
+			return dictionary.TryGetValue(key, out value);
+		}
+
+		public V this[K key]
+		{
+			get => dictionary[key];
+			set => dictionary[key] = value;
+		}
+
+		public ICollection<K> Keys { get=>dictionary.Keys; }
+		public ICollection<V> Values { get=>dictionary.Values; }
+
+		public bool TryAdd(K key, V value)
+		{
+			return dictionary.TryAdd(key, value);
+		}
+
+		public bool ContainsKey(K key)
+		{
+			return dictionary.ContainsKey(key);
+		}
+
+		public void Add(KeyValuePair<K, V> item)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Clear()
+		{
+			dictionary.Clear();
+		}
+
+		public bool Contains(KeyValuePair<K, V> item)
+		{
+			return dictionary.ContainsKey(item.Key) && Equals(dictionary[item.Key], item.Value);
+		}
+		public void CopyTo(KeyValuePair<K, V>[] array, int arrayIndex)
+		{
+			K key = array[arrayIndex].Key;
+			if (dictionary.ContainsKey(key))
+			{
+				array[arrayIndex] = new KeyValuePair<K, V>(key, dictionary[key]);
+			}
+		}
+
+		public bool Remove(KeyValuePair<K, V> item)
+		{
+			return dictionary.Remove(item.Key);
+		}
+
+		public int Count { get=>dictionary.Count; }
+		public bool IsReadOnly { get => false; }
+
+		public bool ContainsValue(V value)
+		{
+			return dictionary.ContainsValue(value);
+		}
+
+		public void Add(K key, V value)
+		{
+			dictionary.Add(key, value);
+		}
+		public bool Remove(K key)
+		{
+			return dictionary.Remove(key);
+		}
+		public IEnumerator<KeyValuePair<K, V>> GetEnumerator()
+		{
+			return dictionary.GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
+
+		#endregion
+		
 		// 序列化的时候把字典里面的内容放进list
 		[OnSerializing]
 		private void OnSerializing(StreamingContext context)
@@ -68,5 +151,6 @@ namespace KFrame.Tools
 			keyList.Clear();
 			valueList.Clear();
 		}
+		
 	}
 }

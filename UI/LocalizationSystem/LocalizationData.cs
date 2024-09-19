@@ -7,7 +7,7 @@
 
 using UnityEngine;
 
-namespace KFrame.Systems
+namespace KFrame.UI
 {
     public abstract class LocalizationDataBase
     {
