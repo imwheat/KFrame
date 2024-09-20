@@ -5,13 +5,17 @@
 //* 描述：UI的基类
 //*****************************************************
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using KFrame.Systems;
-using Sirenix.OdinInspector;
+using KFrame.Tools;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
+
+#if UNITY_EDITOR
+
+using UnityEditor;
+
+#endif
 
 namespace KFrame.UI
 {
@@ -55,6 +59,11 @@ namespace KFrame.UI
         /// 当前的语言类型
         /// </summary>
         protected LanguageType curLanguage;
+        /// <summary>
+        /// 本地化配置列表
+        /// </summary>
+        [SerializeField]
+        protected List<UILocalizationData> localiztionSets;
 
         #endregion
 
@@ -73,7 +82,6 @@ namespace KFrame.UI
         protected virtual void OnDestroy()
         {
             UnRegisterEventListener();
-            LocalizationSystem.UnregisterLanguageEvent(UpdateLanguageGeneralLogic);
         }
 
         #endregion
@@ -88,9 +96,9 @@ namespace KFrame.UI
             currentLayer = data.LayerNum;
             uiKey = data.UIKey;
             
+            //注册事件
             RegisterEventListener();
-            // 绑定本地化事件
-            LocalizationSystem.RegisterLanguageEvent(UpdateLanguageGeneralLogic);
+            //更新语言
             OnUpdateLanguage(LocalizationSystem.LanguageType);
 
         }
@@ -123,7 +131,7 @@ namespace KFrame.UI
         public void Close()
         {
             //如果已经关掉了那就不用再调用
-            if(!gameObject.activeSelf) return;
+            if (!gameObject.activeSelf) return;
             
             UISystem.Close(this);
         }
@@ -133,20 +141,21 @@ namespace KFrame.UI
         /// <summary>
         /// 注册事件
         /// </summary>
-        protected virtual void RegisterEventListener() { }
+        protected virtual void RegisterEventListener()
+        {
+            LocalizationSystem.RegisterLanguageEvent(OnUpdateLanguage);
+        }
 
         /// <summary>
         /// 取消事件
         /// </summary>
-        protected virtual void UnRegisterEventListener() { }
+        protected virtual void UnRegisterEventListener() 
+        { 
+            LocalizationSystem.UnregisterLanguageEvent(OnUpdateLanguage);
+        }
         
 
         #region 本地化
-
-        protected void UpdateLanguageGeneralLogic(LanguageType languageType)
-        {
-            OnUpdateLanguage(languageType);
-        }
 
         /// <summary>
         /// 当语言更新时
@@ -157,7 +166,74 @@ namespace KFrame.UI
             if(curLanguage == languageType) return;
             curLanguage = languageType;
         }
+        /// <summary>
+        /// 更新子集的语言
+        /// </summary>
+        protected void UpdateChildLanguage()
+        {
+            //遍历更新每个UI
+            foreach (UILocalizationData uiLocalizationData in localiztionSets)
+            {
+                uiLocalizationData.UpdateUILanguage(curLanguage);                
+            }
+        }
+        #if UNITY_EDITOR
+        /// <summary>
+        /// 编辑器使用，临时的
+        /// 目前已经查询过的UI
+        /// </summary>
+        protected HashSet<Graphic> seenUI;
+        /// <summary>
+        /// 编辑器使用
+        /// 搜寻这个UI下可以本地化配置的项
+        /// </summary>
+        protected void CollectLocaliztionUI()
+        {
+            //如果已经查询过的UI列表为空那就新建
+            if (seenUI == null)
+            {
+                seenUI = new HashSet<Graphic>();
+                for (int i = localiztionSets.Count -1; i >= 0; i--)
+                {
+                    if (localiztionSets[i] == null || localiztionSets[i].Component == null)
+                    {
+                        localiztionSets.RemoveAt(i);
+                    }
+                    else
+                    {
+                        seenUI.Add(localiztionSets[i].Component);
 
+                    }
+                }
+            }
+            
+             //从子集获取可以本地化的UI
+            Graphic[] uis = GetComponentsInChildren<Graphic>();
+
+            //获取本地化设置
+            LocalizationConfig config = LocalizationConfig.Instance;
+
+            //遍历每个UI
+            foreach (var ui in uis)
+            {
+                //如果已经访问过了，那就跳过
+                if (seenUI.Contains(ui)) continue;
+                seenUI.Add(ui);
+
+                //添加到本地化列表
+                localiztionSets.Add(new UILocalizationData("", ui));
+
+            }
+            
+            //保存
+            EditorUtility.SetDirty(this);
+            EditorUtility.SetDirty(this.gameObject);
+            AssetDatabase.Refresh();
+            AssetDatabase.SaveAssets();
+        }
+        
+        #endif
+        
         #endregion
     }
 }

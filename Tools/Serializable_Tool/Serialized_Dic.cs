@@ -62,7 +62,7 @@ namespace KFrame.Tools
 
 		public void Add(KeyValuePair<K, V> item)
 		{
-			throw new NotImplementedException();
+			dictionary[item.Key] = item.Value;
 		}
 
 		public void Clear()
@@ -145,8 +145,22 @@ namespace KFrame.Tools
 		public void OnAfterDeserialize()
 		{
 			dictionary = new Dictionary<K, V>();
+			if (dictionary == null)
+			{
+				Debug.Log(1);
+			}
 			for (int i = 0; i < keyList.Count; i++)
+			{
+				if (keyList[i] == null)
+				{
+					Debug.Log("2");
+				}
+				else if (valueList[i] == null)
+				{
+					Debug.Log("3");
+				}
 				dictionary.Add(keyList[i], valueList[i]);
+			}
 
 			keyList.Clear();
 			valueList.Clear();

@@ -9,10 +9,22 @@ using UnityEngine.UI;
 
 namespace KFrame.UI
 {
+    [System.Serializable]
     public class UILocalizationData
     {
         public string Key;
         public Graphic Component;
+
+        public UILocalizationData()
+        {
+            
+        }
+
+        public UILocalizationData(string key, Graphic component)
+        {
+            this.Key = key;
+            this.Component = component;
+        }
     }
 }
 

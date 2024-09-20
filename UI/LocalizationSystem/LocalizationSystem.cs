@@ -8,34 +8,31 @@
 
 using System;
 using KFrame.Systems;
-using KFrame.UI;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace KFrame.UI
 {
-    public class LocalizationSystem : MonoBehaviour
+    public static class LocalizationSystem
     {
-        private static LocalizationSystem instance;
         private const string OnUpdateLanguage = "OnUpdateLanguage";
-
+        
         /// <summary>
-        /// 访问或设置语言类型，设置时会自动分发语言修改事件
+        /// 语言类型
+        /// </summary>
+        private static LanguageType languageType;
+        /// <summary>
+        /// 语言类型，设置时会自动分发语言修改事件
         /// </summary>
         public static LanguageType LanguageType
         {
             get
             {
-                if (instance == null)
-                {
-                    instance = FrameRoot.RootTransform.GetComponentInChildren<LocalizationSystem>();
-                }
-
-                return instance.languageType;
+                return languageType;
             }
             set
             {
-                if (UISetPropertyUtility.SetStruct<LanguageType>(ref instance.languageType, value))
+                if (UISetPropertyUtility.SetStruct<LanguageType>(ref languageType, value))
                 {
                     OnLanguageValueChanged();
                 }
@@ -44,73 +41,63 @@ namespace KFrame.UI
 
         public static void Init()
         {
-            instance = FrameRoot.RootTransform.GetComponentInChildren<LocalizationSystem>();
         }
 
-        /// <summary>
-        /// 全局的配置
-        /// 可以运行时修改此配置
-        /// </summary>
-        [FormerlySerializedAs("globalOdinConfig")] [SerializeField] private LocalizationConfig globalConfig;
-
-        [SerializeField] private LanguageType languageType;
-
-        private void OnValidate()
-        {
-            OnLanguageValueChanged();
-        }
+        public static LocalizationConfig Config => LocalizationConfig.Instance;
 
         public static void OnLanguageValueChanged()
         {
-            if (instance == null) return; // 应该没有运行
-            EventBroadCastSystem.EventTrigger(OnUpdateLanguage, instance.languageType);
+            EventBroadCastSystem.EventTrigger(OnUpdateLanguage, languageType);
         }
-
         /// <summary>
-        /// 获取内容，如果不存在会返回Null
+        /// 获取本地化配置数据
         /// </summary>
-        /// <returns></returns>
-        public static T GetContent<T>(string key, LanguageType languageType) where T : LocalizationDataBase =>
-            instance.GetContentByKey<T>(key, languageType);
-
-        public T GetContentByKey<T>(string key, LanguageType languageType) where T : LocalizationDataBase
+        /// <param name="key">key</param>
+        /// <param name="language">语言类型</param>
+        /// <typeparam name="T">需要的数据类型</typeparam>
+        /// <returns>没有的话返回null</returns>
+        public static T GetLocalizationData<T>(string key, LanguageType language) where T : LocalizationDataBase
         {
-            if (globalConfig == null)
+            if (Config == null)
             {
-                Debug.LogWarning("缺少globalConfig");
+                Debug.LogWarning("缺少本地化Config");
                 return null;
             }
 
-            return globalConfig.GetContent<T>(key, languageType);
+            return Config.GetContent<T>(key, language);
         }
-
-        public static LocalizationConfig GetGlobalConfig()
+        /// <summary>
+        /// 尝试获取本地化配置数据
+        /// </summary>
+        /// <param name="key">key</param>
+        /// <param name="language">语言类型</param>
+        /// <typeparam name="T">需要的数据类型</typeparam>
+        /// <returns>没有的话返回false</returns>
+        public static bool TryGetLocalizationData<T>(string key, LanguageType language, out T data) where T : LocalizationDataBase
         {
-            if (instance != null)
+            data = null;
+            
+            if (Config == null)
             {
-                return instance.globalConfig;
+                Debug.LogWarning("缺少本地化Config");
+                return false;
             }
-            else
-            {
-                return null;
-            }
-        }
 
+            return Config.TryGetContent<T>(key, language, out data);
+        }
         /// <summary>
         /// 根据key获取当前语言的文本内容
         /// </summary>
         public static string GetGlobalStringData(string key)
         {
-            //如果实例为空直接返回
-            if (instance == null) return key;
             //如果不存在key直接返回
-            if (!instance.globalConfig.config.ContainsKey(key)) return key;
+            if (!Config.config.ContainsKey(key)) return key;
             //如果不是文本data直接返回
-            if (!(instance.globalConfig.config[key][LanguageType.SimplifiedChinese] is LocalizationStringData))
+            if (!(Config.config[key][LanguageType.SimplifiedChinese] is LocalizationStringData))
                 return key;
 
             //如果条件都符合就返回当前语言的文本内容
-            return ((LocalizationStringData)instance.globalConfig.config[key][instance.languageType]).content;
+            return ((LocalizationStringData)Config.config[key][languageType]).content;
         }
 
         public static void RegisterLanguageEvent(Action<LanguageType> action)

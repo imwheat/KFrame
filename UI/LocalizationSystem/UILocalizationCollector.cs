@@ -85,7 +85,7 @@ namespace KFrame.UI
                 LocalizationStringData data = null;
                 if (localizationConfig != null)
                     data = localizationConfig.GetContent<LocalizationStringData>(key, languageType);
-                if (data == null) data = LocalizationSystem.GetContent<LocalizationStringData>(key, languageType);
+                if (data == null) data = LocalizationSystem.GetLocalizationData<LocalizationStringData>(key, languageType);
                 if (data != null)
                 {
                     Text _text = (Text)component;
@@ -108,7 +108,7 @@ namespace KFrame.UI
                 LocalizationStringData data = null;
                 if (localizationConfig != null)
                     data = localizationConfig.GetContent<LocalizationStringData>(key, languageType);
-                if (data == null) data = LocalizationSystem.GetContent<LocalizationStringData>(key, languageType);
+                if (data == null) data = LocalizationSystem.GetLocalizationData<LocalizationStringData>(key, languageType);
                 if (data != null)
                 {
                     TMP_Text _text = (TMP_Text)component;
@@ -131,7 +131,7 @@ namespace KFrame.UI
                 LocalizationImageData data = null;
                 if (localizationConfig != null)
                     data = localizationConfig.GetContent<LocalizationImageData>(key, languageType);
-                if (data == null) data = LocalizationSystem.GetContent<LocalizationImageData>(key, languageType);
+                if (data == null) data = LocalizationSystem.GetLocalizationData<LocalizationImageData>(key, languageType);
                 if (data != null) ((Image)component).sprite = data.content;
             }
         }
@@ -159,12 +159,6 @@ namespace KFrame.UI
             else
             {
                 config = localizationConfig;
-            }
-
-            //防空
-            if(config.config==null)
-            {
-                config.config = new Serialized_Dic<string, Serialized_Dic<LanguageType, LocalizationDataBase>>();
             }
 
             //遍历每一个UI

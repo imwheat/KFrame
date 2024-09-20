@@ -25,10 +25,11 @@ namespace KFrame.UI
     [CreateAssetMenu(menuName = "KFrame/LocalizationConfig", fileName = "LocalizationConfig")]
     public class LocalizationConfig : GlobalConfigBase<LocalizationConfig>
     {
-        public Serialized_Dic<string, Serialized_Dic<LanguageType, LocalizationDataBase>> config =
-            new Serialized_Dic<string, Serialized_Dic<LanguageType, LocalizationDataBase>>();
-        public Serialized_Dic<LanguageType, int> LanguageFontSize
-            = new Serialized_Dic<LanguageType, int>();
+        
+        public Dictionary<string, Dictionary<LanguageType, LocalizationDataBase>> config =
+            new Dictionary<string, Dictionary<LanguageType, LocalizationDataBase>>();
+        public Dictionary<LanguageType, int> LanguageFontSize
+            = new Dictionary<LanguageType, int>();
         
         /// <summary>
         /// 获取本地化配置
@@ -39,9 +40,9 @@ namespace KFrame.UI
         public T GetContent<T>(string key, LanguageType languageType) where T : LocalizationDataBase
         {
             LocalizationDataBase content = null;
-            if (config.Dictionary.TryGetValue(key, out Serialized_Dic<LanguageType, LocalizationDataBase> dic))
+            if (config.TryGetValue(key, out Dictionary<LanguageType, LocalizationDataBase> dic))
             {
-                dic.Dictionary.TryGetValue(languageType, out content);
+                dic.TryGetValue(languageType, out content);
             }
 
             return (T)content;
@@ -56,9 +57,9 @@ namespace KFrame.UI
         public bool TryGetContent<T>(string key, LanguageType languageType, out T content) where T : LocalizationDataBase
         {
             content = null;
-            if (config.Dictionary.TryGetValue(key, out Serialized_Dic<LanguageType, LocalizationDataBase> dic))
+            if (config.TryGetValue(key, out Dictionary<LanguageType, LocalizationDataBase> dic))
             {
-                if (dic.Dictionary.TryGetValue(languageType, out LocalizationDataBase _content))
+                if (dic.TryGetValue(languageType, out LocalizationDataBase _content))
                 {
                     content = _content as T;
                     return true;
