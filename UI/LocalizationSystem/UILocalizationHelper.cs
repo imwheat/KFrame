@@ -35,21 +35,21 @@ namespace KFrame.UI
             switch (component)
             {   
                 case Text text:
-                    if (LocalizationSystem.TryGetLocalizationData(key, languageType, out LocalizationStringData data))
+                    if (LocalizationSystem.TryGetLocalizedText(key, languageType, out string textData))
                     {
-                        text.text = data.content;
+                        text.text = textData;
                     }
                     break;
                 case TMP_Text tmpText:
-                    if (LocalizationSystem.TryGetLocalizationData(key, languageType, out data))
+                    if (LocalizationSystem.TryGetLocalizedText(key, languageType, out textData))
                     {
-                        tmpText.text = data.content;
+                        tmpText.text = textData;
                     }
                     break;
                 case Image image:
-                    if (LocalizationSystem.TryGetLocalizationData(key, languageType, out LocalizationImageData imgData))
+                    if (LocalizationSystem.TryGetLocalizedImage(key, languageType, out Sprite sprite))
                     {
-                        image.sprite = imgData.content;
+                        image.sprite = sprite;
                     }
                     break;
             }

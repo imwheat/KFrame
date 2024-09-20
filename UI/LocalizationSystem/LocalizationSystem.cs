@@ -50,13 +50,12 @@ namespace KFrame.UI
             EventBroadCastSystem.EventTrigger(OnUpdateLanguage, languageType);
         }
         /// <summary>
-        /// 获取本地化配置数据
+        /// 获取本地化文本数据
         /// </summary>
         /// <param name="key">key</param>
         /// <param name="language">语言类型</param>
-        /// <typeparam name="T">需要的数据类型</typeparam>
-        /// <returns>没有的话返回null</returns>
-        public static T GetLocalizationData<T>(string key, LanguageType language) where T : LocalizationDataBase
+        /// <returns>没有的话返回""</returns>
+        public static string GetLocalizedText(string key, LanguageType language)
         {
             if (Config == null)
             {
@@ -64,42 +63,44 @@ namespace KFrame.UI
                 return null;
             }
 
-            return Config.GetContent<T>(key, language);
+            return Config.GetLocalizedText(key, language);
         }
         /// <summary>
-        /// 尝试获取本地化配置数据
+        /// 尝试获取本地化文本数据
         /// </summary>
         /// <param name="key">key</param>
         /// <param name="language">语言类型</param>
-        /// <typeparam name="T">需要的数据类型</typeparam>
         /// <returns>没有的话返回false</returns>
-        public static bool TryGetLocalizationData<T>(string key, LanguageType language, out T data) where T : LocalizationDataBase
+        public static bool TryGetLocalizedText(string key, LanguageType language, out string text)
         {
-            data = null;
-            
+            return Config.TryGetLocalizedText(key, language, out text);
+        }
+        /// <summary>
+        /// 获取本地化文本数据
+        /// </summary>
+        /// <param name="key">key</param>
+        /// <param name="language">语言类型</param>
+        /// <returns>没有的话返回""</returns>
+        public static Sprite GetLocalizedImage(string key, LanguageType language)
+        {
             if (Config == null)
             {
                 Debug.LogWarning("缺少本地化Config");
-                return false;
+                return null;
             }
 
-            return Config.TryGetContent<T>(key, language, out data);
+            return Config.GetLocalizedImage(key, language);
         }
         /// <summary>
-        /// 根据key获取当前语言的文本内容
+        /// 尝试获取本地化文本数据
         /// </summary>
-        public static string GetGlobalStringData(string key)
+        /// <param name="key">key</param>
+        /// <param name="language">语言类型</param>
+        /// <returns>没有的话返回false</returns>
+        public static bool TryGetLocalizedImage(string key, LanguageType language, out Sprite sprite)
         {
-            //如果不存在key直接返回
-            if (!Config.config.ContainsKey(key)) return key;
-            //如果不是文本data直接返回
-            if (!(Config.config[key][LanguageType.SimplifiedChinese] is LocalizationStringData))
-                return key;
-
-            //如果条件都符合就返回当前语言的文本内容
-            return ((LocalizationStringData)Config.config[key][languageType]).content;
+            return Config.TryGetLocalizedImage(key, language, out sprite);
         }
-
         public static void RegisterLanguageEvent(Action<LanguageType> action)
         {
             EventBroadCastSystem.AddEventListener(OnUpdateLanguage, action);
