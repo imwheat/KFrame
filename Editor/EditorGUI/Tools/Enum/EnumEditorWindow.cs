@@ -55,7 +55,7 @@ namespace KFrame.Editor
             for (int i = 0; i < enumValues.Length; i++)
             {
                 selectOptions[i] = enumValues[i].ToString();
-                selectUIs[i] = new GUIContent(selectOptions[i]);
+                selectUIs[i] = new GUIContent(EditorGUITool.TryGetEnumLabel<TEnum>(selectOptions[i]));
                 optionValues[i] = Convert.ToInt32(enumValues[i]);
             }
             //默认打开搜索栏

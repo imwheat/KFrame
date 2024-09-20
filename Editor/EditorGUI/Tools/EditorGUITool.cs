@@ -16,6 +16,7 @@ using Object = UnityEngine.Object;
 using System.Collections.Generic;
 using KFrame.Attributes;
 using KFrame.UI;
+using KFrame.Utilities;
 using Sirenix.OdinInspector;
 
 namespace KFrame.Editor
@@ -79,6 +80,51 @@ namespace KFrame.Editor
         #region GUI显示工具
 
         /// <summary>
+        /// 尝试获取枚举的label
+        /// </summary>
+        /// <param name="enumLabel">枚举转String</param>
+        /// <typeparam name="TEnum">枚举类型</typeparam>
+        /// <returns>如果没有的话返回原文本</returns>
+        public static string TryGetEnumLabel<TEnum>(string enumLabel) where TEnum : struct
+        {
+            //先获取label的key
+            string labelKey = typeof(TEnum).GetNiceName() + enumLabel;
+            
+            //更新按钮的Label
+            if (tempEnumLabelDic.ContainsKey(labelKey))
+            {
+                enumLabel = tempEnumLabelDic[labelKey];
+            }
+            else
+            {
+                //尝试搜索Attribute然后获取LabelText
+                string newLabel = enumLabel;
+                FieldInfo fieldInfo = typeof(TEnum).GetField(enumLabel);
+                if (fieldInfo != null)
+                {
+                    KLabelTextAttribute labelAttribute = fieldInfo.GetCustomAttribute<KLabelTextAttribute>();
+                    if (labelAttribute != null)
+                    {
+                        newLabel = labelAttribute.Text;
+                    }
+                    else
+                    {
+                        LabelTextAttribute odinLabelTextAttribute = fieldInfo.GetCustomAttribute<LabelTextAttribute>();
+                        if (odinLabelTextAttribute != null)
+                        {
+                            newLabel = odinLabelTextAttribute.Text;
+                        }
+                    }
+                }
+            
+                //更新记录label
+                tempEnumLabelDic[labelKey] = newLabel;
+                enumLabel = newLabel;
+            }
+
+            return enumLabel;
+        }
+        /// <summary>
         /// 显示一个Enum选项
         /// </summary>
         public static void ShowEnumSelectOption<TEnum>(string label, string btnLabel, Action<int> action,
@@ -105,36 +151,7 @@ namespace KFrame.Editor
 
 
             //更新按钮的Label
-            if (tempEnumLabelDic.ContainsKey(btnLabel))
-            {
-                btnLabel = tempEnumLabelDic[btnLabel];
-            }
-            else
-            {
-                //尝试搜索Attribute然后获取LabelText
-                string newLabel = btnLabel;
-                FieldInfo fieldInfo = typeof(TEnum).GetField(btnLabel);
-                if (fieldInfo != null)
-                {
-                    KLabelTextAttribute labelAttribute = fieldInfo.GetCustomAttribute<KLabelTextAttribute>();
-                    if (labelAttribute != null)
-                    {
-                        newLabel = labelAttribute.Text;
-                    }
-                    else
-                    {
-                        LabelTextAttribute odinLabelTextAttribute = fieldInfo.GetCustomAttribute<LabelTextAttribute>();
-                        if (odinLabelTextAttribute != null)
-                        {
-                            newLabel = odinLabelTextAttribute.Text;
-                        }
-                    }
-                }
-            
-                //更新记录label
-                tempEnumLabelDic[btnLabel] = newLabel;
-                btnLabel = newLabel;
-            }
+            btnLabel = TryGetEnumLabel<TEnum>(btnLabel);
 
 
             //显示按钮

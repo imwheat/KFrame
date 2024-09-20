@@ -1,3 +1,5 @@
+using KFrame.Attributes;
+
 namespace KFrame.UI
 {
     /// <summary>
@@ -8,18 +10,18 @@ namespace KFrame.UI
         /// <summary>
         /// 简体中文
         /// </summary>
-        SimplifiedChinese = 0,
+        [KLabelText("简体中文")]SimplifiedChinese = 0,
         /// <summary>
         /// 繁体中文
         /// </summary>
-        TraditionalChinese = 1,
+        [KLabelText("繁體中文")]TraditionalChinese = 1,
         /// <summary>
         /// 英语
         /// </summary>
-        English, 
+        [KLabelText("English")]English = 2, 
         /// <summary>
         /// 日语
         /// </summary>
-        Japanese,
+        [KLabelText("日本語")]Japanese = 3,
     }
 }
