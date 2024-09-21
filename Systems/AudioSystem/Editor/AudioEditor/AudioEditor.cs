@@ -244,8 +244,6 @@ namespace KFrame.Systems
 
         private void Awake()
         {
-            AssemblyReloadEvents.afterAssemblyReload += InitWindow;
-
             //初始化
             InitWindow();
         }
@@ -260,10 +258,6 @@ namespace KFrame.Systems
 
         }
 
-        private void OnDestroy()
-        {
-            AssemblyReloadEvents.afterAssemblyReload -= InitWindow;
-        }
 
         #endregion
 

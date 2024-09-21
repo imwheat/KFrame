@@ -12,6 +12,8 @@ using KFrame.Tools;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using KFrame.Systems;
+using KFrame.UI;
 
 namespace KFrame.Editor
 {
@@ -20,7 +22,12 @@ namespace KFrame.Editor
         [MenuItem("项目工具/音效编辑器")]
         public static void ShowAudioEditorWindow()
         {
-            Systems.AudioEditor.ShowWindow();
+            AudioEditor.ShowWindow();
+        }
+        [MenuItem("项目工具/本地化编辑器")]
+        public static void ShowLocalizationEditorWindow()
+        {
+            LocalizationEditorWindow.ShowWindow();
         }
     }
 }
