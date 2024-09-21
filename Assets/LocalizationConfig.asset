@@ -12,11 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb6fc15697c84394aa013ce830d015d1, type: 3}
   m_Name: LocalizationConfig
   m_EditorClassIdentifier: 
-  config:
-    keyList:
-    - a
-    valueList:
-    - keyList: 0000000001000000
-  LanguageFontSize:
-    keyList: 
-    valueList: 
+  TextDatas:
+  - Key: testButton
+    Datas:
+    - Language: 0
+      Text: "\u6309\u94AE"
+    - Language: 1
+      Text: "\u6309\u9215"
+    - Language: 2
+      Text: Button
+    - Language: 3
+      Text: "\u30D0\u30C8\u30F3"
+  ImageDatas: []

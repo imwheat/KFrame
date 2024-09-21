@@ -42,9 +42,9 @@ namespace KFrame.UI
 
         #region 本地化搜索字典
 
-        private Dictionary<LanguageType, Dictionary<string, string>> textDic;
+        private Dictionary<string, Dictionary<LanguageType, string>> textDic;
 
-        public Dictionary<LanguageType, Dictionary<string, string>> TextDic
+        public Dictionary<string, Dictionary<LanguageType, string>> TextDic
         {
             get
             {
@@ -56,9 +56,9 @@ namespace KFrame.UI
                 return textDic;
             }
         }
-        private Dictionary<LanguageType, Dictionary<string, Sprite>> imgDic;
+        private Dictionary<string, Dictionary<LanguageType, Sprite>> imgDic;
 
-        private Dictionary<LanguageType, Dictionary<string, Sprite>> ImgDic
+        private Dictionary<string, Dictionary<LanguageType, Sprite>> ImgDic
         {
             get
             {
@@ -83,14 +83,9 @@ namespace KFrame.UI
         public void Init()
         {
             //注册语言类型的字典
-            LanguageType[] languages = (LanguageType[])Enum.GetValues(typeof(LanguageType));
-            textDic = new Dictionary<LanguageType, Dictionary<string, string>>();
-            imgDic = new Dictionary<LanguageType, Dictionary<string, Sprite>>();
-            foreach (LanguageType language in languages)
-            {
-                textDic[language] = new Dictionary<string, string>();
-                imgDic[language] = new Dictionary<string, Sprite>();
-            }
+            textDic = new Dictionary<string, Dictionary<LanguageType, string>>();
+            imgDic = new Dictionary<string, Dictionary<LanguageType, Sprite>>();
+
             //然后遍历每个数据然后添加入字典中
             foreach (LocalizationStringData stringData in TextDatas)
             {
@@ -107,22 +102,24 @@ namespace KFrame.UI
         /// <param name="stringData">文本数据</param>
         private void RegisterTextData(LocalizationStringData stringData)
         {
+            textDic[stringData.Key] = new Dictionary<LanguageType, string>();
             //遍历所有数据，然后注册进入字典
             foreach (LocalizationStringDataBase data in stringData.Datas)
             {
-                textDic[data.Language][stringData.Key] = data.Text;
+                textDic[stringData.Key][data.Language] = data.Text;
             }
         }
         /// <summary>
-        /// 注册文本数据
+        /// 注册图片数据
         /// </summary>
-        /// <param name="stringData">文本数据</param>
+        /// <param name="imageData">图片数据</param>
         private void RegisterImageData(LocalizationImageData imageData)
         {
+            imgDic[imageData.Key] = new Dictionary<LanguageType, Sprite>();
             //遍历所有数据，然后注册进入字典
             foreach (LocalizationImageDataBase data in imageData.Datas)
             {
-                imgDic[data.Language][imageData.Key] = data.Sprite;
+                imgDic[imageData.Key][data.Language] = data.Sprite;
             }
         }
         #endregion
@@ -133,11 +130,11 @@ namespace KFrame.UI
         /// 获取本地化文本
         /// </summary>
         /// <param name="key">key</param>
-        /// <param name="languageType">语言类型</param>
+        /// <param name="language">语言类型</param>
         /// <returns>本地化后的文本，如果没有就返回""</returns>
-        public string GetLocalizedText(string key, LanguageType languageType)
+        public string GetLocalizedText(string key, LanguageType language)
         {
-            if (TextDic[languageType].TryGetValue(key, out string text))
+            if (TextDic.TryGetValue(key, out var dic) && dic.TryGetValue(language, out string text))
             {
                 return text;
             }
@@ -148,21 +145,23 @@ namespace KFrame.UI
         /// 尝试获取本地化文本
         /// </summary>
         /// <param name="key">key</param>
-        /// <param name="languageType">语言类型</param>
+        /// <param name="language">语言类型</param>
         /// <returns>本如果没有就返回false</returns>
-        public bool TryGetLocalizedText(string key, LanguageType languageType, out string text)
+        public bool TryGetLocalizedText(string key, LanguageType language, out string text)
         {
-            return TextDic[languageType].TryGetValue(key, out text);
+            text = GetLocalizedText(key, language);
+
+            return text != string.Empty;
         }
         /// <summary>
         /// 获取本地化文本
         /// </summary>
         /// <param name="key">key</param>
-        /// <param name="languageType">语言类型</param>
+        /// <param name="language">语言类型</param>
         /// <returns>本地化后的文本，如果没有就返回null</returns>
-        public Sprite GetLocalizedImage(string key, LanguageType languageType)
+        public Sprite GetLocalizedImage(string key, LanguageType language)
         {
-            if (ImgDic[languageType].TryGetValue(key, out Sprite sprite))
+            if (ImgDic.TryGetValue(key, out var dic) && dic.TryGetValue(language, out Sprite sprite))
             {
                 return sprite;
             }
@@ -173,12 +172,146 @@ namespace KFrame.UI
         /// 尝试获取本地化文本
         /// </summary>
         /// <param name="key">key</param>
-        /// <param name="languageType">语言类型</param>
+        /// <param name="language">语言类型</param>
         /// <returns>本如果没有就返回false</returns>
-        public bool TryGetLocalizedImage(string key, LanguageType languageType, out Sprite sprite)
+        public bool TryGetLocalizedImage(string key, LanguageType language, out Sprite sprite)
         {
-            return ImgDic[languageType].TryGetValue(key, out sprite);
+            sprite = GetLocalizedImage(key, language);
+
+            return sprite != null;
         }
+
+        #endregion
+
+        #region 编辑器相关
+
+        #if UNITY_EDITOR
+
+        private Dictionary<string, LocalizationStringData> textDataDic;
+
+        public Dictionary<string, LocalizationStringData> TextDataDic
+        {
+            get
+            {
+                if (textDataDic == null)
+                {
+                    InitInEditor();
+                }
+
+                return textDataDic;
+            }
+        }
+        private Dictionary<string, LocalizationImageData> imgDataDic;
+
+        private Dictionary<string, LocalizationImageData> ImgDataDic
+        {
+            get
+            {
+                if (imgDataDic == null)
+                {
+                    InitInEditor();
+                }
+
+                return imgDataDic;
+            }
+        }
+        /// <summary>
+        /// 编辑器相关的初始化
+        /// </summary>
+        private void InitInEditor()
+        {
+            //新建字典
+            textDataDic = new Dictionary<string, LocalizationStringData>();
+            imgDataDic = new Dictionary<string, LocalizationImageData>();
+            
+            //然后遍历每个数据然后添加入字典中
+            foreach (LocalizationStringData stringData in TextDatas)
+            {
+                textDataDic[stringData.Key] = stringData;
+            }
+            foreach (LocalizationImageData imageData in ImageDatas)
+            {
+                imgDataDic[imageData.Key] = imageData;
+            }
+        }
+        /// <summary>
+        /// 获取StringData
+        /// </summary>
+        public LocalizationStringData GetStringData(string key)
+        {
+            if (textDataDic.TryGetValue(key, out var data))
+            {
+                return data;
+            }
+
+            return null;
+        }
+        /// <summary>
+        /// 获取ImageData
+        /// </summary>
+        public LocalizationImageData GetImageData(string key)
+        {
+            if (imgDataDic.TryGetValue(key, out var data))
+            {
+                return data;
+            }
+
+            return null;
+        }
+        /// <summary>
+        /// 保存stringData
+        /// </summary>
+        public void SaveStringData(LocalizationStringData stringData)
+        {
+            //如果数据不合规，那就返回
+            if(stringData == null || string.IsNullOrEmpty(stringData.Key)) return;
+
+            if (TextDataDic.TryGetValue(stringData.Key, out LocalizationStringData data))
+            {
+                data.CopyData(stringData);
+            }
+            else
+            {
+                data = new LocalizationStringData();
+                data.CopyData(stringData);
+                data.Key = stringData.Key;
+                TextDataDic[data.Key] = data;
+                TextDatas.Add(data);
+            }
+            
+            //保存
+            EditorUtility.SetDirty(this);
+            AssetDatabase.Refresh();
+            AssetDatabase.SaveAssets();
+        }
+        /// <summary>
+        /// 保存imageData
+        /// </summary>
+        public void SaveImageData(LocalizationImageData imageData)
+        {
+            //如果数据不合规，那就返回
+            if(imageData == null || string.IsNullOrEmpty(imageData.Key)) return;
+
+            if (ImgDataDic.TryGetValue(imageData.Key, out LocalizationImageData data))
+            {
+                data.CopyData(imageData);
+            }
+            else
+            {
+                data = new LocalizationImageData();
+                data.CopyData(imageData);
+                data.Key = imageData.Key;
+                ImgDataDic[data.Key] = data;
+                ImageDatas.Add(data);
+            }
+            
+            //保存
+            EditorUtility.SetDirty(this);
+            AssetDatabase.Refresh();
+            AssetDatabase.SaveAssets();
+        }
+        
+        #endif
 
         #endregion
        

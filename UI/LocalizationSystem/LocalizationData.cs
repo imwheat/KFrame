@@ -37,6 +37,27 @@ namespace KFrame.UI
     public class LocalizationStringData : LocalizationDataBase
     {
         public List<LocalizationStringDataBase> Datas = new();
+        
+        #if UNITY_EDITOR
+
+        /// <summary>
+        /// 复制数据
+        /// </summary>
+        public void CopyData(LocalizationStringData data)
+        {
+            //如果为空那就不进行复制
+            if(data == null) return;
+
+            Datas = new List<LocalizationStringDataBase>();
+
+            foreach (LocalizationStringDataBase stringDataBase in data.Datas)
+            {
+                Datas.Add(new LocalizationStringDataBase(stringDataBase.Language, stringDataBase.Text));
+            }
+        }
+        
+        #endif
+        
     }
     [System.Serializable]
     public class LocalizationImageDataBase
@@ -58,5 +79,25 @@ namespace KFrame.UI
     public class LocalizationImageData : LocalizationDataBase
     {
         public List<LocalizationImageDataBase> Datas = new();
+        
+#if UNITY_EDITOR
+
+        /// <summary>
+        /// 复制数据
+        /// </summary>
+        public void CopyData(LocalizationImageData data)
+        {
+            //如果为空那就不进行复制
+            if(data == null) return;
+
+            Datas = new List<LocalizationImageDataBase>();
+
+            foreach (LocalizationImageDataBase imageDataBase in data.Datas)
+            {
+                Datas.Add(new LocalizationImageDataBase(imageDataBase.Language, imageDataBase.Sprite));
+            }
+        }
+        
+#endif
     }
 }

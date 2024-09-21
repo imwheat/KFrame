@@ -24,9 +24,14 @@ namespace KFrame.UI
     public class LocalizationEditHelper : MonoBehaviour
     {
         #if UNITY_EDITOR
-        
-        private LanguageType curLanguage;
 
+
+        #region 参数
+
+        /// <summary>
+        /// 当前的语言类型
+        /// </summary>
+        private LanguageType curLanguage;
         /// <summary>
         /// 当前的语言类型
         /// </summary>
@@ -91,7 +96,12 @@ namespace KFrame.UI
         /// </summary>
         public bool DrawImgData { get; private set; }
 
-        private void Awake()
+        #endregion
+
+
+        #region 初始化
+
+          private void Awake()
         {
             if (Target == null)
             {
@@ -171,6 +181,12 @@ namespace KFrame.UI
                 imageDic[imageData.Language] = imageData;
             }
         }
+
+        #endregion
+
+
+        #region 更新数据
+
         /// <summary>
         /// 更新绘制类型
         /// </summary>
@@ -208,6 +224,82 @@ namespace KFrame.UI
             EditorUtility.SetDirty(target);
             EditorUtility.SetDirty(this);
         }
+
+        #endregion
+
+        #region 保存和读取
+
+        /// <summary>
+        /// 保存数据
+        /// </summary>
+        public void SaveData()
+        {
+            //保存数据的时候key不能为空
+            if (string.IsNullOrEmpty(Key))
+            {
+                EditorUtility.DisplayDialog("错误", "Key为空，不能保存数据", "确认");
+                return;
+            }
+
+            if (DrawImgData)
+            {
+                ImageData.Key = Key;
+                LocalizationConfig.Instance .SaveImageData(ImageData);
+            }
+            else
+            {
+                StringData.Key = Key;
+                LocalizationConfig.Instance .SaveStringData(StringData);
+            }
+            
+        }
+        /// <summary>
+        /// 从库里加载数据
+        /// </summary>
+        public void LoadData()
+        {
+            //加载数据的时候key不能为空
+            if (string.IsNullOrEmpty(Key))
+            {
+                EditorUtility.DisplayDialog("错误", "Key为空，不能加载数据", "确认");
+                return;
+            }
+
+            if (DrawImgData)
+            {
+                //尝试获取数据
+                var imageData = LocalizationConfig.Instance.GetImageData(Key);
+                if (imageData == null)
+                {
+                    EditorUtility.DisplayDialog("提示", $"不存在Key为{Key}的数据", "确认");
+                }
+                else
+                {
+                    //复制数据、更新UI
+                    ImageData.CopyData(imageData);
+                    UpdateLanguage(curLanguage);
+                }
+            }
+            else
+            {
+                //尝试获取数据
+                var stringData = LocalizationConfig.Instance.GetStringData(Key);
+                if (stringData == null)
+                {
+                    EditorUtility.DisplayDialog("提示", $"不存在Key为{Key}的数据", "确认");
+                }
+                else
+                {
+                    //复制数据、更新UI
+                    StringData.CopyData(stringData);
+                    UpdateLanguage(curLanguage);
+                }
+            }
+        }
+        
+
+        #endregion
+        
         
         #endif
         

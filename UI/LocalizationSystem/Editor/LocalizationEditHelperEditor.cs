@@ -62,7 +62,6 @@ namespace KFrame.UI
             }
             else
             {
-                serializedObject.Update();
                 
                 EditorGUILayout.BeginVertical();
                 
@@ -74,15 +73,33 @@ namespace KFrame.UI
                 
                 EditorGUI.BeginChangeCheck();;
 
-                localEditor.Key = EditorGUILayout.TextField(KGUIHelper.TempContent("本地化Key:"), localEditor.Key);
                 localEditor.Target = (Graphic)EditorGUILayout.ObjectField(KGUIHelper.TempContent("本地化对象:"), localEditor.Target,
                     typeof(Graphic), true);
+                
+                localEditor.Key = EditorGUILayout.TextField(KGUIHelper.TempContent("本地化Key:"), localEditor.Key);
+
 
                 if (localEditor.Target != null)
                 {
                     GUILayout.Space(10f);
 
+                    EditorGUILayout.BeginHorizontal();                    
+                    
                     EditorGUITool.BoldLabelField("本地化配置");
+                    
+                    GUILayout.Space(25f);
+                    
+                    if (GUILayout.Button("保存"))
+                    {
+                        localEditor.SaveData();
+                    }
+
+                    if (GUILayout.Button("加载"))
+                    {
+                        localEditor.LoadData();
+                    }
+                    
+                    EditorGUILayout.EndHorizontal();
                     
                     GUILayout.Space(10f);
                     
@@ -105,11 +122,8 @@ namespace KFrame.UI
                 
                 if (EditorGUI.EndChangeCheck())
                 {
-                    serializedObject.ApplyModifiedProperties();
+                    EditorUtility.SetDirty(target);
                 }
-                
-                
-
                 
                 
                 EditorGUILayout.EndVertical();
