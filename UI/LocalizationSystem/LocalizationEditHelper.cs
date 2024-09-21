@@ -50,12 +50,38 @@ namespace KFrame.UI
             }
         }
         /// <summary>
+        /// 本地化的key
+        /// </summary>
+        private string key;
+
+        /// <summary>
         /// 本地化的Key
         /// </summary>
-        public string Key;
+        public string Key
+        {
+            get => key;
+            set
+            {
+                if (linkedData != null && Parent != null)
+                {
+                    linkedData.Key = value;
+                    EditorUtility.SetDirty(Parent);
+                }
+                key = value;
+            }
+        }
+        /// <summary>
+        /// 管理这个UI本地化的父级
+        /// </summary>
+        public UIBase Parent;
+        /// <summary>
+        /// 绑定的本地化数据
+        /// </summary>
+        private UILocalizationData linkedData;
         /// <summary>
         /// 本地化对象
         /// </summary>
+        [SerializeField]
         private Graphic target;
         /// <summary>
         /// 本地化的对象
@@ -101,13 +127,35 @@ namespace KFrame.UI
 
         #region 初始化
 
-          private void Awake()
+        private void Awake()
         {
             if (Target == null)
             {
                 Target = GetComponent<Graphic>();
             }
+            
+            if (Parent == null)
+            {
+                Parent = GetComponentInParent<UIBase>();
+            }
+            RefreshLinkedData();
+            
             InitData();
+        }
+        /// <summary>
+        /// 刷新一下绑定数据
+        /// </summary>
+        public void RefreshLinkedData()
+        {
+            if (Parent != null)
+            {
+                linkedData = Parent.GetUILocalizationData(target);
+                key = linkedData.Key;
+            }
+            else
+            {
+                linkedData = null;
+            }
         }
 
         /// <summary>

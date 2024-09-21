@@ -27,6 +27,7 @@ namespace KFrame.UI
             if (localEditor == null)
             {
                 localEditor = target as LocalizationEditHelper;
+                localEditor.RefreshLinkedData();
             }
         }
         /// <summary>

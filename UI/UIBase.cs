@@ -180,33 +180,46 @@ namespace KFrame.UI
         #if UNITY_EDITOR
         /// <summary>
         /// 编辑器使用，临时的
-        /// 目前已经查询过的UI
+        /// 用于搜索Graphic绑定的数据
         /// </summary>
-        protected HashSet<Graphic> seenUI;
+        protected Dictionary<Graphic, UILocalizationData> uiDataDic;
+
+        protected Dictionary<Graphic, UILocalizationData> UIDataDic
+        {
+            get
+            {
+                if (uiDataDic == null)
+                {
+                    InitUIDataDic();
+                }
+
+                return uiDataDic;
+            }
+        }
+        /// <summary>
+        /// 初始化字典
+        /// </summary>
+        private void InitUIDataDic()
+        {
+            uiDataDic = new();
+            for (int i = localiztionSets.Count -1; i >= 0; i--)
+            {
+                if (localiztionSets[i] == null || localiztionSets[i].Component == null)
+                {
+                    localiztionSets.RemoveAt(i);
+                }
+                else
+                {
+                    uiDataDic[localiztionSets[i].Component] = localiztionSets[i];
+                }
+            }
+        }
         /// <summary>
         /// 编辑器使用
         /// 搜寻这个UI下可以本地化配置的项
         /// </summary>
         protected void CollectLocaliztionUI()
         {
-            //如果已经查询过的UI列表为空那就新建
-            if (seenUI == null)
-            {
-                seenUI = new HashSet<Graphic>();
-                for (int i = localiztionSets.Count -1; i >= 0; i--)
-                {
-                    if (localiztionSets[i] == null || localiztionSets[i].Component == null)
-                    {
-                        localiztionSets.RemoveAt(i);
-                    }
-                    else
-                    {
-                        seenUI.Add(localiztionSets[i].Component);
-
-                    }
-                }
-            }
-            
              //从子集获取可以本地化的UI
             Graphic[] uis = GetComponentsInChildren<Graphic>();
 
@@ -217,11 +230,12 @@ namespace KFrame.UI
             foreach (var ui in uis)
             {
                 //如果已经访问过了，那就跳过
-                if (seenUI.Contains(ui)) continue;
-                seenUI.Add(ui);
+                if (UIDataDic.ContainsKey(ui)) continue;
+                var data = new UILocalizationData("", ui);
+                UIDataDic.Add(ui, data);
 
                 //添加到本地化列表
-                localiztionSets.Add(new UILocalizationData("", ui));
+                localiztionSets.Add(data);
 
             }
             
@@ -230,6 +244,32 @@ namespace KFrame.UI
             EditorUtility.SetDirty(this.gameObject);
             AssetDatabase.Refresh();
             AssetDatabase.SaveAssets();
+        }
+
+        /// <summary>
+        /// 获取component对应的数据
+        /// </summary>
+        /// <returns>找不到就新建</returns>
+        public UILocalizationData GetUILocalizationData(Graphic component)
+        {
+            if (component == null) return null;
+
+            //如果已经有了，那就返回
+            if (UIDataDic.TryGetValue(component, out UILocalizationData data))
+            {
+                return data;
+            }
+            //没有的话那就新建然后添加返回
+            else
+            {
+                data = new UILocalizationData("", component);
+                UIDataDic[component] = data;
+                localiztionSets.Add(data);
+                
+                //保存
+                EditorUtility.SetDirty(this);
+                return data;
+            }
         }
         
         #endif
