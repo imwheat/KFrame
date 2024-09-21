@@ -125,6 +125,16 @@ namespace KFrame.Editor
             return enumLabel;
         }
         /// <summary>
+        /// 尝试获取枚举的label
+        /// </summary>
+        /// <param name="enumValue">枚举值</param>
+        /// <typeparam name="TEnum">枚举类型</typeparam>
+        /// <returns>如果没有的话返回原文本</returns>
+        public static string TryGetEnumLabel<TEnum>(TEnum enumValue) where TEnum : struct
+        {
+            return TryGetEnumLabel<TEnum>(enumValue.ToString());
+        }
+        /// <summary>
         /// 显示一个Enum选项
         /// </summary>
         public static void ShowEnumSelectOption<TEnum>(string label, string btnLabel, Action<int> action,

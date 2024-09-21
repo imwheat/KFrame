@@ -29,7 +29,31 @@ namespace KFrame.UI
                 localEditor = target as LocalizationEditHelper;
             }
         }
-
+        /// <summary>
+        /// 获取语言类型的label文本
+        /// </summary>
+        private static string TryGetLanguageLabel(LanguageType language)
+        {
+            return EditorGUITool.TryGetEnumLabel<LanguageType>(language);
+        }
+        /// <summary>
+        /// 绘制文本的GUI
+        /// </summary>
+        private void DrawTextGUI(LocalizationStringDataBase stringDataBase)
+        {
+            stringDataBase.Text = EditorGUILayout.TextField(
+                KGUIHelper.TempContent(TryGetLanguageLabel(stringDataBase.Language)),
+                stringDataBase.Text);
+        }
+        /// <summary>
+        /// 绘制文本的GUI
+        /// </summary>
+        private void DrawImageGUI(LocalizationImageDataBase imageDataBase)
+        {
+            imageDataBase.Sprite = (Sprite)EditorGUILayout.ObjectField(
+                KGUIHelper.TempContent(TryGetLanguageLabel(imageDataBase.Language)),
+                imageDataBase.Sprite, typeof(Sprite), false);
+        }
         public override void OnInspectorGUI()
         {
             if (localEditor == null)
@@ -53,20 +77,39 @@ namespace KFrame.UI
                 localEditor.Key = EditorGUILayout.TextField(KGUIHelper.TempContent("本地化Key:"), localEditor.Key);
                 localEditor.Target = (Graphic)EditorGUILayout.ObjectField(KGUIHelper.TempContent("本地化对象:"), localEditor.Target,
                     typeof(Graphic), true);
+
+                if (localEditor.Target != null)
+                {
+                    GUILayout.Space(10f);
+
+                    EditorGUITool.BoldLabelField("本地化配置");
+                    
+                    GUILayout.Space(10f);
+                    
+                    if (localEditor.DrawImgData)
+                    {
+                        for (int i = 0; i < localEditor.ImageData.Datas.Count; i++)
+                        {
+                            DrawImageGUI(localEditor.ImageData.Datas[i]);
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < localEditor.StringData.Datas.Count; i++)
+                        {
+                            DrawTextGUI(localEditor.StringData.Datas[i]);
+                        }
+                    }
+                }
+
                 
                 if (EditorGUI.EndChangeCheck())
                 {
                     serializedObject.ApplyModifiedProperties();
                 }
+                
+                
 
-                if (localEditor.DrawImgData)
-                {
-                    
-                }
-                else
-                {
-                    
-                }
                 
                 
                 EditorGUILayout.EndVertical();

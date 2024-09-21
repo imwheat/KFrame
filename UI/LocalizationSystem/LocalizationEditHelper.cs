@@ -12,11 +12,19 @@ using System.Collections.Generic;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
+#if UNITY_EDITOR
+using TMPro;
+using UnityEditor;
+
+#endif
+
 namespace KFrame.UI
 {
     [ExecuteInEditMode]
     public class LocalizationEditHelper : MonoBehaviour
     {
+        #if UNITY_EDITOR
+        
         private LanguageType curLanguage;
 
         /// <summary>
@@ -67,9 +75,17 @@ namespace KFrame.UI
         /// </summary>
         public LocalizationStringData StringData;
         /// <summary>
+        /// 本地化文本字典
+        /// </summary>
+        private Dictionary<LanguageType, LocalizationStringDataBase> stringDic;
+        /// <summary>
         /// 本地化图片数据
         /// </summary>
         public LocalizationImageData ImageData;
+        /// <summary>
+        /// 本地化图片字典
+        /// </summary>
+        private Dictionary<LanguageType, LocalizationImageDataBase> imageDic;
         /// <summary>
         /// 是否绘制image的数据
         /// </summary>
@@ -77,6 +93,10 @@ namespace KFrame.UI
 
         private void Awake()
         {
+            if (Target == null)
+            {
+                Target = GetComponent<Graphic>();
+            }
             InitData();
         }
 
@@ -94,6 +114,10 @@ namespace KFrame.UI
             {
                 ImageData = new LocalizationImageData();
             }
+
+            stringDic = new Dictionary<LanguageType, LocalizationStringDataBase>();
+            imageDic = new Dictionary<LanguageType, LocalizationImageDataBase>();
+            
             //获取语言的所有类型
             LanguageType[] languages = (LanguageType[])Enum.GetValues(typeof(LanguageType));
             //记录添加数据中没有的语言类型
@@ -133,8 +157,18 @@ namespace KFrame.UI
                 }
                 if (!imageLanguage.Contains(language))
                 {
-                    StringData.Datas.Add(new LocalizationStringDataBase(language, null));
+                    ImageData.Datas.Add(new LocalizationImageDataBase(language, null));
                 }
+            }
+            
+            //注册字典
+            foreach (LocalizationStringDataBase stringData in StringData.Datas)
+            {
+                stringDic[stringData.Language] = stringData;
+            }
+            foreach (LocalizationImageDataBase imageData in ImageData.Datas)
+            {
+                imageDic[imageData.Language] = imageData;
             }
         }
         /// <summary>
@@ -158,7 +192,25 @@ namespace KFrame.UI
         {
             curLanguage = languageType;
             
+            switch (target)
+            {
+                case Image img:
+                    img.sprite = imageDic[languageType].Sprite;
+                    break;
+                case Text text:
+                    text.text = stringDic[languageType].Text;
+                    break;
+                case TMP_Text tmpText:
+                    tmpText.text = stringDic[languageType].Text;
+                    break;
+            }
+            
+            EditorUtility.SetDirty(target);
+            EditorUtility.SetDirty(this);
         }
+        
+        #endif
+        
     }
 }
 
