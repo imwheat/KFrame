@@ -253,7 +253,7 @@ namespace KFrame.UI
             //如果选择编辑key，那就显示为输入栏
             if (editKeyIndex == index)
             {
-                EditorGUI.TextField(dataRect, editKeyText);
+                editKeyText = EditorGUI.TextField(dataRect, editKeyText);
             }
             //正常就显示key
             else
@@ -346,7 +346,7 @@ namespace KFrame.UI
             //如果选择编辑key，那就显示为输入栏
             if (editKeyIndex == index)
             {
-                EditorGUI.TextField(dataRect, editKeyText);
+                editKeyText = EditorGUI.TextField(dataRect, editKeyText);
             }
             //正常就显示key
             else
@@ -598,6 +598,10 @@ namespace KFrame.UI
 
             for (int i = 0; i < config.TextDatas.Count; i++)
             {
+                //如果搜索栏不为空，并且该项不符合搜索结果就跳过
+                if (!string.IsNullOrEmpty(stringDataSearchText) &&
+                    !config.TextDatas[i].Key.Contains(stringDataSearchText)) continue;
+                
                 DrawStringDataGUI(config.TextDatas[i], i);         
             }
             
@@ -610,7 +614,22 @@ namespace KFrame.UI
         /// </summary>
         private void DrawImageDataGUI()
         {
+            EditorGUILayout.BeginVertical();
+
+            imageDataListScrollPos = EditorGUILayout.BeginScrollView(imageDataListScrollPos);
+
+            for (int i = 0; i < config.ImageDatas.Count; i++)
+            {
+                //如果搜索栏不为空，并且该项不符合搜索结果就跳过
+                if (!string.IsNullOrEmpty(imageDataSearchText) &&
+                    !config.ImageDatas[i].Key.Contains(imageDataSearchText)) continue;
+                
+                DrawImageDataGUI(config.ImageDatas[i], i);         
+            }
             
+            EditorGUILayout.EndScrollView();
+            
+            EditorGUILayout.EndVertical();
         }
         /// <summary>
         /// 绘制主区域GUI

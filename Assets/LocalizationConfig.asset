@@ -23,4 +23,14 @@ MonoBehaviour:
       Text: Button
     - Language: 3
       Text: "\u30D0\u30C8\u30F3"
+  - Key: dialogueA
+    Datas:
+    - Language: 0
+      Text: "\u4F60\u597D"
+    - Language: 1
+      Text: "\u4F60\u597D"
+    - Language: 2
+      Text: Hello
+    - Language: 3
+      Text: "\u304A\u306F\u3044\u3088"
   ImageDatas: []
