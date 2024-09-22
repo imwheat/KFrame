@@ -38,7 +38,20 @@ namespace KFrame.UI
             StringData = 0,
             ImageData = 1,
         }
-        
+        /// <summary>
+        /// 编辑器模式
+        /// </summary>
+        private enum EditorMode
+        {
+            /// <summary>
+            /// 编辑模式
+            /// </summary>
+            Edit = 0,
+            /// <summary>
+            /// 选择模式
+            /// </summary>
+            Select = 1,
+        }
         private static class MStyle
         {
 #if UNITY_2018_3_OR_NEWER
@@ -115,6 +128,14 @@ namespace KFrame.UI
         /// </summary>
         private SelectType curSelectType;
         /// <summary>
+        /// 编辑器模式
+        /// </summary>
+        private EditorMode editorMode;
+        /// <summary>
+        /// 选择的回调
+        /// </summary>
+        private Action<LocalizationDataBase> selectCallback; 
+        /// <summary>
         /// 当前语言种类
         /// </summary>
         private LanguageType[] languageTypes;
@@ -180,8 +201,32 @@ namespace KFrame.UI
         {
             LocalizationEditorWindow window = EditorWindow.GetWindow<LocalizationEditorWindow>();
             window.titleContent = new GUIContent("本地化编辑器");
+            window.editorMode = EditorMode.Edit;
         }
-
+        /// <summary>
+        /// 打开窗口选择文本数据
+        /// </summary>
+        /// <param name="selectCallback">选择后的回调</param>
+        public static void ShowWindowAsStringSelector(Action<LocalizationDataBase> selectCallback)
+        {
+            LocalizationEditorWindow window = EditorWindow.GetWindow<LocalizationEditorWindow>();
+            window.titleContent = new GUIContent("点击选择一个Data");
+            window.editorMode = EditorMode.Select;
+            window.curSelectType = SelectType.StringData;
+            window.selectCallback = selectCallback;
+        }
+        /// <summary>
+        /// 打开窗口选择图片数据
+        /// </summary>
+        /// <param name="selectCallback">选择后的回调</param>
+        public static void ShowWindowAsImageSelector(Action<LocalizationDataBase> selectCallback)
+        {
+            LocalizationEditorWindow window = EditorWindow.GetWindow<LocalizationEditorWindow>();
+            window.titleContent = new GUIContent("点击选择一个Data");
+            window.editorMode = EditorMode.Select;
+            window.curSelectType = SelectType.ImageData;
+            window.selectCallback = selectCallback;
+        }
         private void Init()
         {
             languageTypes = EnumExtensions.GetValues<LanguageType>();
@@ -272,7 +317,15 @@ namespace KFrame.UI
                 //如果不显示这个语言那就跳过
                 if(!languageFilter[stringData.Language]) continue;
                 languageRect.x = languageGUIPos[stringData.Language];
-                stringData.Text = EditorGUI.TextField(languageRect, stringData.Text);
+                switch (editorMode)
+                {
+                    case EditorMode.Edit:
+                        stringData.Text = EditorGUI.TextField(languageRect, stringData.Text);
+                        break;
+                    case EditorMode.Select:
+                        EditorGUI.LabelField(languageRect, stringData.Text);
+                        break;
+                }
             }
 
             if (EditorGUI.EndChangeCheck())
@@ -280,51 +333,63 @@ namespace KFrame.UI
                 EditorUtility.SetDirty(config);
             }
 
-            dataRect.size = new Vector2((dataRect.size.x - MStyle.rowSpacing) / 2f, dataRect.size.y);
-            dataRect.x -= MStyle.spacing;
-
-            if (editKeyIndex == index)
+            switch (editorMode)
             {
-                if (GUI.Button(dataRect, "保存"))
-                {
-                    UpdateStringKey(data, editKeyText);
-                    
-                    editKeyIndex = -1;
-                    Repaint();
-                }
-
-                dataRect.x += dataRect.size.x + MStyle.rowSpacing - MStyle.spacing;
-            
-                if (GUI.Button(dataRect, "取消"))
-                {
-                    editKeyIndex = -1;
-                    Repaint();
-                }
-            }
-            else
-            {
-                //修改数据的key
-                if (GUI.Button(dataRect, "修改key"))
-                {
-                    editKeyIndex = index;
-                    editKeyText = data.Key;
-                    Repaint();
-                }
-
-                dataRect.x += dataRect.size.x + MStyle.rowSpacing - MStyle.spacing;
-                
-                //删除数据
-                if (GUI.Button(dataRect, "删除"))
-                {
-                    if (EditorUtility.DisplayDialog("警告", "这是一项危险操作，你确定要删除吗？", "确定", "取消"))
+                case EditorMode.Edit:
+                    dataRect.size = new Vector2((dataRect.size.x - MStyle.rowSpacing) / 2f, dataRect.size.y);
+                    dataRect.x -= MStyle.spacing;
+                    if (editKeyIndex == index)
                     {
-                        //移除数据
-                        config.TextDatas.RemoveAt(index);
-                        config.SaveAsset();
-                        //重绘GUI
-                        Repaint();
+                        if (GUI.Button(dataRect, "保存"))
+                        {
+                            UpdateStringKey(data, editKeyText);
+                    
+                            editKeyIndex = -1;
+                            Repaint();
+                        }
+
+                        dataRect.x += dataRect.size.x + MStyle.rowSpacing - MStyle.spacing;
+            
+                        if (GUI.Button(dataRect, "取消"))
+                        {
+                            editKeyIndex = -1;
+                            Repaint();
+                        }
                     }
-                }
+                    else
+                    {
+                        //修改数据的key
+                        if (GUI.Button(dataRect, "修改key"))
+                        {
+                            editKeyIndex = index;
+                            editKeyText = data.Key;
+                            Repaint();
+                        }
+
+                        dataRect.x += dataRect.size.x + MStyle.rowSpacing - MStyle.spacing;
+                
+                        //删除数据
+                        if (GUI.Button(dataRect, "删除"))
+                        {
+                            if (EditorUtility.DisplayDialog("警告", "这是一项危险操作，你确定要删除吗？", "确定", "取消"))
+                            {
+                                //移除数据
+                                config.TextDatas.RemoveAt(index);
+                                config.SaveAsset();
+                                //重绘GUI
+                                Repaint();
+                            }
+                        }
+                    }
+                    break;
+                case EditorMode.Select:
+                    dataRect.width -= MStyle.rowSpacing / 2f;
+                    if (GUI.Button(dataRect, "选择"))
+                    {
+                        selectCallback?.Invoke(data);
+                        Close();
+                    }
+                    break;
             }
             
             EditorGUILayout.EndHorizontal();
@@ -365,7 +430,15 @@ namespace KFrame.UI
                 //如果不显示这个语言那就跳过
                 if(!languageFilter[stringData.Language]) continue;
                 languageRect.x = languageGUIPos[stringData.Language];
-                stringData.Sprite = (Sprite)EditorGUI.ObjectField(languageRect, stringData.Sprite, typeof(Sprite), false);
+                switch (editorMode)
+                {
+                    case EditorMode.Edit:
+                        stringData.Sprite = (Sprite)EditorGUI.ObjectField(languageRect, stringData.Sprite, typeof(Sprite), false);
+                        break;
+                    case EditorMode.Select:
+                        EditorGUI.DrawPreviewTexture(languageRect, stringData.Sprite.texture);
+                        break;
+                }
             }
 
             if (EditorGUI.EndChangeCheck())
@@ -373,52 +446,66 @@ namespace KFrame.UI
                 EditorUtility.SetDirty(config);
             }
 
-            dataRect.size = new Vector2((dataRect.size.x - MStyle.rowSpacing) / 2f, dataRect.size.y);
-            dataRect.x -= MStyle.spacing;
-
-            if (editKeyIndex == index)
+            switch (editorMode)
             {
-                if (GUI.Button(dataRect, "保存"))
-                {
-                    UpdateImageKey(data, editKeyText);
-                    
-                    editKeyIndex = -1;
-                    Repaint();
-                }
+                case EditorMode.Edit:
+                    dataRect.size = new Vector2((dataRect.size.x - MStyle.rowSpacing) / 2f, dataRect.size.y);
+                    dataRect.x -= MStyle.spacing;
 
-                dataRect.x += dataRect.size.x + MStyle.rowSpacing - MStyle.spacing;
-            
-                if (GUI.Button(dataRect, "取消"))
-                {
-                    editKeyIndex = -1;
-                    Repaint();
-                }
-            }
-            else
-            {
-                //修改数据的key
-                if (GUI.Button(dataRect, "修改key"))
-                {
-                    editKeyIndex = index;
-                    editKeyText = data.Key;
-                    Repaint();
-                }
-
-                dataRect.x += dataRect.size.x + MStyle.rowSpacing - MStyle.spacing;
-                
-                //删除数据
-                if (GUI.Button(dataRect, "删除"))
-                {
-                    if (EditorUtility.DisplayDialog("警告", "这是一项危险操作，你确定要删除吗？", "确定", "取消"))
+                    if (editKeyIndex == index)
                     {
-                        //移除数据
-                        config.TextDatas.RemoveAt(index);
-                        config.SaveAsset();
-                        //重绘GUI
-                        Repaint();
+                        if (GUI.Button(dataRect, "保存"))
+                        {
+                            UpdateImageKey(data, editKeyText);
+                    
+                            editKeyIndex = -1;
+                            Repaint();
+                        }
+
+                        dataRect.x += dataRect.size.x + MStyle.rowSpacing - MStyle.spacing;
+            
+                        if (GUI.Button(dataRect, "取消"))
+                        {
+                            editKeyIndex = -1;
+                            Repaint();
+                        }
                     }
-                }
+                    else
+                    {
+                        //修改数据的key
+                        if (GUI.Button(dataRect, "修改key"))
+                        {
+                            editKeyIndex = index;
+                            editKeyText = data.Key;
+                            Repaint();
+                        }
+
+                        dataRect.x += dataRect.size.x + MStyle.rowSpacing - MStyle.spacing;
+                
+                        //删除数据
+                        if (GUI.Button(dataRect, "删除"))
+                        {
+                            if (EditorUtility.DisplayDialog("警告", "这是一项危险操作，你确定要删除吗？", "确定", "取消"))
+                            {
+                                //移除数据
+                                config.TextDatas.RemoveAt(index);
+                                config.SaveAsset();
+                                //重绘GUI
+                                Repaint();
+                            }
+                        }
+                    }
+                    break;
+                case EditorMode.Select:
+                    dataRect.width -= MStyle.rowSpacing / 2f;
+                    if (GUI.Button(dataRect, "选择"))
+                    {
+                        selectCallback?.Invoke(data);
+                        Close();
+                    }
+                    break;
             }
+            
             
             EditorGUILayout.EndHorizontal();
         }
@@ -602,7 +689,7 @@ namespace KFrame.UI
                 if (!string.IsNullOrEmpty(stringDataSearchText) &&
                     !config.TextDatas[i].Key.Contains(stringDataSearchText)) continue;
                 
-                DrawStringDataGUI(config.TextDatas[i], i);         
+                DrawStringDataGUI(config.TextDatas[i], i);  
             }
             
             EditorGUILayout.EndScrollView();
@@ -667,32 +754,39 @@ namespace KFrame.UI
         /// </summary>
         private void DrawBottomGUI()
         {
-            EditorGUILayout.BeginVertical();
+            switch (editorMode)
+            {
+                case EditorMode.Edit:
+                    EditorGUILayout.BeginVertical();
             
-            GUILayout.FlexibleSpace();
+                    GUILayout.FlexibleSpace();
 
-            EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.BeginHorizontal();
 
-            if (GUILayout.Button("文本数据", GUILayout.Width(MStyle.filterTypeWidth)))
-            {
-                SwitchDrawList(SelectType.StringData);
+                    if (GUILayout.Button("文本数据", GUILayout.Width(MStyle.filterTypeWidth)))
+                    {
+                        SwitchDrawList(SelectType.StringData);
+                    }
+            
+                    if (GUILayout.Button("图片数据", GUILayout.Width(MStyle.filterTypeWidth)))
+                    {
+                        SwitchDrawList(SelectType.ImageData);
+                    }
+            
+                    GUILayout.FlexibleSpace();
+            
+                    if (GUILayout.Button("新建", GUILayout.Width(MStyle.filterTypeWidth)))
+                    {
+                        LocalizationCreateEditorWindow.ShowWindow();
+                    }
+            
+                    EditorGUILayout.EndHorizontal();
+            
+                    EditorGUILayout.EndVertical();
+                    break;
+                case EditorMode.Select:
+                    break;
             }
-            
-            if (GUILayout.Button("图片数据", GUILayout.Width(MStyle.filterTypeWidth)))
-            {
-                SwitchDrawList(SelectType.ImageData);
-            }
-            
-            GUILayout.FlexibleSpace();
-            
-            if (GUILayout.Button("新建", GUILayout.Width(MStyle.filterTypeWidth)))
-            {
-                LocalizationCreateEditorWindow.ShowWindow();
-            }
-            
-            EditorGUILayout.EndHorizontal();
-            
-            EditorGUILayout.EndVertical();
         }
 
         #endregion

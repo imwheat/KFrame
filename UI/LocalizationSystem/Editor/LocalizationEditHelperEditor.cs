@@ -76,9 +76,38 @@ namespace KFrame.UI
 
                 localEditor.Target = (Graphic)EditorGUILayout.ObjectField(KGUIHelper.TempContent("本地化对象:"), localEditor.Target,
                     typeof(Graphic), true);
+
+                EditorGUILayout.BeginHorizontal();
                 
                 localEditor.Key = EditorGUILayout.TextField(KGUIHelper.TempContent("本地化Key:"), localEditor.Key);
 
+                //从库里选择一个数据然后更新UI
+                if (GUILayout.Button("选择", GUILayout.Width(60f)))
+                {
+                    if (localEditor.DrawImgData)
+                    {
+                        LocalizationEditorWindow.ShowWindowAsImageSelector((data) =>
+                        {
+                            localEditor.Key = data.Key;
+                            localEditor.ImageData.CopyData(data as LocalizationImageData);
+                            localEditor.UpdateUI();
+                            serializedObject.ApplyModifiedProperties();
+                        });
+                    }
+                    else
+                    {
+                        LocalizationEditorWindow.ShowWindowAsStringSelector((data) =>
+                        {
+                            localEditor.Key = data.Key;
+                            localEditor.StringData.CopyData(data as LocalizationStringData);
+                            localEditor.UpdateUI();
+                            serializedObject.ApplyModifiedProperties();
+                        });
+                    }
+                }
+                
+                EditorGUILayout.EndHorizontal();
+                
 
                 if (localEditor.Target != null)
                 {

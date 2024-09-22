@@ -106,17 +106,9 @@ namespace KFrame.UI
         /// </summary>
         public LocalizationStringData StringData;
         /// <summary>
-        /// 本地化文本字典
-        /// </summary>
-        private Dictionary<LanguageType, LocalizationStringDataBase> stringDic;
-        /// <summary>
         /// 本地化图片数据
         /// </summary>
         public LocalizationImageData ImageData;
-        /// <summary>
-        /// 本地化图片字典
-        /// </summary>
-        private Dictionary<LanguageType, LocalizationImageDataBase> imageDic;
         /// <summary>
         /// 是否绘制image的数据
         /// </summary>
@@ -173,9 +165,6 @@ namespace KFrame.UI
                 ImageData = new LocalizationImageData();
             }
 
-            stringDic = new Dictionary<LanguageType, LocalizationStringDataBase>();
-            imageDic = new Dictionary<LanguageType, LocalizationImageDataBase>();
-            
             //获取语言的所有类型
             LanguageType[] languages = (LanguageType[])Enum.GetValues(typeof(LanguageType));
             //记录添加数据中没有的语言类型
@@ -219,15 +208,6 @@ namespace KFrame.UI
                 }
             }
             
-            //注册字典
-            foreach (LocalizationStringDataBase stringData in StringData.Datas)
-            {
-                stringDic[stringData.Language] = stringData;
-            }
-            foreach (LocalizationImageDataBase imageData in ImageData.Datas)
-            {
-                imageDic[imageData.Language] = imageData;
-            }
         }
 
         #endregion
@@ -251,28 +231,40 @@ namespace KFrame.UI
                     break;
             }
         }
-
+        /// <summary>
+        /// 更新语言
+        /// </summary>
         public void UpdateLanguage(LanguageType languageType)
         {
             curLanguage = languageType;
+            //更新UI
+            UpdateUI();
             
+            EditorUtility.SetDirty(target);
+            EditorUtility.SetDirty(this);
+        }
+        /// <summary>
+        /// 更新UI
+        /// </summary>
+        public void UpdateUI()
+        {
             switch (target)
             {
                 case Image img:
-                    img.sprite = imageDic[languageType].Sprite;
+                    img.sprite = ImageData.Datas.Find((x) =>x.Language == curLanguage).Sprite;
                     break;
                 case Text text:
-                    text.text = stringDic[languageType].Text;
+                    text.text = StringData.Datas.Find((x => x.Language == curLanguage)).Text;
                     break;
                 case TMP_Text tmpText:
-                    tmpText.text = stringDic[languageType].Text;
+                    tmpText.text = StringData.Datas.Find((x => x.Language == curLanguage)).Text;
                     break;
             }
             
             EditorUtility.SetDirty(target);
             EditorUtility.SetDirty(this);
         }
-
+        
         #endregion
 
         #region 保存和读取
@@ -325,7 +317,7 @@ namespace KFrame.UI
                 {
                     //复制数据、更新UI
                     ImageData.CopyData(imageData);
-                    UpdateLanguage(curLanguage);
+                    UpdateUI();
                 }
             }
             else
@@ -340,7 +332,7 @@ namespace KFrame.UI
                 {
                     //复制数据、更新UI
                     StringData.CopyData(stringData);
-                    UpdateLanguage(curLanguage);
+                    UpdateUI();
                 }
             }
         }
