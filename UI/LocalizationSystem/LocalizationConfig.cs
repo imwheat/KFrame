@@ -216,6 +216,16 @@ namespace KFrame.UI
             }
         }
         /// <summary>
+        /// 保存
+        /// </summary>
+        private void SaveAsset()
+        {
+            //保存
+            EditorUtility.SetDirty(this);
+            AssetDatabase.Refresh();
+            AssetDatabase.SaveAssets();
+        }
+        /// <summary>
         /// 编辑器相关的初始化
         /// </summary>
         private void InitInEditor()
@@ -280,9 +290,7 @@ namespace KFrame.UI
             }
             
             //保存
-            EditorUtility.SetDirty(this);
-            AssetDatabase.Refresh();
-            AssetDatabase.SaveAssets();
+            SaveAsset();
         }
         /// <summary>
         /// 保存imageData
@@ -306,9 +314,79 @@ namespace KFrame.UI
             }
             
             //保存
-            EditorUtility.SetDirty(this);
-            AssetDatabase.Refresh();
-            AssetDatabase.SaveAssets();
+            SaveAsset();
+        }
+        /// <summary>
+        /// 更新文本数据的key
+        /// </summary>
+        /// <param name="data">数据</param>
+        /// <param name="key">key</param>
+        public void UpdateStringDataKey(LocalizationStringData data, string key)
+        {
+            //如果key为空或者和原来一样，或者数据为空那就不做更改
+            if(string.IsNullOrEmpty(key) || data == null || data.Key == key) return;
+            
+            //防止key重复
+            if (TextDataDic.ContainsKey(key))
+            {
+                EditorUtility.DisplayDialog("错误", $"已经存在key为{key}的数据了！", "确认");
+                return;
+            }
+            
+            //先记录之前的key然后更新key
+            string prevKey = data.Key;
+            data.Key = key;
+            //更新textDic
+            if (textDic != null)
+            {
+                textDic.Remove(prevKey);
+                RegisterTextData(data);
+            }
+            //更新textDataDic
+            if (textDataDic != null)
+            {
+                textDataDic.Remove(prevKey);
+                textDataDic[data.Key] = data;
+            }
+            
+            //保存
+            SaveAsset();
+        }
+        /// <summary>
+        /// 更新图片数据的key
+        /// </summary>
+        /// <param name="data">数据</param>
+        /// <param name="key">key</param>
+        public void UpdateImageDataKey(LocalizationImageData data, string key)
+        {
+            //如果key为空或者和原来一样，或者数据为空那就不做更改
+            if(string.IsNullOrEmpty(key) || data == null || data.Key == key) return;
+            
+            //防止key重复
+            if (ImgDataDic.ContainsKey(key))
+            {
+                EditorUtility.DisplayDialog("错误", $"已经存在key为{key}的数据了！", "确认");
+                return;
+            }
+            
+            //先记录之前的key然后更新key
+            string prevKey = data.Key;
+            data.Key = key;
+            //更新imgDic
+            if (imgDic != null)
+            {
+                imgDic.Remove(prevKey);
+                RegisterImageData(data);
+            }
+            //更新imgDataDic
+            if (imgDataDic != null)
+            {
+                imgDataDic.Remove(prevKey);
+                imgDataDic[data.Key] = data;
+            }
+            
+            //保存
+            SaveAsset();
         }
         
         #endif

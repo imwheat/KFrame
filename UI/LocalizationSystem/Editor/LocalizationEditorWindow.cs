@@ -71,6 +71,10 @@ namespace KFrame.UI
             /// </summary>
             internal static int rowCount = -1;
             /// <summary>
+            /// 可见的语言数量
+            /// </summary>
+            internal static int visibleLanguageCount = -1;
+            /// <summary>
             /// 上次更新列宽度GUI的宽度
             /// </summary>
             internal static float prevUpdateGUIWidth = -1f;
@@ -119,6 +123,10 @@ namespace KFrame.UI
         /// </summary>
         private Dictionary<LanguageType, bool> languageFilter;
         /// <summary>
+        /// 记录对应语言的GUI位置坐标
+        /// </summary>
+        private Dictionary<LanguageType, float> languageGUIPos;
+        /// <summary>
         /// 筛选栏折叠
         /// </summary>
         private bool filterFoldout;
@@ -138,6 +146,14 @@ namespace KFrame.UI
         /// 图片数据的列表滚轮位置
         /// </summary>
         private Vector2 imageDataListScrollPos;
+        /// <summary>
+        /// 正在修改编辑的GUI的key的下标
+        /// </summary>
+        private int editKeyIndex = -1;
+        /// <summary>
+        /// 正在编辑的Key的文本
+        /// </summary>
+        private string editKeyText;
         
         #endregion
 
@@ -169,11 +185,16 @@ namespace KFrame.UI
         private void Init()
         {
             languageTypes = EnumExtensions.GetValues<LanguageType>();
+            MStyle.visibleLanguageCount = languageTypes.Length;
             languageFilter = new Dictionary<LanguageType, bool>();
+            languageGUIPos = new Dictionary<LanguageType, float>();
             foreach (LanguageType languageType in languageTypes)
             {
                 languageFilter[languageType] = true;
             }
+            
+            //更新GUI分布
+            UpdateRowLayout();
         }
         
         #endregion
@@ -201,49 +222,19 @@ namespace KFrame.UI
             //如果筛选条件变了，列的排布需要更新
             if (EditorGUI.EndChangeCheck())
             {
+                //更新可见语言数量
+                if (languageFilter[type])
+                {
+                    MStyle.visibleLanguageCount++;
+                }
+                else
+                {
+                    MStyle.visibleLanguageCount--;
+                }
+                
                 UpdateRowLayout();
             }
             
-        }
-
-        #endregion
-
-        #region GUI更新
-        
-        /// <summary>
-        /// 更新列排版分布
-        /// </summary>
-        private void UpdateRowLayout()
-        {
-            //记录列宽度
-            MStyle.prevUpdateGUIWidth = position.width;
-            //统计当前可见的语言类型的数量
-            int visibleLanguageCount = 0;
-            foreach (LanguageType languageType in languageTypes)
-            {
-                if (languageFilter[languageType])
-                {
-                    visibleLanguageCount++;
-                }
-            }
-            //目前列的数量是可见语言数量+2
-            MStyle.rowCount = visibleLanguageCount + 2;
-            //计算更新每列的宽度
-            MStyle.rowWidth = (position.width- MStyle.rowSpacing * (MStyle.rowCount -1)) / MStyle.rowCount ;
-            //重绘
-            Repaint();
-        }
-
-        /// <summary>
-        /// 检测是否需要进行列排版分布的更新
-        /// </summary>
-        private void CheckRowLayoutUpdate()
-        {
-            //如果还没进行过更新，或者面板UI进行过较大程度的调整那就更新分布
-            if (MStyle.prevUpdateGUIWidth < 0f || Mathf.Abs(position.width - MStyle.prevUpdateGUIWidth) > 1f)
-            {
-                UpdateRowLayout();
-            }
         }
         /// <summary>
         /// 绘制一行文本数据GUI
@@ -259,8 +250,20 @@ namespace KFrame.UI
             
             Rect dataRect = EditorGUILayout.GetControlRect(GUILayout.Height(MStyle.labelHeight),
                 GUILayout.Width(MStyle.rowWidth));
-            EditorGUI.LabelField(dataRect,data.Key);
-            dataRect.x += rowInterval;
+            //如果选择编辑key，那就显示为输入栏
+            if (editKeyIndex == index)
+            {
+                EditorGUI.TextField(dataRect, editKeyText);
+            }
+            //正常就显示key
+            else
+            {
+                EditorGUI.LabelField(dataRect,data.Key);
+            }
+            dataRect.x += rowInterval * (MStyle.visibleLanguageCount + 1);
+            Rect languageRect = dataRect;
+            
+            EditorGUI.BeginChangeCheck();
             
             //绘制每个选项
             for (int i = 0; i < data.Datas.Count; i++)
@@ -268,28 +271,210 @@ namespace KFrame.UI
                 LocalizationStringDataBase stringData = data.Datas[i];
                 //如果不显示这个语言那就跳过
                 if(!languageFilter[stringData.Language]) continue;
-                stringData.Text = EditorGUI.TextField(dataRect, stringData.Text);
-                dataRect.x += rowInterval;
+                languageRect.x = languageGUIPos[stringData.Language];
+                stringData.Text = EditorGUI.TextField(languageRect, stringData.Text);
+            }
 
+            if (EditorGUI.EndChangeCheck())
+            {
+                EditorUtility.SetDirty(config);
             }
 
             dataRect.size = new Vector2((dataRect.size.x - MStyle.rowSpacing) / 2f, dataRect.size.y);
             dataRect.x -= MStyle.spacing;
 
-            if (GUI.Button(dataRect, "修改key"))
+            if (editKeyIndex == index)
             {
-                
-            }
+                if (GUI.Button(dataRect, "保存"))
+                {
+                    UpdateStringKey(data, editKeyText);
+                    
+                    editKeyIndex = -1;
+                    Repaint();
+                }
 
-            dataRect.x += dataRect.size.x + MStyle.rowSpacing - MStyle.spacing;
+                dataRect.x += dataRect.size.x + MStyle.rowSpacing - MStyle.spacing;
             
-            if (GUI.Button(dataRect, "删除"))
+                if (GUI.Button(dataRect, "取消"))
+                {
+                    editKeyIndex = -1;
+                    Repaint();
+                }
+            }
+            else
             {
+                //修改数据的key
+                if (GUI.Button(dataRect, "修改key"))
+                {
+                    editKeyIndex = index;
+                    editKeyText = data.Key;
+                    Repaint();
+                }
+
+                dataRect.x += dataRect.size.x + MStyle.rowSpacing - MStyle.spacing;
                 
+                //删除数据
+                if (GUI.Button(dataRect, "删除"))
+                {
+                    if (EditorUtility.DisplayDialog("警告", "这是一项危险操作，你确定要删除吗？", "确定", "取消"))
+                    {
+                        //移除数据
+                        config.TextDatas.RemoveAt(index);
+                        config.SaveAsset();
+                        //重绘GUI
+                        Repaint();
+                    }
+                }
             }
             
             EditorGUILayout.EndHorizontal();
         }
+        /// <summary>
+        /// 绘制一行图片数据GUI
+        /// </summary>
+        /// <param name="data">要绘制的数据</param>
+        /// <param name="index">在列表里面的下标</param>
+        private void DrawImageDataGUI(LocalizationImageData data, int index)
+        {
+            EditorGUILayout.BeginHorizontal();
+            
+            //获取列间隔
+            float rowInterval = MStyle.rowInterval;
+            
+            Rect dataRect = EditorGUILayout.GetControlRect(GUILayout.Height(MStyle.labelHeight),
+                GUILayout.Width(MStyle.rowWidth));
+            //如果选择编辑key，那就显示为输入栏
+            if (editKeyIndex == index)
+            {
+                EditorGUI.TextField(dataRect, editKeyText);
+            }
+            //正常就显示key
+            else
+            {
+                EditorGUI.LabelField(dataRect,data.Key);
+            }
+            dataRect.x += rowInterval * (MStyle.visibleLanguageCount + 1);
+            Rect languageRect = dataRect;
+            
+            EditorGUI.BeginChangeCheck();
+            
+            //绘制每个选项
+            for (int i = 0; i < data.Datas.Count; i++)
+            {
+                LocalizationImageDataBase stringData = data.Datas[i];
+                //如果不显示这个语言那就跳过
+                if(!languageFilter[stringData.Language]) continue;
+                languageRect.x = languageGUIPos[stringData.Language];
+                stringData.Sprite = (Sprite)EditorGUI.ObjectField(languageRect, stringData.Sprite, typeof(Sprite), false);
+            }
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                EditorUtility.SetDirty(config);
+            }
+
+            dataRect.size = new Vector2((dataRect.size.x - MStyle.rowSpacing) / 2f, dataRect.size.y);
+            dataRect.x -= MStyle.spacing;
+
+            if (editKeyIndex == index)
+            {
+                if (GUI.Button(dataRect, "保存"))
+                {
+                    UpdateImageKey(data, editKeyText);
+                    
+                    editKeyIndex = -1;
+                    Repaint();
+                }
+
+                dataRect.x += dataRect.size.x + MStyle.rowSpacing - MStyle.spacing;
+            
+                if (GUI.Button(dataRect, "取消"))
+                {
+                    editKeyIndex = -1;
+                    Repaint();
+                }
+            }
+            else
+            {
+                //修改数据的key
+                if (GUI.Button(dataRect, "修改key"))
+                {
+                    editKeyIndex = index;
+                    editKeyText = data.Key;
+                    Repaint();
+                }
+
+                dataRect.x += dataRect.size.x + MStyle.rowSpacing - MStyle.spacing;
+                
+                //删除数据
+                if (GUI.Button(dataRect, "删除"))
+                {
+                    if (EditorUtility.DisplayDialog("警告", "这是一项危险操作，你确定要删除吗？", "确定", "取消"))
+                    {
+                        //移除数据
+                        config.TextDatas.RemoveAt(index);
+                        config.SaveAsset();
+                        //重绘GUI
+                        Repaint();
+                    }
+                }
+            }
+            
+            EditorGUILayout.EndHorizontal();
+        }
+
+        #endregion
+
+        #region GUI更新
+
+
+        /// <summary>
+        /// 更新语言的分布
+        /// </summary>
+        private void UpdateLanguageLayout()
+        {
+            float rowInterval = MStyle.rowInterval; //列间隔
+            int k = 1; //记录当前可见的语言数量
+            for (int i = 0; i < languageTypes.Length; i++)
+            {
+                //如果可见
+                if (languageFilter[languageTypes[i]])
+                {
+                    //那就更新坐标
+                    languageGUIPos[languageTypes[i]] = rowInterval * k;
+                    k++;//计数+1
+                }
+            }
+        }
+        /// <summary>
+        /// 更新列排版分布
+        /// </summary>
+        private void UpdateRowLayout()
+        {
+            //记录列宽度
+            MStyle.prevUpdateGUIWidth = position.width;
+            //目前列的数量是可见语言数量+2
+            MStyle.rowCount = MStyle.visibleLanguageCount + 2;
+            //计算更新每列的宽度
+            MStyle.rowWidth = (position.width- MStyle.rowSpacing * (MStyle.rowCount -1)) / MStyle.rowCount;
+            //更新每个语言的位置分布
+            UpdateLanguageLayout();
+            //重绘
+            Repaint();
+        }
+
+        /// <summary>
+        /// 检测是否需要进行列排版分布的更新
+        /// </summary>
+        private void CheckRowLayoutUpdate()
+        {
+            //如果还没进行过更新，或者面板UI进行过较大程度的调整那就更新分布
+            if (MStyle.prevUpdateGUIWidth < 0f || Mathf.Abs(position.width - MStyle.prevUpdateGUIWidth) > 1f)
+            {
+                UpdateRowLayout();
+            }
+        }
+
         
         #endregion
         
@@ -454,6 +639,9 @@ namespace KFrame.UI
         private void SwitchDrawList(SelectType type)
         {
             curSelectType = type;
+            editKeyIndex = -1;
+            editKeyText = "";
+            Repaint();
         }
         /// <summary>
         /// 绘制底部GUI
@@ -476,11 +664,58 @@ namespace KFrame.UI
                 SwitchDrawList(SelectType.ImageData);
             }
             
+            GUILayout.FlexibleSpace();
+            
+            if (GUILayout.Button("新建", GUILayout.Width(MStyle.filterTypeWidth)))
+            {
+                LocalizationCreateEditorWindow.ShowWindow();
+            }
+            
             EditorGUILayout.EndHorizontal();
             
             EditorGUILayout.EndVertical();
         }
 
+        #endregion
+
+        #region 编辑保存数据
+
+        /// <summary>
+        /// 更新key
+        /// </summary>
+        private void UpdateStringKey(LocalizationStringData data, string key)
+        {
+            //停止文本编辑
+            EditorGUITool.EndEditTextField();
+            
+            if (string.IsNullOrEmpty(key))
+            {
+                EditorUtility.DisplayDialog("错误", "保存的key不能为空！", "确认");
+                return;
+            }
+            if(data == null || key == data.Key) return;
+            
+            //更新key
+            config.UpdateStringDataKey(data, key);
+        }
+        /// <summary>
+        /// 更新key
+        /// </summary>
+        private void UpdateImageKey(LocalizationImageData data, string key)
+        {
+            //停止文本编辑
+            EditorGUITool.EndEditTextField();
+            
+            if (string.IsNullOrEmpty(key))
+            {
+                EditorUtility.DisplayDialog("错误", "保存的key不能为空！", "确认");
+                return;
+            }
+            if(data == null || key == data.Key) return;
+            
+            //更新key
+            config.UpdateImageDataKey(data, key);
+        }
         #endregion
         
     }
