@@ -12,7 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using KFrame.Attributes;
-using KFrame.Utility;
+using KFrame.Utilities;
 
 namespace KFrame.UI
 {

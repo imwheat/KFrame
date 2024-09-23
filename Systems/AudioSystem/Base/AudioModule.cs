@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
-using KFrame.Utility;
+using KFrame.Utilities;
 using KFrame.UI;
 using UnityEngine.Serialization;
 

@@ -8,6 +8,8 @@
 using UnityEngine;
 using UnityEditor;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using Object = UnityEngine.Object;
 
 namespace KFrame.Editor
@@ -16,7 +18,7 @@ namespace KFrame.Editor
     {
         private static Material extractSpriteMaterial;
 
-        private static readonly string extractSpriteShader = "\r\n            Shader \"Hidden/Sirenix/Editor/GUIIcon\"\r\n            {\r\n\t            Properties\r\n\t            {\r\n                    _MainTex(\"Texture\", 2D) = \"white\" {}\r\n                    _Color(\"Color\", Color) = (1,1,1,1)\r\n                    _Rect(\"Rect\", Vector) = (0,0,0,0)\r\n                    _TexelSize(\"TexelSize\", Vector) = (0,0,0,0)\r\n\t            }\r\n                SubShader\r\n\t            {\r\n                    Blend SrcAlpha OneMinusSrcAlpha\r\n                    Pass\r\n                    {\r\n                        CGPROGRAM\r\n                            #pragma vertex vert\r\n                            #pragma fragment frag\r\n                            #include \"UnityCG.cginc\"\r\n\r\n                            struct appdata\r\n                            {\r\n                                float4 vertex : POSITION;\r\n\t\t\t\t\t            float2 uv : TEXCOORD0;\r\n\t\t\t\t            };\r\n\r\n                            struct v2f\r\n                            {\r\n                                float2 uv : TEXCOORD0;\r\n\t\t\t\t\t            float4 vertex : SV_POSITION;\r\n\t\t\t\t            };\r\n\r\n                            sampler2D _MainTex;\r\n                            float4 _Rect;\r\n\r\n                            v2f vert(appdata v)\r\n                            {\r\n                                v2f o;\r\n                                o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);\r\n                                o.uv = v.uv;\r\n                                return o;\r\n                            }\r\n\r\n                            fixed4 frag(v2f i) : SV_Target\r\n\t\t\t\t            {\r\n                                float2 uv = i.uv;\r\n                                uv *= _Rect.zw;\r\n\t\t\t\t\t            uv += _Rect.xy;\r\n\t\t\t\t\t            return tex2D(_MainTex, uv);\r\n\t\t\t\t            }\r\n\t\t\t            ENDCG\r\n\t\t            }\r\n\t            }\r\n            }";
+        private static readonly string extractSpriteShader = "\r\n            Shader \"Hidden/KFrame/Editor/GUIIcon\"\r\n            {\r\n\t            Properties\r\n\t            {\r\n                    _MainTex(\"Texture\", 2D) = \"white\" {}\r\n                    _Color(\"Color\", Color) = (1,1,1,1)\r\n                    _Rect(\"Rect\", Vector) = (0,0,0,0)\r\n                    _TexelSize(\"TexelSize\", Vector) = (0,0,0,0)\r\n\t            }\r\n                SubShader\r\n\t            {\r\n                    Blend SrcAlpha OneMinusSrcAlpha\r\n                    Pass\r\n                    {\r\n                        CGPROGRAM\r\n                            #pragma vertex vert\r\n                            #pragma fragment frag\r\n                            #include \"UnityCG.cginc\"\r\n\r\n                            struct appdata\r\n                            {\r\n                                float4 vertex : POSITION;\r\n\t\t\t\t\t            float2 uv : TEXCOORD0;\r\n\t\t\t\t            };\r\n\r\n                            struct v2f\r\n                            {\r\n                                float2 uv : TEXCOORD0;\r\n\t\t\t\t\t            float4 vertex : SV_POSITION;\r\n\t\t\t\t            };\r\n\r\n                            sampler2D _MainTex;\r\n                            float4 _Rect;\r\n\r\n                            v2f vert(appdata v)\r\n                            {\r\n                                v2f o;\r\n                                o.vertex = mul(UNITY_MATRIX_MVP, v.vertex);\r\n                                o.uv = v.uv;\r\n                                return o;\r\n                            }\r\n\r\n                            fixed4 frag(v2f i) : SV_Target\r\n\t\t\t\t            {\r\n                                float2 uv = i.uv;\r\n                                uv *= _Rect.zw;\r\n\t\t\t\t\t            uv += _Rect.xy;\r\n\t\t\t\t\t            return tex2D(_MainTex, uv);\r\n\t\t\t\t            }\r\n\t\t\t            ENDCG\r\n\t\t            }\r\n\t            }\r\n            }";
 
         //
         // 摘要:
@@ -27,6 +29,13 @@ namespace KFrame.Editor
         //     if you're compiling to an assembly. Unity has moved the method in 2017, and Unity's
         //     assembly updater is not able to fix it for you. This searches for a proper LoadImage
         //     method in multiple locations, and also handles type name conflicts.
+        /// <summary>
+        /// 通过二进制数据创建加载一个Texture
+        /// </summary>
+        /// <param name="width">宽</param>
+        /// <param name="height">高</param>
+        /// <param name="bytes">数据</param>
+        /// <returns>创建的Texture</returns>
         public static Texture2D LoadImage(int width, int height, byte[] bytes)
         {
             Texture2D texture2D = new Texture2D(width, height, TextureFormat.ARGB32, mipChain: false, linear: true);
@@ -36,9 +45,12 @@ namespace KFrame.Editor
             return texture2D;
         }
 
-        //
-        // 摘要:
-        //     Crops a Texture2D into a new Texture2D.
+        /// <summary>
+        /// 将Texture转为Texture2D
+        /// </summary>
+        /// <param name="texture">原texture</param>
+        /// <param name="source"></param>
+        /// <returns></returns>
         public static Texture2D CropTexture(this Texture texture, Rect source)
         {
             RenderTexture active = RenderTexture.active;
@@ -57,9 +69,14 @@ namespace KFrame.Editor
             return texture2D;
         }
 
-        //
-        // 摘要:
-        //     Resizes a texture by blitting, this allows you to resize unreadable textures.
+        /// <summary>
+        /// 重新调整Texture的大小
+        /// </summary>
+        /// <param name="texture">原texture</param>
+        /// <param name="width">新的宽</param>
+        /// <param name="height">新的高</param>
+        /// <param name="filterMode">模式</param>
+        /// <returns>调整尺寸后的Texture</returns>
         public static Texture2D ResizeByBlit(this Texture texture, int width, int height, FilterMode filterMode = FilterMode.Bilinear)
         {
             RenderTexture active = RenderTexture.active;
@@ -80,12 +97,11 @@ namespace KFrame.Editor
             return texture2D;
         }
 
-        //
-        // 摘要:
-        //     Converts a Sprite to a Texture2D.
-        //
-        // 参数:
-        //   sprite:
+        /// <summary>
+        /// 把sprite转为Texture
+        /// </summary>
+        /// <param name="sprite">要转换的sprite</param>
+        /// <returns></returns>
         public static Texture2D ConvertSpriteToTexture(Sprite sprite)
         {
             Rect rect = sprite.rect;
@@ -111,6 +127,168 @@ namespace KFrame.Editor
             RenderTexture.active = active;
             GL.sRGBWrite = sRGBWrite;
             return texture2D;
+        }
+        
+        /// <summary>
+        /// 生成所有单独的子Texture 并返回所有的路径
+        /// </summary>
+        /// <param name="multiImage"></param>
+        /// <returns></returns>
+        public static List<string> GeneratorChildTextureToPath(Texture2D multiImage)
+        {
+            //存放所有转换而来的png路径
+            List<string> paths = new List<string>();
+            //获取路径名称  
+            string rootPath = Path.GetDirectoryName(AssetDatabase.GetAssetPath(multiImage));
+            //图片路径名称 
+            string path = rootPath + "/" + multiImage.name + ".PNG";
+            //获取图片导入
+            TextureImporter texImp = AssetImporter.GetAtPath(path) as TextureImporter;
+            //创建文件夹
+            AssetDatabase.CreateFolder(rootPath, multiImage.name);
+
+            if (Directory.Exists(rootPath + "/" + multiImage.name))
+            {
+                //清空文件夹内容
+                Directory.Delete(rootPath + "/" + multiImage.name, true);
+
+                AssetDatabase.Refresh();
+            }
+
+
+            //遍历其中图集
+            foreach (SpriteMetaData metaData in texImp.spritesheet)
+            {
+                Texture2D image = new Texture2D((int)metaData.rect.width, (int)metaData.rect.height);
+
+                image.filterMode = FilterMode.Point;
+
+
+                for (int y = (int)metaData.rect.y; y < metaData.rect.y + metaData.rect.height; y++) //Y轴像素  
+                {
+                    for (int x = (int)metaData.rect.x; x < metaData.rect.x + metaData.rect.width; x++)
+                    {
+                        image.SetPixel(x - (int)metaData.rect.x, y - (int)metaData.rect.y, multiImage.GetPixel(x, y));
+                    }
+                }
+
+                //转换纹理到兼容格式
+                if (image.format != TextureFormat.ARGB32 && image.format != TextureFormat.RGB24)
+                {
+                    Texture2D newTexture = new Texture2D(image.width, image.height);
+                    newTexture.SetPixels(image.GetPixels(0), 0);
+                    image = newTexture;
+                }
+
+                byte[] pngData = image.EncodeToPNG();
+                string output_path = rootPath + "/" + multiImage.name + "/" + metaData.name + ".PNG"; //子图片输出路径
+                File.WriteAllBytes(output_path, pngData);                                             //输出子PNG图片
+                paths.Add(output_path);
+            }
+
+            // 刷新资源窗口界面  
+            AssetDatabase.Refresh();
+
+            return paths;
+        }
+
+        public static List<Texture2D> GeneratorChildTexture(Texture2D multImage)
+        {
+            //存放所有转换而来的png路径
+            List<string> paths = new List<string>();
+            List<Texture2D> child = new();
+            //获取路径名称  
+            string rootPath = Path.GetDirectoryName(AssetDatabase.GetAssetPath(multImage));
+            //图片路径名称 
+            string path = rootPath + "/" + multImage.name + ".PNG";
+            //获取图片导入
+            TextureImporter texImp = AssetImporter.GetAtPath(path) as TextureImporter;
+
+
+            //创建文件夹
+            AssetDatabase.CreateFolder(rootPath, multImage.name);
+
+            if (Directory.Exists(rootPath + "/" + multImage.name))
+            {
+                //清空文件夹内容
+                Directory.Delete(rootPath + "/" + multImage.name, true);
+
+                AssetDatabase.Refresh();
+            }
+
+
+            //遍历其中图集
+            foreach (SpriteMetaData metaData in texImp.spritesheet)
+            {
+                Texture2D image = new Texture2D((int)metaData.rect.width, (int)metaData.rect.height);
+
+                image.filterMode = FilterMode.Point;
+
+                for (int y = (int)metaData.rect.y; y < metaData.rect.y + metaData.rect.height; y++) //Y轴像素  
+                {
+                    for (int x = (int)metaData.rect.x; x < metaData.rect.x + metaData.rect.width; x++)
+                    {
+                        image.SetPixel(x - (int)metaData.rect.x, y - (int)metaData.rect.y, multImage.GetPixel(x, y));
+                    }
+                }
+
+                //转换纹理到兼容格式
+                if (image.format != TextureFormat.ARGB32 && image.format != TextureFormat.RGB24)
+                {
+                    Texture2D newTexture = new Texture2D(image.width, image.height);
+                    newTexture.SetPixels(image.GetPixels(0), 0);
+                    image = newTexture;
+                }
+
+                byte[] pngData = image.EncodeToPNG();
+                string output_path = rootPath + "/" + multImage.name + "/" + metaData.name + ".PNG"; //子图片输出路径
+                File.WriteAllBytes(output_path, pngData);                                            //输出子PNG图片
+                paths.Add(output_path);
+            }
+
+            // 刷新资源窗口界面  
+            AssetDatabase.Refresh();
+
+            foreach (var s in paths)
+            {
+                child.Add(AssetDatabase.LoadAssetAtPath<Texture2D>(s));
+            }
+
+            return child;
+        }
+
+
+        /// <summary>
+        /// 返回所有子图集
+        /// </summary>
+        /// <param name="multImage"></param>
+        /// <returns></returns>
+        public static List<Texture2D> GetChildTextures(Texture2D multImage)
+        {
+            List<Texture2D> textures = new();
+
+            //获取路径名称  
+            string rootPath = Path.GetDirectoryName(AssetDatabase.GetAssetPath(multImage));
+            //图片路径名称 
+            string path = rootPath + "/" + multImage.name + ".PNG";
+            //获取图片导入
+            TextureImporter texImp = AssetImporter.GetAtPath(path) as TextureImporter;
+
+            //遍历其中图集
+            foreach (SpriteMetaData metaData in texImp.spritesheet)
+            {
+                Texture2D image = new Texture2D((int)metaData.rect.width, (int)metaData.rect.height);
+
+                for (int y = (int)metaData.rect.y; y < metaData.rect.y + metaData.rect.height; y++) //Y轴像素  
+                {
+                    for (int x = (int)metaData.rect.x; x < metaData.rect.x + metaData.rect.width; x++)
+                        image.SetPixel(x - (int)metaData.rect.x, y - (int)metaData.rect.y, image.GetPixel(x, y));
+                }
+
+                textures.Add(image);
+            }
+
+            return textures;
         }
     }
 }

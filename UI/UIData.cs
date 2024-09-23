@@ -5,7 +5,7 @@
 //* 描述：存储UI的数据
 //*****************************************************
 using System;
-using KFrame.Utility;
+using KFrame.Utilities;
 using Sirenix.OdinInspector;
 using UnityEngine;
 namespace KFrame.UI

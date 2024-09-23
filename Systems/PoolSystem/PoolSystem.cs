@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using KFrame.Utility;
+using KFrame.Utilities;
 using UnityEngine;
 using UnityEngine.Events;
 

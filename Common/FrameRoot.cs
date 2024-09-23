@@ -4,7 +4,7 @@ using UnityEngine;
 namespace KFrame
 {
     using UnityEngine.SceneManagement;
-    using KFrame.Utility;
+    using Utilities;
     using KFrame.Systems;
     
 

@@ -12,7 +12,7 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 using System.IO;
 using KFrame.Attributes;
-using KFrame.Utility;
+using KFrame.Utilities;
 
 #if UNITY_EDITOR
 

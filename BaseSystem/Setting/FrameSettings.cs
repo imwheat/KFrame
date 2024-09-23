@@ -2,7 +2,7 @@ using KFrame.Attributes;
 using UnityEngine;
 using Sirenix.OdinInspector;
 using KFrame.Systems;
-using KFrame.Utility;
+using KFrame.Utilities;
 using KFrame.UI;
 
 #if UNITY_EDITOR

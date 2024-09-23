@@ -1,7 +1,7 @@
 #if ENABLE_ADDRESSABLES
 using System;
 using System.Collections.Generic;
-using KFrame.Utility;
+using KFrame.Utilities;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;

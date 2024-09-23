@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using KFrame.Utility;
+using KFrame.Utilities;
 using UnityEngine;
 
 namespace KFrame.Systems

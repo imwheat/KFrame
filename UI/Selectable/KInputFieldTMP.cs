@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading;
 using KFrame;
-using KFrame.Utility;
+using KFrame.Utilities;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;

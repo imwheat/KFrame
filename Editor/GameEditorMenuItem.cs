@@ -8,7 +8,7 @@
 using UnityEngine;
 using UnityEditor;
 using KFrame;
-using KFrame.Utility;
+using KFrame.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;

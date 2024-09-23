@@ -8,7 +8,7 @@
 using System;
 using System.IO;
 using UnityEditor;
-using KFrame.Utility;
+using KFrame.Utilities;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using System.Text;
@@ -50,7 +50,7 @@ namespace KFrame.Editor
         /// <summary>
         /// 将CS文件转为模版的时候是否忽略方法参数
         /// </summary>
-        private bool ignoreCSElement;
+        private bool ignoreCsElement;
         /// <summary>
         /// 模版的GUI选项
         /// </summary>
@@ -74,7 +74,7 @@ namespace KFrame.Editor
             templateName = "";
             searchFilter = string.Empty;
             scriptsTop = SCRIPTTOP;
-            ignoreCSElement = true;
+            ignoreCsElement = true;
         }
 
         protected override void OnGUI()
@@ -222,7 +222,7 @@ namespace KFrame.Editor
             {
                 GUILayout.Space(5);
 
-                ignoreCSElement = EditorGUILayout.Toggle("忽略所有参数和方法:", ignoreCSElement);
+                ignoreCsElement = EditorGUILayout.Toggle("忽略所有参数和方法:", ignoreCsElement);
 
                 GUILayout.Space(5);
 
@@ -234,9 +234,13 @@ namespace KFrame.Editor
             GUILayout.Space(5);
             if (GUILayout.Button("添加"))
             {
-                AddScripTemplate(addTextAsset, groupName2, ignoreCSElement);
+                AddScripTemplate(addTextAsset, groupName2, ignoreCsElement);
             }
 
+            if (GUILayout.Button("测试"))
+            {
+                
+            }
 
             EditorGUILayout.EndVertical();
         }

@@ -10,7 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine.Audio;
-using KFrame.Utility;
+using KFrame.Utilities;
 using UnityEngine.Serialization;
 
 namespace KFrame.Systems
