@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
-using KFrame.Tools;
+using KFrame.Extensions;
 
 namespace KFrame.Systems
 {

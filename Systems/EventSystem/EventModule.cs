@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using KFrame.Tools;
+using KFrame.Extensions;
 
 namespace KFrame.Systems
 {
