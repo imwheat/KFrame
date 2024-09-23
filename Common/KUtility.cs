@@ -15,7 +15,7 @@ namespace KFrame
 	/// 通用工具集
 	/// <para>这里希望放一些通用的，常用的方法</para>
 	/// </summary>
-	public static class KomugiUtils
+	public static class KUtility
     {
         public static void OpenLocalPath()
         {

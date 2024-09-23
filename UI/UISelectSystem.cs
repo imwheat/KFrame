@@ -44,14 +44,17 @@ namespace KFrame.UI
             }
 
         }
+        #pragma warning disable
         /// <summary>
         /// 是否在UI面板
         /// </summary>
         private static bool inTheUIPanel;
+
         /// <summary>
         /// 是否在UI面板
         /// </summary>
         public static bool InTheUIPanel => InTheUIPanel;
+        #pragma warning restore
         /// <summary>
         /// 当前选择的UI
         /// </summary>

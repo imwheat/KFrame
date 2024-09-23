@@ -8,7 +8,7 @@ namespace KFrame
     /// 这是一种懒汉单例
     /// </summary>
     /// <typeparam name="T">单例泛型</typeparam>
-    public abstract class AutoMonoSingleton<T> : MonoBehaviour where T : AutoMonoSingleton<T>
+    public abstract class LazyMonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
     {
         private static T instance = null;
 

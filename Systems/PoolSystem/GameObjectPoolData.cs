@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using KFrame.Extensions;
 using UnityEngine;
 
 namespace KFrame.Systems

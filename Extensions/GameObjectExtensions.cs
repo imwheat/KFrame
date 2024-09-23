@@ -1,3 +1,4 @@
+using KFrame.Systems;
 using UnityEngine;
 
 namespace KFrame.Extensions
@@ -403,6 +404,51 @@ namespace KFrame.Extensions
             }
 
             return target.transform.childCount;
+        }
+
+        #endregion
+
+        #region 其他
+
+        /// <summary>
+        /// 扩展方法，用于检查一个 GameObject 是否为空。
+        /// </summary>
+        /// <param name="obj">要检查空值的 GameObject。</param>
+        /// <returns>如果 GameObject 为空则返回 true，否则返回 false。</returns>
+        public static bool IsNull(this GameObject obj)
+        {
+            // 使用 ReferenceEquals 方法来比较 obj 和 null 是否引用同一对象。
+            // 如果 obj 和 null 引用同一对象，说明 obj 是空的，返回 true。
+            // 否则，返回 false，表示 obj 不为空。
+            return ReferenceEquals(obj, null);
+        }
+        /// <summary>
+        /// GameObject放入对象池
+        /// </summary>
+        public static void GameObjectPushPool(this GameObject go)
+        {
+            if (go.IsNull())
+            {
+                Debug.Log("将空物体放入对象池");
+            }
+            else
+            {
+                PoolSystem.PushGameObject(go);
+            }
+        }
+        /// <summary>
+        /// GameObject放入对象池
+        /// </summary>
+        public static void GameObjectPushPool(this Component com)
+        {
+            GameObjectPushPool(com.gameObject);
+        }
+        /// <summary>
+        /// 普通类放进池子
+        /// </summary>
+        public static void ObjectPushPool(this object obj)
+        {
+            PoolSystem.PushObject(obj);
         }
 
         #endregion

@@ -119,7 +119,7 @@ namespace KFrame
 			bool isAddFileType = false //是否加类型后缀
 		)
 		{
-			KomugiUtils.SetCopyBuffer(GetFrameworkFileName(isAddDataPath, isAddAssetsBefore,
+			KUtility.SetCopyBuffer(GetFrameworkFileName(isAddDataPath, isAddAssetsBefore,
 				isAddVersion, isAddTime, isAddFileType)); //复制字符串到剪贴板
 		}
 

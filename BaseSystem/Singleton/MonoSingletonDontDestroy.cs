@@ -8,7 +8,7 @@ namespace KFrame
     /// 运行游戏自动放置于DontDestroy
     /// </summary>
     /// <typeparam name="T">单例类型</typeparam>
-    public class MonoSingleNoDestroy<T> : MonoBehaviour where T : MonoSingleNoDestroy<T>
+    public class MonoSingletonDontDestroy<T> : MonoBehaviour where T : MonoBehaviour
     {
         private static T instance;
 
