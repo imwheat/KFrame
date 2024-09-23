@@ -22,7 +22,7 @@ using UnityEditor;
 
 namespace KFrame.UI
 {
-    [CreateAssetMenu(menuName = "KFrame/LocalizationConfig", fileName = "LocalizationConfig")]
+    [KGlobalConfigPath(GlobalPathType.Assets, typeof(LocalizationConfig), true)]
     public class LocalizationConfig : GlobalConfigBase<LocalizationConfig>
     {
         #region 储存数据

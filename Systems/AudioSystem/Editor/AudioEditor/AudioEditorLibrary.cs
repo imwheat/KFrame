@@ -6,13 +6,14 @@
 //*****************************************************
 using System.Collections;
 using System.Collections.Generic;
+using KFrame.Attributes;
 using KFrame.Utilities;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace KFrame.Systems
 {
-    [CreateAssetMenu(fileName = "AudioEditorLibrary", menuName = "ScriptableObject/Editor/AudioEditorLibrary")]
+    [KGlobalConfigPath(GlobalPathType.Editor, typeof(AudioEditorLibrary), true)]
     public class AudioEditorLibrary : GlobalConfigBase<AudioEditorLibrary>
     {
         [LabelText("音效模版"), FoldoutGroup("信息浏览")] public List<AudioEditData> AudioTemplates;

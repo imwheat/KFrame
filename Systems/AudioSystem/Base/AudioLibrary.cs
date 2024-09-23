@@ -6,6 +6,7 @@
 //*****************************************************
 using UnityEngine;
 using System.Collections.Generic;
+using KFrame.Attributes;
 using Sirenix.OdinInspector;
 using UnityEngine.Audio;
 using KFrame.Utilities;
@@ -18,7 +19,7 @@ using UnityEditor;
 
 namespace KFrame.Systems
 {
-    [CreateAssetMenu(fileName = "AudioLibrary", menuName = "ScriptableObject/AudioLibrary")]
+    [KGlobalConfigPath(GlobalPathType.Assets, typeof(AudioLibrary), true)]
     public class AudioLibrary : GlobalConfigBase<AudioLibrary>
     {
         [field: SerializeField, LabelText("音效库"), FoldoutGroup("信息预览")] public List<AudioStack> Audioes { get; private set; }

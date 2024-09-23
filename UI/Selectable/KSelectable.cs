@@ -56,6 +56,28 @@ namespace KFrame.UI
             }
         }
 
+        #region 生命周期
+
+        protected override void Awake()
+        {
+            //读取全局配置的颜色配置
+            UIGlobalConfig config = UIGlobalConfig.Instance;
+            colors = new ColorBlock()
+            {
+                colorMultiplier = colors.colorMultiplier,
+                disabledColor = config.DisabledColor,
+                fadeDuration = colors.fadeDuration,
+                highlightedColor = config.SelectedColor,
+                normalColor = config.NormalColor,
+                pressedColor = config.PressColor,
+                selectedColor = config.SelectedColor,
+            };
+            
+            base.Awake();
+        }
+
+        #endregion
+        
         #region 方法重写
 
         /// <summary>

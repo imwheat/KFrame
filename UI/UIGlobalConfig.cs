@@ -5,14 +5,12 @@
 //* 描述：UI的全局配置
 //*******************************************************
 
-using UnityEngine;
-using KFrame;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using KFrame.Attributes;
 using KFrame.Utilities;
+using UnityEngine;
 
 namespace KFrame.UI
 {
@@ -22,6 +20,22 @@ namespace KFrame.UI
     [KGlobalConfigPath(GlobalPathType.Assets, typeof(UIGlobalConfig), true)]
     public class UIGlobalConfig : GlobalConfigBase<UIGlobalConfig>
     {
+        /// <summary>
+        /// 普通状态下的颜色
+        /// </summary>
+        public Color NormalColor = new Color(0.7f, 0.7f, 0.7f, 1f);
+        /// <summary>
+        /// 按下后的颜色
+        /// </summary>
+        public Color PressColor = new Color(0.4f, 0.4f, 0.4f, 1f);
+        /// <summary>
+        /// 选择后的颜色
+        /// </summary>
+        public Color SelectedColor = new Color(1f, 1f, 1f, 1f);
+        /// <summary>
+        /// 禁用的颜色
+        /// </summary>
+        public Color DisabledColor = new Color(0.2f, 0.2f, 0.2f, 1f);
         /// <summary>
         /// UI数据
         /// </summary>
