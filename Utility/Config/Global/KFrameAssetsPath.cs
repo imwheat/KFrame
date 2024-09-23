@@ -21,10 +21,64 @@ namespace KFrame.Utility
     [InitializeOnLoad]
     public static class KFrameAssetsPath
     {
-        public static readonly string DefaultFrameAssetsPath = "Assets/KFrame/";
+        /// <summary>
+        /// 框架路径
+        /// </summary>
+        public static readonly string DefaultFramePath = "Assets/KFrame/";
+        /// <summary>
+        /// 框架Assets路径
+        /// </summary>
+        public static string FrameAssetsPath => DefaultFramePath + "Assets/";
+        /// <summary>
+        /// 框架编辑器Assets路径
+        /// </summary>
+        public static string FrameEditorAssetsPath => FrameAssetsPath + "Editor/";
         static KFrameAssetsPath()
         {
+            //如果找不到文件夹路径了
+            if (!AssetDatabase.IsValidFolder(DefaultFramePath))
+            {
+                if (KFramePathSearch.Instance == null)
+                {
+                    throw new Exception("错误！文件搜索SO丢失了，无法进行路径搜索");
+                }
+                else
+                {
+                    //那就从文件路径SO开始搜寻
+                    string searchSOPath = AssetDatabase.GetAssetPath(KFramePathSearch.Instance);
+                    string prevPath = searchSOPath;
+                    //找到最外层的KFrame文件夹
+                    while (searchSOPath.Contains("KFrame"))
+                    {
+                        prevPath = searchSOPath;
+                        searchSOPath = FileExtensions.GetParentDirectory(searchSOPath, 1);
+                    }
+                    //返回路径
+                    DefaultFramePath = prevPath.GetNiceDirectoryPath();
+                }
+                
 
+            }
+            
+        }
+        /// <summary>
+        /// 根据类型获取全局路径
+        /// </summary>
+        /// <param name="pathType">路径类型</param>
+        /// <returns>对应的路径</returns>
+        public static string GetPath(GlobalPathType pathType)
+        {
+            switch (pathType)
+            {
+                case GlobalPathType.Frame:
+                    return DefaultFramePath;
+                case GlobalPathType.Assets:
+                    return FrameAssetsPath;
+                case GlobalPathType.Editor:
+                    return FrameEditorAssetsPath;
+            }
+
+            return "";
         }
     }
 }

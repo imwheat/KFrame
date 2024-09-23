@@ -1,3 +1,4 @@
+using KFrame.Attributes;
 using UnityEngine;
 using Sirenix.OdinInspector;
 using KFrame.Systems;
@@ -31,6 +32,7 @@ namespace KFrame
     /// <summary>
     /// 框架的设置SO文件
     /// </summary>
+    [KGlobalConfigPath(GlobalPathType.Frame, typeof(FrameSettings), true)]
     public class FrameSettings : GlobalConfigBase<FrameSettings>
     {
         #region 资源管理

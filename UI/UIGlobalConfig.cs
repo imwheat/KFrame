@@ -19,7 +19,7 @@ namespace KFrame.UI
     /// <summary>
     /// UI的全局配置
     /// </summary>
-    [KGlobalConfigPath("Assets/KFrame/Assets/", typeof(UIGlobalConfig), true)]
+    [KGlobalConfigPath(GlobalPathType.Assets, typeof(UIGlobalConfig), true)]
     public class UIGlobalConfig : GlobalConfigBase<UIGlobalConfig>
     {
         /// <summary>

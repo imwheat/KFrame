@@ -315,6 +315,17 @@ namespace KFrame.Utility
             // 递归调用以获取更上一级的目录
             return GetParentDirectory(parentDirectory, levels - 1);
         }
+        
+        /// <summary>
+        /// 整理返回一个合理的文件夹路径
+        /// </summary>
+        /// <param name="path">原路径</param>
+        /// <returns>一个合理的路径</returns>
+        public static string GetNiceDirectoryPath(this string path)
+        {
+            return path.Trim().TrimEnd('/', '\\').TrimStart('/', '\\')
+                .Replace('\\', '/') + "/";
+        }
 
         /// <summary>
         /// 检测Unity的资源是否存在 资源路径以相对的Assets开头

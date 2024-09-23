@@ -33,8 +33,7 @@ namespace KFrame.Attributes
         /// <summary>
         /// Asset路径
         /// </summary>
-        public string AssetPath => assetPath.Trim().TrimEnd('/', '\\').TrimStart('/', '\\')
-            .Replace('\\', '/') + "/";
+        public string AssetPath => assetPath.GetNiceDirectoryPath();
         /// <summary>
         /// 文件名称
         /// </summary>
@@ -62,6 +61,15 @@ namespace KFrame.Attributes
         /// <param name="type">文件类型，用于作为文件名称</param>
         /// <param name="createIfNotFound">如果找不到的话就自动创建</param>
         public KGlobalConfigPathAttribute(string path, Type type, bool createIfNotFound = false) : this(path, type.GetNiceName(), createIfNotFound)
+        {
+        }
+        /// <summary>
+        /// 全局配置的Attribute
+        /// </summary>
+        /// <param name="pathType">Asset路径类型</param>
+        /// <param name="type">文件类型，用于作为文件名称</param>
+        /// <param name="createIfNotFound">如果找不到的话就自动创建</param>
+        public KGlobalConfigPathAttribute(GlobalPathType pathType, Type type, bool createIfNotFound = false) : this(KFrameAssetsPath.GetPath(pathType), type, createIfNotFound)
         {
         }
     }
