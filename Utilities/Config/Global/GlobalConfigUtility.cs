@@ -6,6 +6,7 @@
 //*******************************************************
 
 using System;
+using KFrame.Systems;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -27,11 +28,11 @@ namespace KFrame.Utilities
         /// <summary>
         /// 获取搜索Asset
         /// </summary>
-        public static T GetInstance(string defaultAssetFolderPath)
+        public static T GetInstance(string defaultAssetFolderPath, string defaultFileNameWithoutExtension = null, bool createIfCantFind = false)
         {
             if(instance == null)
             {
-                LoadInstanceIfAssetExists(defaultAssetFolderPath);
+                LoadInstanceIfAssetExists(defaultAssetFolderPath, defaultFileNameWithoutExtension, createIfCantFind);
             }
 
             return instance;
@@ -41,10 +42,24 @@ namespace KFrame.Utilities
         /// </summary>
         /// <param name="assetPath">Asset路径</param>
         /// <param name="defaultFileNameWithoutExtension">默认名称</param>
-        internal static void LoadInstanceIfAssetExists(string assetPath, string defaultFileNameWithoutExtension = null)
+        /// <param name="createIfCantFind">如果找不到的话就自动创建</param>
+        internal static void LoadInstanceIfAssetExists(string assetPath, string defaultFileNameWithoutExtension = null, bool createIfCantFind = false)
         {
             //默认取NiceName
             string text = defaultFileNameWithoutExtension ?? typeof(T).GetNiceName();
+            
+            
+            //先尝试从资源管理器里面加载
+            instance = ResSystem.LoadAsset<T>(assetPath + text + ".asset");
+            if (instance == null)
+            {
+                instance = ResSystem.LoadAsset<T>(text);
+            }
+            if (instance != null)
+            {
+                return;
+            }
+                        
             //如果在Resource文件夹里
             if (StringExtensions.Contains(assetPath, "/resources/", StringComparison.OrdinalIgnoreCase))
             {
@@ -127,7 +142,16 @@ namespace KFrame.Utilities
                     instance = AssetDatabase.LoadAssetAtPath<T>(path);
                 }
             }
-
+            
+            //怎么都找不到的话，如果允许创建的话，那就创建
+            if (instance == null && createIfCantFind)
+            {
+                instance = ScriptableObject.CreateInstance<T>();
+                instance.name = text;
+                AssetDatabase.CreateAsset(instance, assetPath + text + ".asset");
+                AssetDatabase.Refresh();
+                AssetDatabase.SaveAssets();
+            }
 #endif
 
         }

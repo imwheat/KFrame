@@ -369,7 +369,18 @@ namespace KFrame.Systems
         /// <param name="assetName">AB资源名称</param>
         public static T LoadAsset<T>(string assetName) where T : UnityEngine.Object
         {
-            return Addressables.LoadAssetAsync<T>(assetName).WaitForCompletion();
+            var locationHandle = Addressables.LoadResourceLocationsAsync(assetName).WaitForCompletion();
+            if (locationHandle.Count > 0)
+            {
+                var handle = Addressables.LoadAssetAsync<T>(locationHandle).WaitForCompletion();
+
+                return handle;
+            }
+            else
+            {
+                return null;
+            }
+
         }
 
         /// <summary>
@@ -380,6 +391,7 @@ namespace KFrame.Systems
         /// <param name="callBack">回调函数</param>
         public static void LoadAssetAsync<T>(string assetName, Action<T> callback = null) where T : UnityEngine.Object
         {
+            
             Addressables.LoadAssetAsync<T>(assetName).Completed += (handle) =>
             {
                 OnLoadAssetAsyncCompleted<T>(handle, callback);

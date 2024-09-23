@@ -97,6 +97,7 @@ namespace KFrame
         {
             EditorEventModule = new EventModule();
             EditorApplication.update += () => { InitForEditor(); };
+            FrameSettings.Instance.InitOnEditor();
         }
 
         [InitializeOnLoadMethod]
@@ -112,17 +113,8 @@ namespace KFrame
             {
                 instance = GameObject.FindObjectOfType<FrameRoot>();
                 if (instance == null) return;
-
-
-                instance.frameSetting.InitOnEditor();
-
-                //如果是UI测试场景
-                if (SceneManager.GetActiveScene().name == "UIFrameTest")
-                {
-                    return;
-                }
-
             }
+            
         }
 #endif
 

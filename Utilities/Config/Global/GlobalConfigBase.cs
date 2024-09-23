@@ -25,7 +25,7 @@ namespace KFrame.Utilities
                     configAttribute = typeof(T).GetCustomAttribute<KGlobalConfigPathAttribute>();
                     if (configAttribute == null)
                     {
-                        configAttribute = new KGlobalConfigPathAttribute(typeof(T).GetNiceName());
+                        configAttribute = new KGlobalConfigPathAttribute(typeof(T).GetNiceName(), "", false);
                     }
                 }
 
@@ -35,7 +35,7 @@ namespace KFrame.Utilities
         /// <summary>
         /// 实例
         /// </summary>
-        public static T Instance => GlobalConfigUtility<T>.GetInstance(ConfigAttribute.AssetPath);
+        public static T Instance => GlobalConfigUtility<T>.GetInstance(ConfigAttribute.AssetPath, ConfigAttribute.FileName, ConfigAttribute.CreateIfNotFound);
 
     }
 }

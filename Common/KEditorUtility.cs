@@ -1,34 +1,27 @@
+#if UNITY_EDITOR
+
 //****************** 代码文件申明 ***********************
-//* 文件：KEditorUtility
+//* 文件：FrameClass
 //* 作者：wheat
-//* 创建时间：2024/06/07 09:13:48 星期五
-//* 描述：拓展一些EditorUtility的功能
+//* 创建时间：2024/09/23 09:16:17 星期一
+//* 描述：只能在编辑器里使用，辅助的一些编辑器功能
 //*******************************************************
 
 using UnityEngine;
+using KFrame;
+using KFrame.Extensions;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEditor;
-using Object = UnityEngine.Object;
 
-namespace KFrame.Editor
+namespace KFrame
 {
     /// <summary>
-    /// 拓展一些<see cref="EditorUtility"/>的功能
+    /// 只能在编辑器里使用
     /// </summary>
-    public static class KEditorUtility
+    public class KEditorUtility
     {
-        /// <summary>
-        /// 保存某项Asset
-        /// </summary>
-        public static void SaveAsset(this Object @object)
-        {
-            //空不能保存
-            if (@object == null) return;
-
-            //保存
-            EditorUtility.SetDirty(@object);
-            AssetDatabase.Refresh();
-            AssetDatabase.SaveAssets();
-        }
         /// <summary>
         /// 增加编辑器宏
         /// </summary>
@@ -57,3 +50,5 @@ namespace KFrame.Editor
     }
 }
 
+
+#endif

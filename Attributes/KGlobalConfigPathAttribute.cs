@@ -7,11 +7,11 @@
 
 using System;
 using System.ComponentModel;
+using KFrame.Utilities;
 using UnityEngine;
 
 namespace KFrame.Attributes
 {
-    //只有在Unity编辑器里编译
     /// <summary>
     /// 框架全局配置的特性，用于定位什么的
     /// </summary>
@@ -36,12 +36,33 @@ namespace KFrame.Attributes
         public string AssetPath => assetPath.Trim().TrimEnd('/', '\\').TrimStart('/', '\\')
             .Replace('\\', '/') + "/";
         /// <summary>
-        /// 
+        /// 文件名称
+        /// </summary>
+        public string FileName;
+        /// <summary>
+        /// 自动创建如果找不到的话
+        /// </summary>
+        public bool CreateIfNotFound;
+        /// <summary>
+        /// 全局配置的Attribute
         /// </summary>
         /// <param name="path">Asset路径</param>
-        public KGlobalConfigPathAttribute(string path)
+        /// <param name="fileName">文件名称</param>
+        /// <param name="createIfNotFound">如果找不到的话就自动创建</param>
+        public KGlobalConfigPathAttribute(string path, string fileName = "", bool createIfNotFound = false)
         {
             assetPath = path;
+            FileName = fileName;
+            CreateIfNotFound = createIfNotFound;
+        }
+        /// <summary>
+        /// 全局配置的Attribute
+        /// </summary>
+        /// <param name="path">Asset路径</param>
+        /// <param name="type">文件类型，用于作为文件名称</param>
+        /// <param name="createIfNotFound">如果找不到的话就自动创建</param>
+        public KGlobalConfigPathAttribute(string path, Type type, bool createIfNotFound = false) : this(path, type.GetNiceName(), createIfNotFound)
+        {
         }
     }
 }

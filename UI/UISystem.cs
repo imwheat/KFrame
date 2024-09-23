@@ -17,16 +17,41 @@ namespace KFrame.UI
         private static UISystem instance;
         public static UISettingsSave Settings;
 
+        private static Dictionary<string, UIData> uiDataDic;
+        private static Dictionary<string, List<UIBase>> activeWindowsDic;
+
+        [SerializeField, ShowInInspector] private UILayerBase[] uiLayers;
+        [SerializeField] private RectTransform dragLayer;
+
+        private static UILayerBase[] UILayers => instance.uiLayers;
+
+        #region 初始化操作
+
         public static void Init()
         {
             //获取实例
             instance = FrameRoot.RootTransform.GetComponentInChildren<UISystem>();
             
-            //初始化参数
-            activeWindowsDic = new Dictionary<string, List<UIBase>>();
+            //初始化字典
+            instance.InitDic();
             
             //加载UI配置
             LoadUISettings();
+        }
+        /// <summary>
+        /// 初始化字典
+        /// </summary>
+        private void InitDic()
+        {
+            //新建字典
+            uiDataDic = new Dictionary<string, UIData>();
+            activeWindowsDic = new Dictionary<string, List<UIBase>>();
+            
+            //注册字典
+            foreach (UIData uiData in UIGlobalConfig.Instance.UIDatas)
+            {
+                uiDataDic[uiData.UIKey] = uiData;
+            }
         }
 
         private void OnDestroy()
@@ -35,13 +60,7 @@ namespace KFrame.UI
             SaveUISettings();
         }
 
-        private static Dictionary<string, UIData> UIDataDic => FrameRoot.Setting.UIDataDic;
-        private static Dictionary<string, List<UIBase>> activeWindowsDic;
-
-        [SerializeField, ShowInInspector] private UILayerBase[] uiLayers;
-        [SerializeField] private RectTransform dragLayer;
-
-        private static UILayerBase[] UILayers => instance.uiLayers;
+        #endregion
 
         #region 动态加载/移除窗口数据
 
@@ -55,7 +74,7 @@ namespace KFrame.UI
         /// <param name="data">窗口的重要数据</param>
         public static void AddUIData(string uiKey, UIData data)
         {
-            UIDataDic.TryAdd(uiKey, data);
+            uiDataDic.TryAdd(uiKey, data);
         }
 
         /// <summary>
@@ -85,7 +104,7 @@ namespace KFrame.UI
         /// <returns>可能为Null</returns>
         public static UIData GetUIData(string uiKey)
         {
-            if (UIDataDic.TryGetValue(uiKey, out UIData windowData))
+            if (uiDataDic.TryGetValue(uiKey, out UIData windowData))
             {
                 return windowData;
             }
@@ -109,7 +128,7 @@ namespace KFrame.UI
         /// <param name="uiKey"></param>
         public static bool TryGetUIData(string uiKey, out UIData data)
         {
-            return UIDataDic.TryGetValue(uiKey, out data);
+            return uiDataDic.TryGetValue(uiKey, out data);
         }
 
         /// <summary>
@@ -119,7 +138,7 @@ namespace KFrame.UI
         /// <returns></returns>
         public static bool RemoveUIData(string uiKey)
         {
-            return UIDataDic.Remove(uiKey);
+            return uiDataDic.Remove(uiKey);
         }
 
         /// <summary>
@@ -127,7 +146,7 @@ namespace KFrame.UI
         /// </summary>
         public static void ClearUIData()
         {
-            UIDataDic.Clear();
+            uiDataDic.Clear();
         }
 
         #endregion
@@ -197,7 +216,7 @@ namespace KFrame.UI
         public static UIBase Show(string uiKey)
         {
             //获取数据，然后显示UI
-            if (UIDataDic.TryGetValue(uiKey, out UIData windowData))
+            if (uiDataDic.TryGetValue(uiKey, out UIData windowData))
             {
                 return ShowWindow(windowData);
             }
