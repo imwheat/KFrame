@@ -52,6 +52,10 @@ namespace KFrame.Editor
         /// </summary>
         private bool ignoreCsElement;
         /// <summary>
+        /// 添加的脚本名称
+        /// </summary>
+        private string addCsTemplateName;
+        /// <summary>
         /// 模版的GUI选项
         /// </summary>
         private List<GUIContent> templateGUI;
@@ -227,19 +231,28 @@ namespace KFrame.Editor
                 GUILayout.Space(5);
 
             }
-
+            //模版名称
+            GUILayout.Label("脚本模版名称:");
+            addCsTemplateName = EditorGUILayout.TextField(addCsTemplateName, GUILayout.Height(30f));
             //分类名称
             GUILayout.Label("脚本分类名称:(可选)");
             groupName2 = EditorGUILayout.TextArea(groupName2, GUILayout.Height(30));
             GUILayout.Space(5);
             if (GUILayout.Button("添加"))
             {
-                AddScripTemplate(addTextAsset, groupName2, ignoreCsElement);
+                if (string.IsNullOrEmpty(addCsTemplateName))
+                {
+                    EditorUtility.DisplayDialog("错误", "脚本模版的名称不能为空", "确认");
+                }
+                else
+                {
+                    AddScripTemplate(addTextAsset, addCsTemplateName, groupName2, ignoreCsElement);
+                }
             }
 
             if (GUILayout.Button("测试"))
             {
-                
+                Debug.Log(ConvertCSToTemplate(addTextAsset.text, ignoreCsElement));
             }
 
             EditorGUILayout.EndVertical();
@@ -350,7 +363,7 @@ namespace KFrame.Editor
         /// 通过文本文件添加模版
         /// </summary>
         /// <param name="ignoreElements">将CS文件转为模版的时候是否忽略方法参数</param>
-        public static void AddScripTemplate(TextAsset textAsset, string groupName, bool ignoreElements)
+        public static void AddScripTemplate(TextAsset textAsset, string assetName,string groupName, bool ignoreElements)
         {
             if(textAsset == null)
             {
@@ -383,7 +396,6 @@ namespace KFrame.Editor
                 return;
             }
 
-            string assetName = textAsset.name.Replace(".cs","");
             //如果已经有了就不再添加
             if(ScriptTemplateConfig.TemplateDic.ContainsKey(assetName))
             {
@@ -562,11 +574,7 @@ namespace KFrame.Editor
                 {
                     scriptTopIndex = i;
                 }
-                else if (!lines[i].Contains("class") && !lines[i].Contains("interface"))
-                {
-                    sb.Append(lines[i]).Append('\n');
-                }
-                else
+                else if (lines[i].Contains("class") || lines[i].Contains("interface"))
                 {
                     startIndex = i;
                     break;
@@ -610,32 +618,37 @@ namespace KFrame.Editor
 
             //然后开始转为模版
 
+            //替换一开始声明的typeName
+            for (int i = scriptTopIndex; i <= startIndex; i++)
+            {
+                //转换类型名称
+                lines[i] = lines[i].Replace(typeName, ScriptTemplateConfig.SCRIPTNAME);
+                //更新这一行的内容
+                sb.Append(lines[i]).Append('\n');
+            }
+            //计算一开始的深度，并填写开头代码
+            int depth = 1;
+            for (int i = scriptTopIndex + 1; i < startIndex; i++)
+            {
+                //记录深度
+                if (lines[i].Contains('{'))
+                {
+                    depth++;
+                }
+            }
+
             //忽略参数和方法
             if (ignoreElements)
             {
-                //计算一开始的深度，并填写开头代码
-                int depth = 1;
-                for (int i = scriptTopIndex + 1; i < startIndex; i++)
+                //如果类声明那一行没有{那就加上一个
+                if (!lines[startIndex].Contains('{'))
                 {
-                    //记录深度
-                    if (lines[i].Contains('{'))
+                    //补上一个{
+                    for (int i = 1; i < depth; i++)
                     {
-                        depth++;
+                        sb.Append("    ");
                     }
-                }
-                //替换一开始声明的typeName
-                for (int i = startIndex; i < lines.Length; i++)
-                {
-                    //转换类型名称
-                    lines[i].Replace(typeName, ScriptTemplateConfig.SCRIPTNAME);
-                    //更新这一行的内容
-                    sb.Append(lines[i]).Append('\n');
-
-                    //到'{'就停止
-                    if (lines[i].Contains('{'))
-                    {
-                        break;
-                    }
+                    sb.Append("{\n");
                 }
 
                 //空一行
@@ -657,19 +670,30 @@ namespace KFrame.Editor
             else
             {
 
-                for (int i = startIndex; i < lines.Length; i++)
+                for (int i = startIndex + 1; i < lines.Length; i++)
                 {
                     //转换类型名称
-                    lines[i].Replace(typeName, ScriptTemplateConfig.SCRIPTNAME);
+                    lines[i] = lines[i].Replace(typeName, ScriptTemplateConfig.SCRIPTNAME);
                     //添加这一行的文本
                     sb.Append(lines[i]).Append('\n');
                     //查看这一行是不是有方法(只支持常规写法)
                     if (lines[i].Contains('(') && (lines[i].Contains("private") || lines[i].Contains("public")
-                        || lines[i].Contains("interval") || lines[i].Contains("protected")))
+                        || lines[i].Contains("interval") || lines[i].Contains("protected")) && !lines[i].Contains('=') && !lines[i].Contains(';'))
                     {
                         //查找这一行的结尾
                         int k = FindEndIndexofMethod(lines, i);
-
+                        
+                        //如果找到了在同一行，那就移除掉{}
+                        if (k == i)
+                        {
+                            int _start = lines[i].IndexOf('{');
+                            int _end = lines[i].IndexOf('}');
+                            if (_start != -1 && _end != -1)
+                            {
+                                lines[i] = lines[i].Substring(0, lines[i].Length - _end + _start);
+                            }
+                        }
+                        
                         //如果找到了
                         if (k != -1)
                         {
@@ -686,9 +710,9 @@ namespace KFrame.Editor
                             //更新i
                             i = k;
 
-                            sb.Append("{").Append('\n');
+                            sb.Append(space).Append("{").Append('\n');
                             sb.Append(space).AppendLine("    throw new System.NotImplementedException();");
-                            sb.Append("}").Append('\n');
+                            sb.Append(space).Append("}").Append('\n');
                         }
 
                     }
