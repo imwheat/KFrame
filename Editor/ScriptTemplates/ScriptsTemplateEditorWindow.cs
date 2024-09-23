@@ -240,6 +240,8 @@ namespace KFrame.Editor
             GUILayout.Space(5);
             if (GUILayout.Button("添加"))
             {
+                //结束文本编辑
+                EditorGUITool.EndEditTextField();
                 if (string.IsNullOrEmpty(addCsTemplateName))
                 {
                     EditorUtility.DisplayDialog("错误", "脚本模版的名称不能为空", "确认");

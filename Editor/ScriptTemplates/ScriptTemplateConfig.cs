@@ -9,10 +9,11 @@ using UnityEngine;
 using UnityEditor;
 using KFrame.Utilities;
 using System.Collections.Generic;
+using KFrame.Attributes;
 
 namespace KFrame.Editor
 {
-    [CreateAssetMenu(fileName = "ScriptTemplateConfig", menuName = "ScriptableObject/Editor/ScriptTemplateConfig")]
+    [KGlobalConfigPath(GlobalPathType.Editor, typeof(ScriptTemplateConfig), true)]
     public class ScriptTemplateConfig : GlobalConfigBase<ScriptTemplateConfig>
     {
         /// <summary>
@@ -22,8 +23,7 @@ namespace KFrame.Editor
         /// <summary>
         /// 脚本模版路径
         /// </summary>
-        public static string FrameScriptTemplatesPath => Instance._frameScriptTemplatesPath;
-        private string _frameScriptTemplatesPath = "Assets/KFrame/Editor/ScriptTemplates/Templates/";
+        public static string FrameScriptTemplatesPath => KFrameAssetsPath.FrameEditorAssetsPath + "ScriptTemplates/Templates/";
         /// <summary>
         /// 脚本模版列表
         /// </summary>
