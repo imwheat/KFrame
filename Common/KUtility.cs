@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using KFrame.Extensions;
+using KFrame.Utility;
 
 #if UNITY_EDITOR
 

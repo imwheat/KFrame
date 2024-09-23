@@ -5,7 +5,7 @@
 //* 描述：给框架使用的创建UI的Attribute
 //*****************************************************
 using System;
-using KFrame.Utilities;
+using KFrame.Utility;
 
 namespace KFrame.UI
 {

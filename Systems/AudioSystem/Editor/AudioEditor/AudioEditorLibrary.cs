@@ -6,7 +6,7 @@
 //*****************************************************
 using System.Collections;
 using System.Collections.Generic;
-using KFrame.Utilities;
+using KFrame.Utility;
 using Sirenix.OdinInspector;
 using UnityEngine;
 

@@ -7,7 +7,7 @@
 
 using System;
 using System.ComponentModel;
-using KFrame.Utilities;
+using KFrame.Utility;
 using UnityEngine;
 
 namespace KFrame.Attributes

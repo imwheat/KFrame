@@ -7,7 +7,7 @@
 
 using UnityEngine;
 using KFrame;
-using KFrame.Extensions;
+using KFrame.Utility;
 using System;
 using System.Collections;
 using System.Collections.Generic;

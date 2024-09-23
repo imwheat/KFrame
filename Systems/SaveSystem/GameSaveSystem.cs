@@ -7,7 +7,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using KFrame.Extensions;
+using KFrame.Utility;
 using KFrame.UI;
 
 namespace KFrame.Systems

@@ -7,9 +7,9 @@
 
 using UnityEngine;
 using UnityEditor;
-using KFrame.Extensions;
+using KFrame.Utility;
 using System.Collections.Generic;
-using KFrame.Utilities;
+using KFrame.Utility;
 
 namespace KFrame.Editor
 {

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using KFrame;
 using KFrame.Systems;
-using KFrame.Utilities;
+using KFrame.Utility;
 using UnityEngine;
 using UnityEngine.EventSystems;
 

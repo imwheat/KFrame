@@ -4,13 +4,13 @@
 //* 创建时间：2023年04月26日 星期五 09:47
 //* 描述：有一些管理、创建脚本的工具方法
 //*****************************************************
-using KFrame.Extensions;
+using KFrame.Utility;
 using System;
 using System.IO;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using StringExtensions = KFrame.Extensions.StringExtensions;
+using StringExtensions = KFrame.Utility.StringExtensions;
 
 namespace KFrame.Editor
 {

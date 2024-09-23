@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using KFrame.Extensions;
+using KFrame.Utility;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;

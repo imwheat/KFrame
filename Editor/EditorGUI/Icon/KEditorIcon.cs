@@ -5,7 +5,8 @@
 //* 描述：编辑器绘制使用的GUI的图片
 //*******************************************************
 
-using KFrame.Utilities;
+using KFrame.Utility;
+using KFrame.Utility;
 using UnityEngine;
 
 namespace KFrame.Editor

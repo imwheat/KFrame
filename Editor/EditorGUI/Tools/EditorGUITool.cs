@@ -16,7 +16,7 @@ using Object = UnityEngine.Object;
 using System.Collections.Generic;
 using KFrame.Attributes;
 using KFrame.UI;
-using KFrame.Utilities;
+using KFrame.Utility;
 using Sirenix.OdinInspector;
 
 namespace KFrame.Editor

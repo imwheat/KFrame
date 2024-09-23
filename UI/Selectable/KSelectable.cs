@@ -7,7 +7,7 @@
 using System;
 using System.Collections.Generic;
 using KFrame;
-using KFrame.Utilities;
+using KFrame.Utility;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;

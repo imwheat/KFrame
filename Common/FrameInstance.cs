@@ -1,6 +1,6 @@
 using System.Text;
 using KFrame.Systems;
-using KFrame.Extensions;
+using KFrame.Utility;
 
 namespace KFrame
 {

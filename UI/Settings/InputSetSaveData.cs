@@ -5,7 +5,7 @@
 //* 描述：按键设置配置
 //*****************************************************
 
-using KFrame.Extensions;
+using KFrame.Utility;
 
 namespace KFrame.UI
 {
