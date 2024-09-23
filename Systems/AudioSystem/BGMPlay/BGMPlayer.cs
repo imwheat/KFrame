@@ -215,7 +215,7 @@ namespace KFrame.Systems
                 {
                     enablingPlayList[i].UpdateModifyVolume(BGMTranslationVolumeCurve.Evaluate(bgmTranslationProgress));
                 }
-                yield return CoroutineTool.WaitForFixedUpdate();
+                yield return CoroutineExtensions.WaitForFixedUpdate();
             }
 
             //把v规整为1f后再更新一下音量
@@ -226,7 +226,7 @@ namespace KFrame.Systems
                 BGMPlayingList.Add(enablingPlayList[i]);
             }
             enablingPlayList.Clear();
-            yield return CoroutineTool.WaitForFixedUpdate();
+            yield return CoroutineExtensions.WaitForFixedUpdate();
 
             //清空协程
             bgmTranslationCoroutine = null;
@@ -274,7 +274,7 @@ namespace KFrame.Systems
                 {
                     disablingPlayList[i].UpdateModifyVolume(BGMTranslationVolumeCurve.Evaluate(bgmTranslationProgress));
                 }
-                yield return CoroutineTool.WaitForFixedUpdate();
+                yield return CoroutineExtensions.WaitForFixedUpdate();
             }
 
             //结束播放
@@ -284,7 +284,7 @@ namespace KFrame.Systems
             }
             //清空播放列表
             disablingPlayList.Clear();
-            yield return CoroutineTool.WaitForFixedUpdate();
+            yield return CoroutineExtensions.WaitForFixedUpdate();
 
             //清空协程
             bgmTranslationCoroutine = null;

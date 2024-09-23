@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace KFrame.Extensions
 {
-    public static partial class UtilityTools
+    public static class ColorExtensions
     {
         /// <summary>
         /// 灰度值
@@ -36,10 +36,16 @@ namespace KFrame.Extensions
         {
             return originValue / 360f;
         }
-
+        /// <summary>
+        /// 改变颜色的Alpha
+        /// </summary>
+        /// <param name="color">原本的颜色</param>
+        /// <param name="alphaValue">修改后的alpha</param>
+        /// <returns>修改alpha后的颜色</returns>
         public static Color ChangeAlpha(this Color color, float alphaValue)
         {
-            return new Color(color.r, color.g, color.b, alphaValue);
+            color = new Color(color.r, color.g, color.b, alphaValue);
+            return color;
         }
     }
 }

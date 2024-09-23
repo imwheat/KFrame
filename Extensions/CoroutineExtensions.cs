@@ -13,7 +13,7 @@ namespace KFrame.Extensions
     /// 4. 潜在问题：预先创建的 YieldInstruction 实例可能导致意外行为，因为共享同一实例。其他代码修改实例可能影响其他协程。
     /// </para>
     /// </summary>
-    public static class CoroutineTool
+    public static class CoroutineExtensions
     {
         private struct WaitForFrameStruct : IEnumerator
         {

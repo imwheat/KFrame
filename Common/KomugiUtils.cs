@@ -19,7 +19,7 @@ namespace KFrame
     {
         public static void OpenLocalPath()
         {
-            FileTools.OpenLocalPath();
+            FileExtensions.OpenLocalPath();
         }
 
         public static void SetCopyBuffer(string context)

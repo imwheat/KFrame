@@ -120,7 +120,7 @@ namespace KFrame.Systems
             SaveGamePlayData();
 
             //等待一帧
-            yield return CoroutineTool.WaitForEndOfFrame();
+            yield return CoroutineExtensions.WaitForEndOfFrame();
 
             //保存新的数据
             foreach (ISaveable s in Saveables)
@@ -129,15 +129,15 @@ namespace KFrame.Systems
                 if (s != null)
                 {
                     s.OnSave();
-                    yield return CoroutineTool.WaitForEndOfFrame();
+                    yield return CoroutineExtensions.WaitForEndOfFrame();
                 }
             }
 
             //等待一帧
-            yield return CoroutineTool.WaitForEndOfFrame();
+            yield return CoroutineExtensions.WaitForEndOfFrame();
 
             //等待一帧
-            yield return CoroutineTool.WaitForEndOfFrame();
+            yield return CoroutineExtensions.WaitForEndOfFrame();
 
 #if UNITY_EDITOR
             if (CurSaveIndex != -1)
@@ -150,7 +150,7 @@ namespace KFrame.Systems
 #endif
 
 
-            yield return CoroutineTool.WaitForEndOfFrame();
+            yield return CoroutineExtensions.WaitForEndOfFrame();
 
             if (showUI)
             {

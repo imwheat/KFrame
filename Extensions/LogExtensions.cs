@@ -13,7 +13,7 @@ using UnityEngine;
 
 namespace KFrame.Extensions
 {
-    public static class LogTool
+    public static class LogExtensions
     {
         public static void Log(this string logContent)
         {

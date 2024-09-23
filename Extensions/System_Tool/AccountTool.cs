@@ -3,7 +3,10 @@ using UnityEngine;
 
 namespace KFrame.Extensions
 {
-    public static partial class UtilityTools
+    /// <summary>
+    /// 创建账号使用
+    /// </summary>
+    public static class AccountTool
     {
         /// <summary>
         /// 将指定的文本复制到系统剪贴板。

@@ -9,7 +9,7 @@ namespace KFrame.Editor
         /// <summary>
         /// 模版路径
         /// </summary>
-        public static string TemplatesPath => FileTools.ConvertAssetPathToSystemPath(ScriptTemplateConfig.FrameScriptTemplatesPath);
+        public static string TemplatesPath => FileExtensions.ConvertAssetPathToSystemPath(ScriptTemplateConfig.FrameScriptTemplatesPath);
 
         #region 代码生成开始标识
 

@@ -77,7 +77,7 @@ namespace KFrame
 			if (isAddDataPath)
 			{
 #if UNITY_EDITOR
-				sb.Append(FileTools.GetLocalPathTo());
+				sb.Append(FileExtensions.GetLocalPathTo());
 #endif
 			}
 
@@ -95,7 +95,7 @@ namespace KFrame
 
 			if (isAddTime)
 			{
-				sb.Append("_" + DataTimeTool.GetFormatNowTime(is12Time: false));
+				sb.Append("_" + DataTimeExtensions.GetFormatNowTime(is12Time: false));
 			}
 
 			if (isAddFileType)

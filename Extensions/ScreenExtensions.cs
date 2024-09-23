@@ -3,9 +3,9 @@ using UnityEngine;
 namespace KFrame.Extensions
 {
     /// <summary>
-    /// 设备屏幕检测
+    /// 设备屏幕操作的拓展
     /// </summary>
-    public static partial class UtilityTools
+    public static class ScreenExtensions
     {
         /// <summary>
         /// 检查当前屏幕是否为横屏模式。

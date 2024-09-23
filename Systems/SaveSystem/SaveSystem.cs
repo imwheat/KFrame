@@ -732,7 +732,7 @@ namespace KFrame.Systems
                     // 避免框架内部的数据类型也使用外部序列化工具序列化，这一般都会出现问题
                     if (binarySerializer == null || saveObject.GetType() == typeof(SaveSystemData))
                     {
-                        FileTools.SaveFile(saveObject, path);
+                        FileExtensions.SaveFile(saveObject, path);
                     }
                     else
                     {
@@ -743,7 +743,7 @@ namespace KFrame.Systems
                     break;
                 case SaveSystemType.Json:
                     string jsonData = JsonUtility.ToJson(saveObject);
-                    FileTools.SaveJson(jsonData, path);
+                    FileExtensions.SaveJson(jsonData, path);
                     break;
             }
         }
@@ -778,7 +778,7 @@ namespace KFrame.Systems
                 case SaveSystemType.Binary:
                     // 避免框架内部的数据类型也使用外部序列化工具序列化，这一般都会出现问题
                     if (binarySerializer == null || typeof(T) == typeof(SaveSystemData))
-                        return FileTools.LoadFile<T>(path);
+                        return FileExtensions.LoadFile<T>(path);
                     else
                     {
                         FileStream file = new FileStream(path, FileMode.Open);
@@ -788,7 +788,7 @@ namespace KFrame.Systems
                         return binarySerializer.Deserialize<T>(bytes);
                     }
                 case SaveSystemType.Json:
-                    return FileTools.LoadJson<T>(path);
+                    return FileExtensions.LoadJson<T>(path);
             }
 
             return null;

@@ -108,7 +108,7 @@ namespace KFrame.Editor
             //如果字典里面有的话那就从字典里面获取
             if (TemplateDic.ContainsKey(templateName))
             {
-                return FileTools.ConvertAssetPathToSystemPath(AssetDatabase.GetAssetPath(TemplateDic[templateName]));
+                return FileExtensions.ConvertAssetPathToSystemPath(AssetDatabase.GetAssetPath(TemplateDic[templateName]));
             }
 
             Debug.LogWarning($"找不到模版，模版名称:{templateName}");

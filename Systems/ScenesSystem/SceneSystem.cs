@@ -154,7 +154,7 @@ namespace KFrame.Systems
                     }
                 }
 
-                yield return CoroutineTool.WaitForFrames();
+                yield return CoroutineExtensions.WaitForFrames();
             }
         }
 
@@ -179,7 +179,7 @@ namespace KFrame.Systems
                     }
                 }
 
-                yield return CoroutineTool.WaitForFrames();
+                yield return CoroutineExtensions.WaitForFrames();
             }
         }
     }

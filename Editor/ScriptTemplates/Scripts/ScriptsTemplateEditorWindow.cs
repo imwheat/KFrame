@@ -199,7 +199,7 @@ namespace KFrame.Editor
             }
             if (GUILayout.Button("打开脚本模板所在文件夹"))
             {
-                FileTools.OpenPathFolder(ScriptTemplateConfig.FrameScriptTemplatesPath);
+                FileExtensions.OpenPathFolder(ScriptTemplateConfig.FrameScriptTemplatesPath);
             }
 
 
@@ -362,7 +362,7 @@ namespace KFrame.Editor
                 string templateName = textAsset.name;
                 CreateScriptTemplate(templateName, ConvertCSToTemplate(textAsset.text, ignoreElements), groupName);
                 //获取模版路径
-                string templatePath = FileTools.ConvertAssetPathToSystemPath(ScriptTemplateConfig.FrameScriptTemplatesPath);
+                string templatePath = FileExtensions.ConvertAssetPathToSystemPath(ScriptTemplateConfig.FrameScriptTemplatesPath);
                 //如果有分组
                 if (string.IsNullOrEmpty(groupName) == false)
                 {
@@ -423,7 +423,7 @@ namespace KFrame.Editor
             }
 
             //获取模版路径
-            string templatePath = FileTools.ConvertAssetPathToSystemPath(ScriptTemplateConfig.FrameScriptTemplatesPath);
+            string templatePath = FileExtensions.ConvertAssetPathToSystemPath(ScriptTemplateConfig.FrameScriptTemplatesPath);
             //如果有分组
             if (string.IsNullOrEmpty(group) == false)
             {
@@ -431,7 +431,7 @@ namespace KFrame.Editor
             }
 
             //如果目标文件夹不存在，那就创建
-            FileTools.CreateDirectoryIfNotExist(templatePath);
+            FileExtensions.CreateDirectoryIfNotExist(templatePath);
 
             //获取模版创建路径
             string filePath = templatePath + templateName + group + ".cs.txt";
@@ -447,7 +447,7 @@ namespace KFrame.Editor
                 File.WriteAllText(filePath, text);
                 AssetDatabase.Refresh();
                 AssetDatabase.SaveAssets();
-                ScriptTemplateConfig.AddTemplate(FileTools.ConvertSystemPathToAssetPath(filePath));
+                ScriptTemplateConfig.AddTemplate(FileExtensions.ConvertSystemPathToAssetPath(filePath));
                 Debug.Log("模板保存至: " + filePath);
             }
             catch (Exception e)

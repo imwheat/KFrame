@@ -10,6 +10,7 @@ using System.IO;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using StringExtensions = KFrame.Extensions.StringExtensions;
 
 namespace KFrame.Editor
 {
@@ -88,7 +89,7 @@ namespace KFrame.Editor
             string _CodeGenerator_EndText = (useRegion ? CodeGenerator_EndTextRegion : CodeGenerator_EndText) + addContentTag;
 
             //检查一下是不是已经存在了
-            int existIndex = UtilityTools.IndexOf(csText, _CodeGenerator_StartText, startRegionIndex, endRegionIndex);
+            int existIndex = StringExtensions.IndexOf(csText, _CodeGenerator_StartText, startRegionIndex, endRegionIndex);
             if (existIndex != -1)
             {
                 Debug.LogError($"已经存在相同的tag的代码了，如果你要更新替换旧的请使用{nameof(UpdateCode)}");
@@ -167,8 +168,8 @@ namespace KFrame.Editor
             string _CodeGenerator_EndText = (useRegion ? CodeGenerator_EndTextRegion : CodeGenerator_EndText) + removeContentTag;
 
             //检查一下是不是已经不存在了
-            int startIndex = UtilityTools.IndexOf(csText, _CodeGenerator_StartText, startRegionIndex, endRegionIndex);
-            int endIndex = UtilityTools.IndexOf(csText, _CodeGenerator_EndText, startRegionIndex, endRegionIndex);
+            int startIndex = StringExtensions.IndexOf(csText, _CodeGenerator_StartText, startRegionIndex, endRegionIndex);
+            int endIndex = StringExtensions.IndexOf(csText, _CodeGenerator_EndText, startRegionIndex, endRegionIndex);
             if (startIndex == -1 || endIndex == -1)
             {
                 Debug.Log( $"标记文本{_CodeGenerator_StartText},开始id:{startRegionIndex},结束id:{endRegionIndex}");
@@ -307,7 +308,7 @@ namespace KFrame.Editor
             }
             else if (findAssets.Length == 1)
             {
-                csPath = FileTools.ConvertAssetPathToSystemPath(AssetDatabase.GUIDToAssetPath(findAssets[0]));
+                csPath = FileExtensions.ConvertAssetPathToSystemPath(AssetDatabase.GUIDToAssetPath(findAssets[0]));
                 return true;
             }
             else

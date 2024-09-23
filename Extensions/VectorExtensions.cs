@@ -5,7 +5,7 @@ namespace KFrame.Extensions
     /// <summary>
     /// Koo向量工具
     /// </summary>
-    public static partial class UtilityTools
+    public static class VectorExtensions
     {
         #region Vector类型的数值比较
 
@@ -100,7 +100,6 @@ namespace KFrame.Extensions
         }
 
         #endregion
-
 
         #region Vector的操作
 

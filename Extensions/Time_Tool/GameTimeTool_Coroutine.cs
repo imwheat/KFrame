@@ -24,7 +24,7 @@ namespace KFrame.Extensions
 
         private static IEnumerator TimeCoroutine(float time, UnityAction callBack)
         {
-            yield return CoroutineTool.WaitForSeconds(time);
+            yield return CoroutineExtensions.WaitForSeconds(time);
             callBack?.Invoke();
         }
     }

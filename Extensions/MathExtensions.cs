@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace KFrame.Extensions
 {
-	public static partial class MathTool
+	public static class MathExtensions
 	{
 		#region 数值常量
 
@@ -266,7 +266,7 @@ namespace KFrame.Extensions
 			string resultStr = "";
 			int strLength = numStr.Length;
 			//切分出字符数组
-			string[] unitAllString = UtilityTools.GetSpliteStringFormat("零,一,二,三,四,五,六,七,八,九");
+			string[] unitAllString = StringExtensions.GetSpliteStringFormat("零,一,二,三,四,五,六,七,八,九");
 			string units = "", tens = "", hundreds = "";
 			string tenStr = "十";
 			string hundredStr = "百";

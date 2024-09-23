@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace KFrame.Extensions
 {
-    public static class NetTool
+    public static class NetExtensions
     {
         #region 计算机网络相关
 

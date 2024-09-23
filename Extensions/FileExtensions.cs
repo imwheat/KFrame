@@ -20,7 +20,7 @@ namespace KFrame.Extensions
     /// <para>3.包括了对UnityPackage的简化操作</para>
     /// <para>4.IO 操作</para>
     /// </summary>
-    public static class FileTools
+    public static class FileExtensions
     {
         #region 计算机单位
 

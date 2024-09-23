@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace KFrame.Extensions
 {
-    public static class DataTimeTool
+    public static class DataTimeExtensions
     {
         #region 时间工具
 

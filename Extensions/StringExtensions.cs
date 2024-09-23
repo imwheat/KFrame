@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace KFrame.Extensions
 {
-    public static partial class UtilityTools
+    public static class StringExtensions
     {
         private static readonly string[] inputDelimiters = new string[] { "\"\"", "''", "{}", "()", "[]" ,"//","\\\\"};
 

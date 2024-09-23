@@ -3,9 +3,9 @@ using UnityEngine;
 namespace KFrame.Extensions
 {
     /// <summary>
-    /// Koo游戏对象工具
+    /// K游戏对象工具
     /// </summary>
-    public static partial class UtilityTools
+    public static class GameObjectExtensions
     {
         private static readonly Vector3 ZeroVector = Vector3.zero;
         private static readonly Quaternion IdentityQuaternion = Quaternion.identity;

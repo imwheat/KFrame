@@ -100,7 +100,7 @@ namespace KFrame.Systems
 			{
 				EventInfo eventInfo = (EventInfo)eventInfoDic[eventName];
 
-				yield return CoroutineTool.WaitForSeconds(delayTime);
+				yield return CoroutineExtensions.WaitForSeconds(delayTime);
 
 				eventInfo.action?.Invoke();
 			}

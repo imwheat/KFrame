@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -204,7 +205,7 @@ namespace KFrame.Extensions
     /// <summary>
     /// 随机工具
     /// </summary>
-    public static partial class UtilityTools
+    public static class RandomExtensions
     {
         #region Random静态拓展
 
@@ -263,6 +264,58 @@ namespace KFrame.Extensions
         public static Vector2 GetRandomUnitVector2()
         {
             return Random.insideUnitCircle;
+        }
+        /// <summary>
+        /// 在范围内随机获取一个值[x,y)
+        /// </summary>
+        /// <param name="range">范围</param>
+        /// <returns>一个在range范围内的值[x,y)</returns>
+        public static float GetRandomValue(this Vector2 range)
+        {
+            float min, max;
+            if (range.x < range.y)
+            {
+                min = range.x;
+                max = range.y;
+            }
+            else
+            {
+                min = range.y;
+                max = range.x;
+            }
+
+            return Random.Range(min, max);
+        }
+        /// <summary>
+        /// 在范围内随机获取一个值[x,y)
+        /// </summary>
+        /// <param name="range">范围</param>
+        /// <returns>一个在range范围内的值[x,y)</returns>
+        public static float GetRandomValue(this Vector2Int range)
+        {
+            int min, max;
+            if (range.x < range.y)
+            {
+                min = range.x;
+                max = range.y;
+            }
+            else
+            {
+                min = range.y;
+                max = range.x;
+            }
+
+            return Random.Range(min, max);
+        }
+        /// <summary>
+        /// 随机获取一个list里的下标
+        /// </summary>
+        /// <param name="list">获取对象</param>
+        /// <returns>随机一个下标，如果传入list为空返回-1</returns>
+        public static int GetRandomIndex(this IList list)
+        {
+            if (list == null) return -1;
+            return Random.Range(0, list.Count);
         }
 
         #endregion

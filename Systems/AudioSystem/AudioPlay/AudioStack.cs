@@ -125,6 +125,7 @@ namespace KFrame.Systems
                         PlayIndexs.Add(i);
                     }
                 }
+
                 //随机选取一个播放
                 int k = UnityEngine.Random.Range(0, PlayIndexs.Count);
                 int id = PlayIndexs[k];
