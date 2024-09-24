@@ -6,16 +6,26 @@
 //*****************************************************
 
 using System;
+using System.Globalization;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace KFrame.Systems
 {
     [System.Serializable]
     public class SaveItem
     {
-        public int saveID;
+        /// <summary>
+        /// 存档id
+        /// </summary>
+        public int SaveID;
+        /// <summary>
+        /// 上次存档时间
+        /// </summary>
         private DateTime lastSaveTime;
-
+        /// <summary>
+        /// 上次存档时间
+        /// </summary>
         public DateTime LastSaveTime
         {
             get
@@ -27,26 +37,36 @@ namespace KFrame.Systems
 
                 return lastSaveTime;
             }
+            private set
+            {
+                lastSaveTime = value;
+                lastSaveTimeString = lastSaveTime.ToString(CultureInfo.CurrentCulture);
+            }
         }
-
-        [SerializeField] private string lastSaveTimeString; // Json不支持DateTime，用来持久化的
+        /// <summary>
+        /// 上次存档时间
+        /// Json不支持DateTime，用来持久化的
+        /// </summary>
+        [SerializeField] 
+        private string lastSaveTimeString; 
 
         public SaveItem(int saveID, DateTime lastSaveTime)
         {
-            this.saveID = saveID;
-            this.lastSaveTime = lastSaveTime;
-            lastSaveTimeString = lastSaveTime.ToString();
+            this.SaveID = saveID;
+            LastSaveTime = lastSaveTime;
         }
         public SaveItem(int saveID, string lastSaveTimeString)
         {
-            this.saveID = saveID;
+            this.SaveID = saveID;
             this.lastSaveTimeString = lastSaveTimeString;
         }
-
-        public void UpdateTime(DateTime lastSaveTime)
+        /// <summary>
+        /// 更新保存时间
+        /// </summary>
+        /// <param name="newSaveTime">新的保存时间</param>
+        public void UpdateTime(DateTime newSaveTime)
         {
-            this.lastSaveTime = lastSaveTime;
-            lastSaveTimeString = lastSaveTime.ToString();
+            LastSaveTime = newSaveTime;
         }
     }
 }

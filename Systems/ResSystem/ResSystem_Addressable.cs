@@ -1,12 +1,16 @@
 #if ENABLE_ADDRESSABLES
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using KFrame.Utilities;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
+using AsyncOperation = UnityEngine.AsyncOperation;
+using Component = UnityEngine.Component;
 using Object = UnityEngine.Object;
 
 namespace KFrame.Systems
@@ -22,8 +26,7 @@ namespace KFrame.Systems
         /// </summary>
         public static T GetOrNew<T>() where T : class, new()
         {
-            T obj = PoolSystem.GetObject<T>();
-            if (obj == null) obj = new T();
+            var obj = PoolSystem.GetObject<T>() ?? new T();
             return obj;
         }
 
@@ -36,8 +39,7 @@ namespace KFrame.Systems
         /// <param name="keyName">对象池中的名称</param>
         public static T GetOrNew<T>(string keyName) where T : class, new()
         {
-            T obj = PoolSystem.GetObject<T>(keyName);
-            if (obj == null) obj = new T();
+            var obj = PoolSystem.GetObject<T>(keyName) ?? new T();
             return obj;
         }
 
@@ -105,43 +107,13 @@ namespace KFrame.Systems
         #region 游戏物体
 
         /// <summary>
-        /// 初始化一个GameObject类型的对象池类型
-        /// </summary>  
-        /// <param name="keyName">资源名称</param>
-        /// <param name="maxCapacity">容量限制，超出时会销毁而不是进入对象池，-1代表无限</param>
-        /// <param name="defaultQuantity">默认容量，填写会向池子中放入对应数量的对象，0代表不预先放入</param>
-        /// <param name="assetName">AB资源名称</param>
-        public static void InitGameObjectPoolForKeyName(string keyName, int maxCapacity = -1, string assetName = null,
-            int defaultQuantity = 0)
-        {
-            if (defaultQuantity <= 0 || assetName == null)
-            {
-                PoolSystem.InitGameObjectPool(keyName, maxCapacity, null, 0);
-            }
-            else
-            {
-                GameObject[] gameObjects = new GameObject[defaultQuantity];
-                for (int i = 0; i < defaultQuantity; i++)
-                {
-                    gameObjects[i] = Addressables.InstantiateAsync(assetName).WaitForCompletion();
-                }
-
-                PoolSystem.InitGameObjectPool(keyName, maxCapacity, gameObjects);
-            }
-        }
-
-        /// <summary>
-        /// 初始化对象池并设置容量
+        /// 自动释放资源事件，基于事件工具
         /// </summary>
-        /// <param name="maxCapacity">容量限制，超出时会销毁而不是进入对象池，-1代表无限</param>
-        /// <param name="defaultQuantity">默认容量，填写会向池子中放入对应数量的对象，0代表不预先放入</param>
-        /// <param name="assetName">AB资源名称</param>
-        public static void InitGameObjectPoolForAssetName(string assetName, int maxCapacity = -1,
-            int defaultQuantity = 0)
+        private static void AutomaticReleaseAssetAction(GameObject obj)
         {
-            InitGameObjectPoolForKeyName(assetName, maxCapacity, assetName, defaultQuantity);
+            Addressables.ReleaseInstance(obj);
         }
-
+        
         /// <summary>
         /// 卸载游戏对象，这里是使用对象池的方式
         /// </summary>
@@ -154,7 +126,7 @@ namespace KFrame.Systems
         /// 游戏物体放置对象池中
         /// </summary>
         /// <param name="keyName">对象池中的key</param>
-        /// <param name="obj">放入的物体</param>
+        /// <param name="gameObject">放入的物体</param>
         public static void PushGameObjectInPool(string keyName, GameObject gameObject)
         {
             PoolSystem.PushGameObject(keyName, gameObject);
@@ -342,14 +314,6 @@ namespace KFrame.Systems
         }
 
         /// <summary>
-        /// 自动释放资源事件，基于事件工具
-        /// </summary>
-        private static void AutomaticReleaseAssetAction(GameObject obj)
-        {
-            Addressables.ReleaseInstance(obj);
-        }
-
-        /// <summary>
         /// 异步加载游戏物体并获取组件
         /// </summary>
         /// <typeparam name="T">物体身上的组件</typeparam>
@@ -396,7 +360,29 @@ namespace KFrame.Systems
         #endregion
 
         #region 游戏Asset
-
+        
+        /// <summary>
+        /// 异步加载资源地址
+        /// </summary>
+        /// <param name="key">资源的key</param>
+        /// <param name="type">资源类型</param>
+        /// <returns>资源的地址的异步handle</returns>
+        private static AsyncOperationHandle<IList<IResourceLocation>> LoadResourceLocationsAsync(object key,
+            Type type = null)
+        {
+            return Addressables.LoadResourceLocationsAsync(key, type);
+        }
+        /// <summary>
+        /// 同步加载资源地址
+        /// </summary>
+        /// <param name="key">资源的key</param>
+        /// <param name="type">资源类型</param>
+        /// <returns>资源的地址</returns>
+        private static IList<IResourceLocation> LoadResourceLocations(object key,
+            Type type = null)
+        {
+            return Addressables.LoadResourceLocationsAsync(key, type).WaitForCompletion();
+        }
         /// <summary>
         /// 加载Unity资源  如AudioClip Sprite 预制体
         /// 要注意，资源不在使用时候，需要调用一次Release
@@ -404,12 +390,12 @@ namespace KFrame.Systems
         /// <param name="assetName">AB资源名称</param>
         public static T LoadAsset<T>(string assetName) where T : UnityEngine.Object
         {
-            var locationHandle = Addressables.LoadResourceLocationsAsync(assetName).WaitForCompletion();
+            var locationHandle = LoadResourceLocations(assetName);
             if (locationHandle.Count > 0)
             {
-                var handle = Addressables.LoadAssetAsync<T>(locationHandle).WaitForCompletion();
+                var result = Addressables.LoadAssetAsync<T>(locationHandle).WaitForCompletion();
 
-                return handle;
+                return result;
             }
             else
             {
@@ -426,7 +412,7 @@ namespace KFrame.Systems
         /// <param name="callback">回调函数</param>
         public static async void LoadAssetAsync<T>(string assetName, Action<T> callback = null) where T : UnityEngine.Object
         {
-            var locationHandle = await Addressables.LoadResourceLocationsAsync(assetName).Task;
+            var locationHandle = await LoadResourceLocationsAsync(assetName).Task;
             
             if (locationHandle.Count > 0)
             {
@@ -499,27 +485,29 @@ namespace KFrame.Systems
         #endregion
 
         #region 场景资源加载
-
-        public static AsyncOperation LoadSceneAsync(string sceneName,
+        /// <summary>
+        /// 从Addressables里异步加载场景资源
+        /// </summary>
+        /// <param name="sceneName">场景名称</param>
+        /// <param name="mode">加载模式</param>
+        /// <returns>场景加载的异步handle</returns>
+        public static AsyncOperationHandle<SceneInstance> LoadSceneAsync(string sceneName,
             LoadSceneMode mode = LoadSceneMode.Single)
         {
-            AsyncOperationHandle<SceneInstance> sceneAsync =
+            AsyncOperationHandle<SceneInstance> sceneHandle =
                 Addressables.LoadSceneAsync(sceneName, mode);
 
-            AsyncOperation load = sceneAsync.Result.ActivateAsync();
-
-            return load;
+            return sceneHandle;
         }
-
-        public static AsyncOperation LoadSceneAsync(int sceneBuildIndex,
+        /// <summary>
+        /// 从Addressables里同步加载场景资源
+        /// </summary>
+        /// <param name="sceneName">场景名称</param>
+        /// <param name="mode">加载模式</param>
+        public static void LoadScene(string sceneName,
             LoadSceneMode mode = LoadSceneMode.Single)
         {
-            AsyncOperationHandle<SceneInstance> sceneAsync =
-                Addressables.LoadSceneAsync(sceneBuildIndex, mode);
-
-            AsyncOperation load = sceneAsync.Result.ActivateAsync();
-
-            return load;
+            Addressables.LoadSceneAsync(sceneName, mode).WaitForCompletion().ActivateAsync();
         }
 
         #endregion

@@ -37,7 +37,7 @@ namespace KFrame.Systems
                     return -1;
                 }
 
-                return CurSave.saveID;
+                return CurSave.SaveID;
             }
         }
 

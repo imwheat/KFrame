@@ -1,7 +1,7 @@
 //****************** 代码文件申明 ************************
 //* 文件：SaveSystem                      
 //* 作者：wheat
-//* 创建时间：2023年09月03日 星期日 20:35
+//* 创建时间：2024/09/24 15:23:18 星期二
 //* 描述：存档系统
 //*****************************************************
 
@@ -37,23 +37,36 @@ namespace KFrame.Systems
             // 所有存档的列表
             public List<SaveItem> saveItemList = new List<SaveItem>();
         }
-
+        
+        /// <summary>
+        /// 存档数据
+        /// </summary>
         private static SaveSystemData saveSystemData;
 
-        // 存档的保存
-        private const string saveDirName = "saveData";
+        /// <summary>
+        /// 存档保存路径文件夹名称
+        /// </summary>
+        private const string SaveDirName = "SaveData/";
 
-        // 设置的保存：1.全局数据的保存（分辨率、按键设置） 2.存档的设置保存。
-        // 常规情况下，存档系统自行维护
-        private const string settingDirName = "setting";
+        /// <summary>
+        /// 一些游戏设置的保存文件夹名称
+        /// </summary>
+        private const string SettingDirName = "Setting/";
 
-        // 存档文件夹路径
+        /// <summary>
+        /// 存档文件夹路径
+        /// </summary>
         public static string SaveDirPath;
+        /// <summary>
+        /// 游戏设置保存路径
+        /// </summary>
         private static string settingDirPath;
 
-        // 存档中对象的缓存字典 
-        // <存档ID,<文件名称，实际的对象>>
-        private static Dictionary<int, Dictionary<string, object>> cacheDic =
+        /// <summary>
+        /// 存档中对象的缓存字典
+        /// (存档ID,(文件名称，实际的对象))
+        /// </summary>
+        private static readonly Dictionary<int, Dictionary<string, object>> cacheDic =
             new Dictionary<int, Dictionary<string, object>>();
 
 
@@ -68,19 +81,22 @@ namespace KFrame.Systems
         }
 #endif
 
-        // 初始化的事情
+        /// <summary>
+        /// 初始化
+        /// </summary>
         public static void Init()
         {
-            SaveDirPath = Application.persistentDataPath + "/" + saveDirName;
-            settingDirPath = Application.persistentDataPath + "/" + settingDirName;
+            SaveDirPath = Application.persistentDataPath + "/" + SaveDirName;
+            settingDirPath = Application.persistentDataPath + "/" + SettingDirName;
 #if UNITY_EDITOR
             if (!UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode || inited)
             {
                 return;
             }
 #endif
+            //检查路径
             CheckAndCreateDir();
-            // 初始化SaveSystemData
+            //初始化SaveSystemData
             InitSaveSystemData();
 
 #if UNITY_EDITOR
@@ -153,7 +169,7 @@ namespace KFrame.Systems
                 saveItems.Add(saveSystemData.saveItemList[i]);
             }
 
-            saveItems.Sort((a, b) => a.saveID - b.saveID);
+            saveItems.Sort((a, b) => a.SaveID - b.SaveID);
             return saveItems;
         }
 
@@ -219,7 +235,7 @@ namespace KFrame.Systems
         {
             for (int i = 0; i < saveSystemData.saveItemList.Count; i++)
             {
-                if (saveSystemData.saveItemList[i].saveID == id)
+                if (saveSystemData.saveItemList[i].SaveID == id)
                 {
                     return saveSystemData.saveItemList[i];
                 }
@@ -233,7 +249,7 @@ namespace KFrame.Systems
         /// </summary>
         public static SaveItem GetSaveItem(SaveItem saveItem)
         {
-            GetSaveItem(saveItem.saveID);
+            GetSaveItem(saveItem.SaveID);
             return null;
         }
 
@@ -313,7 +329,7 @@ namespace KFrame.Systems
         /// </summary>
         public static void DeleteSaveItem(SaveItem saveItem)
         {
-            DeleteSaveItem(saveItem.saveID);
+            DeleteSaveItem(saveItem.SaveID);
         }
 
         #endregion
@@ -429,7 +445,7 @@ namespace KFrame.Systems
         /// <param name="saveFileName">保存的文件名称</param>
         public static void SaveObject(object saveObject, string saveFileName, SaveItem saveItem)
         {
-            SaveObject(saveObject, saveFileName, saveItem.saveID);
+            SaveObject(saveObject, saveFileName, saveItem.SaveID);
         }
 
         /// <summary>
@@ -482,7 +498,7 @@ namespace KFrame.Systems
         /// <param name="saveFileName">文件名称</param>
         public static T LoadObject<T>(string saveFileName, SaveItem saveItem) where T : class
         {
-            return LoadObject<T>(saveFileName, saveItem.saveID);
+            return LoadObject<T>(saveFileName, saveItem.SaveID);
         }
 
 
@@ -503,7 +519,7 @@ namespace KFrame.Systems
         /// <param name="saveItem">存档项</param>
         public static T LoadObject<T>(SaveItem saveItem) where T : class
         {
-            return LoadObject<T>(typeof(T).Name, saveItem.saveID);
+            return LoadObject<T>(typeof(T).Name, saveItem.SaveID);
         }
 
         /// <summary>
@@ -531,7 +547,7 @@ namespace KFrame.Systems
         /// <param name="saveID">存档的ID</param>
         public static void DeleteObject<T>(string saveFileName, SaveItem saveItem) where T : class
         {
-            DeleteObject<T>(saveFileName, saveItem.saveID);
+            DeleteObject<T>(saveFileName, saveItem.SaveID);
         }
 
         /// <summary>
@@ -549,7 +565,7 @@ namespace KFrame.Systems
         /// <param name="saveID">存档的ID</param>
         public static void DeleteObject<T>(SaveItem saveItem) where T : class
         {
-            DeleteObject<T>(typeof(T).Name, saveItem.saveID);
+            DeleteObject<T>(typeof(T).Name, saveItem.SaveID);
         }
 
         #endregion
@@ -634,8 +650,8 @@ namespace KFrame.Systems
             for (int i = 0; i < saveSystemData.saveItemList.Count; i++)
             {
                 //如果文件不存在了那就删除这个存档
-                if (!Directory.Exists($"{SaveDirPath}/{saveSystemData.saveItemList[i].saveID}") ||
-                    !File.Exists($"{SaveDirPath}/{saveSystemData.saveItemList[i].saveID}/{saveDataName}"))
+                if (!Directory.Exists($"{SaveDirPath}/{saveSystemData.saveItemList[i].SaveID}") ||
+                    !File.Exists($"{SaveDirPath}/{saveSystemData.saveItemList[i].SaveID}/{saveDataName}"))
                 {
                     saveSystemData.saveItemList.RemoveAt(i);
                     i--;
@@ -679,16 +695,10 @@ namespace KFrame.Systems
         /// </summary>
         private static void CheckAndCreateDir()
         {
-            // 确保路径的存在
-            if (Directory.Exists(SaveDirPath) == false)
-            {
-                Directory.CreateDirectory(SaveDirPath);
-            }
+            //如果文件夹不存在就创建
+            FileExtensions.CreateDirectoryIfNotExist(SaveDirPath);
+            FileExtensions.CreateDirectoryIfNotExist(settingDirPath);
 
-            if (Directory.Exists(settingDirPath) == false)
-            {
-                Directory.CreateDirectory(settingDirPath);
-            }
         }
 
         /// <summary>
