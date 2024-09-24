@@ -48,7 +48,7 @@ namespace KFrame.Systems
 		{
 			// 创建父节点 并设置到对象池根节点下方
 			GameObject go = PoolSystem.GetGameObject(PoolSystem.PoolLayerGameObjectName, poolRootObj);
-			if (go.IsNull())
+			if (!go)
 			{
 				go = new GameObject(PoolSystem.PoolLayerGameObjectName);
 				go.transform.SetParent(poolRootObj);
@@ -113,7 +113,7 @@ namespace KFrame.Systems
 		/// 销毁层数据
 		/// </summary>
 		/// <param name="pushThisToPool">将对象池层级挂接点也推送进对象池</param>
-		public void Destroy(bool pushThisToPool = false)
+		public void Dispose(bool pushThisToPool = false)
 		{
 			MaxCapacity = -1;
 			if (!pushThisToPool)

@@ -13,11 +13,21 @@ namespace KFrame.Systems
         /// 对象池层物体的游戏物体名称，用于将层物体也放进对象池
         /// </summary>
         public const string PoolLayerGameObjectName = "PoolLayerGameObjectName";
-
+        /// <summary>
+        /// GameObject对象池Module
+        /// </summary>
         private static GameObjectPoolModule gameObjectPoolModule;
+        /// <summary>
+        /// Object对象池Module
+        /// </summary>
         private static ObjectPoolModule objectPoolModule;
+        /// <summary>
+        /// 对象池根节点
+        /// </summary>
         private static Transform poolRootTransform;
-
+        /// <summary>
+        /// 初始化对象池
+        /// </summary>
         public static void Init()
         {
             gameObjectPoolModule = new GameObjectPoolModule();

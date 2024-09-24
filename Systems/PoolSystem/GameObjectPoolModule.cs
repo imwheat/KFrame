@@ -82,7 +82,6 @@ namespace KFrame.Systems
             {
                 //更新容量限制
                 poolData.MaxCapacity = maxCapacity;
-                //底层Queue自动扩容这里不管
 
                 //在指定默认容量和默认对象时才有意义
                 if (defaultQuantity > 0)
@@ -239,7 +238,6 @@ namespace KFrame.Systems
                     {
                         //如果有并且池的里有预制体，那就获取
                         obj = poolData.GetObj(parent, isActiveStart);
-                        if (parent == null) obj.transform.SetParent(DefaultDefaultParentInGameScene.transform);
                     }
                 }
 
@@ -282,7 +280,6 @@ namespace KFrame.Systems
                     {
                         //如果有并且池的里有预制体，那就获取
                         obj = poolData.GetObj(parent, isActiveStart);
-                        if (parent == null) obj.transform.SetParent(DefaultDefaultParentInGameScene.transform);
 
                         callBack?.Invoke(obj);
                         return obj;
@@ -332,7 +329,7 @@ namespace KFrame.Systems
         /// <param name="isActiveStart">是否立即激活</param>
         /// <param name="callBack">回调函数</param>
         /// <param name="isAsync">是否异步</param>
-        /// <returns></returns>
+        /// <returns>如果池子里没有了那就返回null</returns>
         public T GetOrNewGameObject<T>(string assetName, Transform parent = null, bool isActiveStart = true,
             UnityAction<T> callBack = null, bool isAsync = true) where T : Component
         {
@@ -357,20 +354,21 @@ namespace KFrame.Systems
         }
 
         /// <summary>
-        /// 通过预制体取东西 如果为null直接使用资源New一个GO
+        /// 通过预制体取GameObject
         /// </summary>
-        /// <param name="prefab"></param>
-        /// <param name="parent"></param>
+        /// <param name="prefab">预制体</param>
+        /// <param name="parent">父级</param>
         /// <param name="simplyNameType">简化物品名称方法 默认0 为完全简化物品名称 0 只简化(Clone) 1 不进行简化</param>
-        /// <param name="callBack"></param>
-        /// <returns></returns>
+        /// <param name="isActiveStart">初始是否为激活状态</param>
+        /// <param name="callBack">回调</param>
+        /// <returns>如果池子里没有了那就返回null</returns>
         public GameObject GetOrNewGameObject(GameObject prefab, Transform parent = null, bool isActiveStart = true,
             UnityAction<GameObject> callBack = null, int simplyNameType = 0)
         {
-            GameObject obj = GetOrNewGameObject(prefab, parent, isActiveStart, null);
+            GameObject obj = GetOrNewGameObject(prefab.name, parent, isActiveStart, null);
             
             //如果obj不为空
-            if (obj != null)
+            if (obj)
             {
                 //简化预制体名称
                 if (simplyNameType == -1)
@@ -390,21 +388,22 @@ namespace KFrame.Systems
         }
 
         /// <summary>
-        /// 通过预制体取东西 如果为null直接使用资源New一个GO
+        /// 通过预制体取GameObject
         /// </summary>
-        /// <param name="prefab"></param>
-        /// <param name="parent"></param>
+        /// <param name="prefab">预制体</param>
+        /// <param name="parent">父级</param>
         /// <param name="simplyNameType">简化物品名称方法 默认0 为完全简化物品名称 0 只简化(Clone) 1 不进行简化</param>
-        /// <param name="callBack"></param>
-        /// <returns></returns>
+        /// <param name="isActiveStart">初始是否为激活状态</param>
+        /// <param name="callBack">回调函数</param>
+        /// <returns>如果池子里没有了那就返回null</returns>
         public T GetOrNewGameObject<T>(GameObject prefab, Transform parent = null, bool isActiveStart = true,
             UnityAction<T> callBack = null, int simplyNameType = 0) where T : Component
         {
-            GameObject obj = GetOrNewGameObject(prefab, parent, isActiveStart, null);
+            GameObject obj = GetOrNewGameObject(prefab.name, parent, isActiveStart, null);
             T component = null;
             
             //如果obj不为空
-            if (obj != null)
+            if (obj)
             {
                 //简化预制体名称
                 if (simplyNameType == -1)
@@ -433,7 +432,7 @@ namespace KFrame.Systems
         public bool PushGameObject(string keyName, GameObject obj)
         {
             //如果GameObject为空或者key为空那就推入失败
-            if (obj == null || string.IsNullOrEmpty(keyName)) return false;
+            if (!obj || string.IsNullOrEmpty(keyName)) return false;
             
             //获取池子然后推入
             if (GameObjectPoolDataDic.TryGetValue(keyName, out GameObjectPoolData poolData))
@@ -467,7 +466,7 @@ namespace KFrame.Systems
             //获取对象池，如果有的话那就清空
             if (GameObjectPoolDataDic.TryGetValue(keyName, out GameObjectPoolData gameObjectPoolData))
             {
-                gameObjectPoolData.Destroy(true); //摧毁数据 并把自己也推入对象池
+                gameObjectPoolData.Dispose(true); //释放数据 并把自己也推入对象池
                 GameObjectPoolDataDic.Remove(keyName);
             }
         }
@@ -480,7 +479,7 @@ namespace KFrame.Systems
             var enumerator = GameObjectPoolDataDic.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                enumerator.Current.Value.Destroy(false);
+                enumerator.Current.Value.Dispose(false);
             }
 
             GameObjectPoolDataDic.Clear();
