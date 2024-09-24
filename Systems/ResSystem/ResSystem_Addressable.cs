@@ -202,7 +202,7 @@ namespace KFrame.Systems
         /// <param name="parent">父物体</param>
         /// <param name="callback">加载完成后的回调</param>
         /// <param name="autoRelease">物体销毁时，会自动去调用一次Addressables.Release</param>
-        public static async void InstantiateGameObjectAsync(Transform parent, string keyName, Action<GameObject> callback,
+        public static void InstantiateGameObjectAsync(Transform parent, string keyName, Action<GameObject> callback,
             bool autoRelease = true)
         {
             GameObject go = PoolSystem.GetGameObject(keyName, parent);

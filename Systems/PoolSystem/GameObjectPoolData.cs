@@ -19,14 +19,13 @@ namespace KFrame.Systems
 		/// <summary>
 		/// 对象容器
 		/// </summary>
-		public Queue<GameObject> PoolQueue;
+		public readonly Queue<GameObject> PoolQueue;
 
 		/// <summary>
 		/// 容量限制
 		/// -1 为无限
 		/// </summary>
-		public int maxCapacity = -1;
-
+		public int MaxCapacity = -1;
 		public GameObjectPoolData(int capacity = -1)
 		{
 			if (capacity == -1)
@@ -38,8 +37,14 @@ namespace KFrame.Systems
 				PoolQueue = new Queue<GameObject>(capacity);
 			}
 		}
-
-		public void Init(string assetPath, Transform poolRootObj, int capacity = -1)
+		
+		/// <summary>
+		/// 初始化对象池
+		/// </summary>
+		/// <param name="keyName">对象池key</param>
+		/// <param name="poolRootObj">对象池的父级</param>
+		/// <param name="capacity">对象池容量(-1为无上限)</param>
+		public void Init(string keyName, Transform poolRootObj, int capacity = -1)
 		{
 			// 创建父节点 并设置到对象池根节点下方
 			GameObject go = PoolSystem.GetGameObject(PoolSystem.PoolLayerGameObjectName, poolRootObj);
@@ -50,8 +55,8 @@ namespace KFrame.Systems
 			}
 
 			RootTransform = go.transform;
-			RootTransform.name = assetPath;
-			maxCapacity = capacity;
+			RootTransform.name = keyName;
+			MaxCapacity = capacity;
 		}
 
 		#endregion
@@ -64,9 +69,9 @@ namespace KFrame.Systems
 		public bool PushObj(GameObject obj)
 		{
 			// 检测是不是超过容量
-			if (maxCapacity != -1 && PoolQueue.Count >= maxCapacity)
+			if (MaxCapacity != -1 && PoolQueue.Count >= MaxCapacity)
 			{
-				GameObject.Destroy(obj);
+				Object.Destroy(obj);
 				return false;
 			}
 
@@ -85,22 +90,22 @@ namespace KFrame.Systems
 		/// <summary>
 		/// 从对象池中获取对象
 		/// </summary>
-		/// <returns></returns>
 		public GameObject GetObj(Transform parent = null, bool isActiveStart = true)
 		{
-			GameObject obj = PoolQueue.Dequeue();
-			// 显示对象
-			obj.SetActive(isActiveStart);
-			// 设置父物体
-			obj.transform.SetParent(parent);
-			if (parent == null)
+			//从队列里面获取obj
+			GameObject obj = null;
+			lock (PoolQueue)
 			{
-				// 回归默认场景
-				UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(obj,
-					UnityEngine.SceneManagement.SceneManager.GetActiveScene());
-
+				obj = PoolQueue.Dequeue();
 			}
-
+			//如果没有就返回null
+			if (!obj) return null;
+			//调整激活状态
+			obj.SetActive(isActiveStart);
+			//设置父物体
+			//如果没有父物体，那就调整到场景默认父级
+			obj.transform.SetParent(!parent ? GameObjectPoolModule.DefaultDefaultParentInGameScene.transform : parent);
+			//返回obj
 			return obj;
 		}
 
@@ -108,20 +113,20 @@ namespace KFrame.Systems
 		/// 销毁层数据
 		/// </summary>
 		/// <param name="pushThisToPool">将对象池层级挂接点也推送进对象池</param>
-		public void Desotry(bool pushThisToPool = false)
+		public void Destroy(bool pushThisToPool = false)
 		{
-			maxCapacity = -1;
+			MaxCapacity = -1;
 			if (!pushThisToPool)
 			{
 				// 真实销毁 这里由于删除层级根物体 会导致下方所有对象都被删除，所以不需要单独删除PoolQueue
-				GameObject.Destroy(RootTransform.gameObject);
+				Object.Destroy(RootTransform.gameObject);
 			}
 			else
 			{
 				// 销毁队列中的全部游戏物体
 				foreach (GameObject item in PoolQueue)
 				{
-					GameObject.Destroy(item);
+					Object.Destroy(item);
 				}
 
 				// 扔进对象池

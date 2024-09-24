@@ -12,56 +12,53 @@ namespace KFrame.Systems
     {
         #region GameObjectPoolModule持有的数据及初始化方法
 
-        // 根节点
+        /// <summary>
+        /// 根节点
+        /// </summary>
         private Transform poolRootTransform;
 
         /// <summary>
-        /// 游戏世界的父物体
+        /// 默认的父物体
         /// </summary>
-        private GameObject parentInGameScene;
+        private static GameObject defaultParentInGameScene;
 
         /// <summary>
-        /// 外部的调用
+        /// 默认的父物体
         /// </summary>
-        public GameObject ParentInGameScene
+        public static GameObject DefaultDefaultParentInGameScene
         {
             get
             {
-                if (parentInGameScene == null)
+                //如果为空那就新建一个
+                if (defaultParentInGameScene == null)
                 {
-                    //先在当前激活的场景里面找 激活的对象
-                    parentInGameScene = GameObject.Find("GameObjectPool");
-                    //没找到
-                    if (parentInGameScene == null)
-                    {
-                        parentInGameScene = new GameObject("GameObjectPool");
-                    }
+                    defaultParentInGameScene = new GameObject("GameObjectPool");
                 }
 
-                //之前的如果失活了 
-                if (parentInGameScene.activeSelf == false)
+                //之前的如果失活了 ，并且当前激活的场景和之前那个不一样
+                if (!defaultParentInGameScene.activeSelf && defaultParentInGameScene.scene.name != SceneManager.GetActiveScene().name)
                 {
-                    //判断一下当前激活的场景
-                    if (parentInGameScene.scene.name != SceneManager.GetActiveScene().name)
-                    {
-                        //New一个新的
-                        parentInGameScene = new GameObject("GameObjectPool");
-                    }
+                    //那就新建一个
+                    defaultParentInGameScene = new GameObject("GameObjectPool");
                 }
 
-                return parentInGameScene;
+                return defaultParentInGameScene;
             }
         }
 
         /// <summary>
-        /// GameObject对象容器
+        /// 对象池数据字典
         /// </summary>
-        public Dictionary<string, GameObjectPoolData> GameObjectPoolDataDic { get; private set; } =
+        public readonly Dictionary<string, GameObjectPoolData> GameObjectPoolDataDic =
             new Dictionary<string, GameObjectPoolData>();
-
-        public void Init(Transform poolRootTransform)
+        
+        /// <summary>
+        /// 初始化
+        /// </summary>
+        /// <param name="rootTransform">对象池根节点</param>
+        public void Init(Transform rootTransform)
         {
-            this.poolRootTransform = poolRootTransform;
+            poolRootTransform = rootTransform;
         }
 
         /// <summary>
@@ -84,19 +81,19 @@ namespace KFrame.Systems
             if (GameObjectPoolDataDic.TryGetValue(keyName, out GameObjectPoolData poolData))
             {
                 //更新容量限制
-                poolData.maxCapacity = maxCapacity;
+                poolData.MaxCapacity = maxCapacity;
                 //底层Queue自动扩容这里不管
 
                 //在指定默认容量和默认对象时才有意义
                 if (defaultQuantity > 0)
                 {
-                    if (prefab.IsNull() == false)
+                    if (prefab != null)
                     {
                         int nowCapacity = poolData.PoolQueue.Count;
                         // 生成差值容量个数的物体放入对象池
                         for (int i = 0; i < defaultQuantity - nowCapacity; i++)
                         {
-                            GameObject go = GameObject.Instantiate(prefab);
+                            GameObject go = Object.Instantiate(prefab);
                             go.name = prefab.name;
                             poolData.PushObj(go);
                         }
@@ -116,12 +113,12 @@ namespace KFrame.Systems
                 //在指定默认容量和默认对象时才有意义
                 if (defaultQuantity != 0)
                 {
-                    if (prefab.IsNull() == false)
+                    if (prefab != null)
                     {
                         // 生成容量个数的物体放入对象池
                         for (int i = 0; i < defaultQuantity; i++)
                         {
-                            GameObject go = GameObject.Instantiate(prefab);
+                            GameObject go = Object.Instantiate(prefab);
                             go.name = prefab.name;
                             poolData.PushObj(go);
                         }
@@ -154,7 +151,7 @@ namespace KFrame.Systems
         /// <param name="gameObjects">默认要放进来的对象数组</param>
         public void InitGameObjectPool(string keyName, int maxCapacity = -1, GameObject[] gameObjects = null)
         {
-            if (gameObjects.Length > maxCapacity && maxCapacity != -1)
+            if (gameObjects != null && gameObjects.Length > maxCapacity && maxCapacity != -1)
             {
                 Debug.LogWarning("默认容量超出最大容量限制");
                 return;
@@ -164,7 +161,7 @@ namespace KFrame.Systems
             if (GameObjectPoolDataDic.TryGetValue(keyName, out GameObjectPoolData poolData))
             {
                 //更新容量限制
-                poolData.maxCapacity = maxCapacity;
+                poolData.MaxCapacity = maxCapacity;
             }
             //设置的对象池不存在
             else
@@ -174,7 +171,7 @@ namespace KFrame.Systems
             }
 
             //在指定默认容量和默认对象时才有意义
-            if (gameObjects.Length > 0)
+            if (gameObjects != null && gameObjects.Length > 0)
             {
                 int nowCapacity = poolData.PoolQueue.Count;
                 // 生成差值容量个数的物体放入对象池
@@ -187,7 +184,7 @@ namespace KFrame.Systems
                     }
                     else
                     {
-                        GameObject.Destroy(gameObjects[i].gameObject);
+                        Object.Destroy(gameObjects[i].gameObject);
                     }
                 }
             }
@@ -196,7 +193,7 @@ namespace KFrame.Systems
         /// <summary>
         /// 创建一条新的对象池数据
         /// </summary>
-        private GameObjectPoolData CreateGameObjectPoolData(string layerName, int maxCapacity = -1)
+        private GameObjectPoolData CreateGameObjectPoolData(string keyName, int maxCapacity = -1)
         {
             //交由Object对象池拿到poolData的类
             GameObjectPoolData poolData = PoolSystem.GetObject<GameObjectPoolData>();
@@ -205,8 +202,8 @@ namespace KFrame.Systems
             if (poolData == null) poolData = new GameObjectPoolData(maxCapacity);
 
             //对拿到的poolData副本进行初始化（覆盖之前的数据）
-            poolData.Init(layerName, poolRootTransform, maxCapacity);
-            GameObjectPoolDataDic.Add(layerName, poolData);
+            poolData.Init(keyName, poolRootTransform, maxCapacity);
+            GameObjectPoolDataDic.Add(keyName, poolData);
             return poolData;
         }
 
@@ -215,26 +212,41 @@ namespace KFrame.Systems
         #region GameObjectPool相关功能
 
         /// <summary>
-        /// 从对象池拿去物品 如果没Init 返回Null
+        /// 从对象池拿取GameObject
         /// </summary>
         /// <param name="keyName">字典Key</param>
         /// <param name="parent">父物体</param>
+        /// <param name="isActiveStart">刚生成的时候是否激活</param>
         /// <param name="callBack">对这个物品进行的额外操作</param>
-        /// <returns>处理完成的GO</returns>
+        /// <returns>如果池子里没有了那就返回null</returns>
         public GameObject GetGameObject(string keyName, Transform parent = null, bool isActiveStart = true,
             UnityAction<GameObject> callBack = null)
         {
             GameObject obj = null;
-            // 先尝试获取PoolData
-            if (GameObjectPoolDataDic.TryGetValue(keyName, out GameObjectPoolData poolData) &&
-                poolData.PoolQueue.Count > 0)
+            GameObjectPoolData poolData = null;
+            
+            //先尝试获取PoolData
+            lock (GameObjectPoolDataDic)
             {
-                //如果有并且池的里有预制体，那就获取
-                obj = poolData.GetObj(parent, isActiveStart);
-                if (parent == null) obj.transform.SetParent(ParentInGameScene.transform);
+                GameObjectPoolDataDic.TryGetValue(keyName, out poolData);
             }
+            //获取到PoolData后从中获取GameObject
+            if (poolData != null)
+            {
+                lock (poolData)
+                {
+                    if (poolData.PoolQueue.Count > 0)
+                    {
+                        //如果有并且池的里有预制体，那就获取
+                        obj = poolData.GetObj(parent, isActiveStart);
+                        if (parent == null) obj.transform.SetParent(DefaultDefaultParentInGameScene.transform);
+                    }
+                }
 
-            callBack?.Invoke(obj); //触发回调方法
+            }
+            
+            //触发回调函数，然后返回结果
+            callBack?.Invoke(obj); 
             return obj;
         }
 
@@ -254,47 +266,58 @@ namespace KFrame.Systems
             UnityAction<GameObject> callBack = null, bool isAsync = true)
         {
             GameObject obj = null;
-            // 检查有没有这一层
-            if (GameObjectPoolDataDic.TryGetValue(assetName, out GameObjectPoolData poolData) &&
-                poolData.PoolQueue.Count > 0)
+            GameObjectPoolData poolData = null;
+            
+            //先尝试获取PoolData
+            lock (GameObjectPoolDataDic)
             {
-                obj = poolData.GetObj(parent, isActiveStart);
-                if (parent == null)
-                {
-                    obj.transform.SetParent(ParentInGameScene.transform);
-                }
-
-                callBack?.Invoke(obj);
+                GameObjectPoolDataDic.TryGetValue(assetName, out poolData);
             }
-            else
+            //如果池子中有GameObject那就处理后返回GameObject
+            if (poolData != null)
             {
-                if (isAsync)
+                lock (poolData)
                 {
-                    //使用异步加载资源 创建对象给外部使用
-                    ResSystem.LoadAssetAsync<GameObject>(assetName, (objLA) =>
+                    if (poolData.PoolQueue.Count > 0)
                     {
-                        obj = Object.Instantiate(objLA);
-                        GameObjectHandle();
-                    });
-                }
-                else
-                {
-                    //使用异步加载资源 创建对象给外部使用
-                    var objLA = ResSystem.LoadAsset<GameObject>(assetName);
-                    obj = Object.Instantiate(objLA);
-                    GameObjectHandle();
+                        //如果有并且池的里有预制体，那就获取
+                        obj = poolData.GetObj(parent, isActiveStart);
+                        if (parent == null) obj.transform.SetParent(DefaultDefaultParentInGameScene.transform);
+
+                        callBack?.Invoke(obj);
+                        return obj;
+                    }
                 }
             }
-
-
+            
+            //如果没有那就生成一个
+                
+            //对生成后的GameObject进行处理
             void GameObjectHandle()
             {
                 obj.SetActive(isActiveStart);
                 obj.name = assetName;
-                obj.transform.SetParent(parent == null ? ParentInGameScene.transform : parent);
+                obj.transform.SetParent(parent == null ? DefaultDefaultParentInGameScene.transform : parent);
                 callBack?.Invoke(obj);
             }
-
+                
+            if (isAsync)
+            {
+                //使用异步加载资源 创建对象给外部使用
+                ResSystem.LoadAssetAsync<GameObject>(assetName, (objPrefab) =>
+                {
+                    obj = Object.Instantiate(objPrefab);
+                    GameObjectHandle();
+                });
+            }
+            else
+            {
+                //加载资源 创建对象给外部使用
+                var objPrefab = ResSystem.LoadAsset<GameObject>(assetName);
+                obj = Object.Instantiate(objPrefab);
+                GameObjectHandle();
+            }
+            
             return obj;
         }
 
@@ -311,51 +334,26 @@ namespace KFrame.Systems
         /// <param name="isAsync">是否异步</param>
         /// <returns></returns>
         public T GetOrNewGameObject<T>(string assetName, Transform parent = null, bool isActiveStart = true,
-            UnityAction<T> callBack = null, bool isAsync = true) where T : class
+            UnityAction<T> callBack = null, bool isAsync = true) where T : Component
         {
-            GameObject obj = null;
-            // 检查有没有这一层
-            if (GameObjectPoolDataDic.TryGetValue(assetName, out GameObjectPoolData poolData) &&
-                poolData.PoolQueue.Count > 0)
+            //先生成GameObject
+            GameObject obj = GetOrNewGameObject(assetName, parent, isActiveStart, null, isAsync);
+            
+            //如果没有那就返回null
+            if (obj == null)
             {
-                obj = poolData.GetObj(parent, isActiveStart);
-                if (parent == null)
-                {
-                    obj.transform.SetParent(ParentInGameScene.transform);
-                }
-
-                callBack?.Invoke(obj.GetComponent<T>());
+                callBack?.Invoke(null);
+                return null;
             }
             else
             {
-                if (isAsync)
-                {
-                    //使用异步加载资源 创建对象给外部使用 todo 还有问题
-                    ResSystem.LoadAssetAsync<GameObject>(assetName, (objLA) =>
-                    {
-                        obj = Object.Instantiate(objLA);
-                        GameObjectHandle(obj);
-                    });
-                }
-                else
-                {
-                    //使用同步加载资源 创建对象给外部使用
-                    var objLA = ResSystem.LoadAsset<GameObject>(assetName);
-                    obj = Object.Instantiate(objLA);
-                    GameObjectHandle(obj);
-                }
+                //不为空那就获取component然后调用回调函数
+                T component = obj.GetComponent<T>();
+                callBack?.Invoke(component);
+
+                return component;
             }
 
-
-            void GameObjectHandle(GameObject gameObject)
-            {
-                gameObject.SetActive(isActiveStart);
-                gameObject.name = assetName;
-                gameObject.transform.SetParent(parent == null ? ParentInGameScene.transform : parent);
-                callBack?.Invoke(gameObject.GetComponent<T>());
-            }
-
-            return obj.GetComponent<T>();
         }
 
         /// <summary>
@@ -369,39 +367,24 @@ namespace KFrame.Systems
         public GameObject GetOrNewGameObject(GameObject prefab, Transform parent = null, bool isActiveStart = true,
             UnityAction<GameObject> callBack = null, int simplyNameType = 0)
         {
-            GameObject obj = null;
-
-            // 检查有没有这一层
-            if (GameObjectPoolDataDic.TryGetValue(prefab.name, out GameObjectPoolData poolData)
-                && poolData.PoolQueue.Count > 0)
+            GameObject obj = GetOrNewGameObject(prefab, parent, isActiveStart, null);
+            
+            //如果obj不为空
+            if (obj != null)
             {
-                //如果队列中有，那就从队列中获取
-                obj = poolData.GetObj(parent, isActiveStart);
-                //如果父物体为空 放进默认父物体中
-                if (parent == null) obj.transform.SetParent(ParentInGameScene.transform);
-            }
-            else //没有对象那就新生成一个
-            {
-                obj = Object.Instantiate(prefab, parent, false);
-                //如果父物体为空 放进默认父物体中
-                if (parent == null) obj.transform.SetParent(ParentInGameScene.transform);
-            }
-
-            obj.SetActive(isActiveStart);
-
-            //简化预制体名称
-            if (simplyNameType == -1)
-            {
-                obj.KooCompleteSimplyPrefabName();
-            }
-            else if (simplyNameType == 0)
-            {
-                obj.KooSimplyPrefabName();
+                //简化预制体名称
+                if (simplyNameType == -1)
+                {
+                    obj.CompleteSimplyPrefabName();
+                }
+                else if (simplyNameType == 0)
+                {
+                    obj.SimplyPrefabName();
+                }
             }
 
             //回调函数
             callBack?.Invoke(obj);
-
 
             return obj;
         }
@@ -415,80 +398,89 @@ namespace KFrame.Systems
         /// <param name="callBack"></param>
         /// <returns></returns>
         public T GetOrNewGameObject<T>(GameObject prefab, Transform parent = null, bool isActiveStart = true,
-            UnityAction<T> callBack = null, int simplyNameType = 0)
+            UnityAction<T> callBack = null, int simplyNameType = 0) where T : Component
         {
-            GameObject obj = null;
+            GameObject obj = GetOrNewGameObject(prefab, parent, isActiveStart, null);
+            T component = null;
+            
+            //如果obj不为空
+            if (obj != null)
+            {
+                //简化预制体名称
+                if (simplyNameType == -1)
+                {
+                    obj.CompleteSimplyPrefabName();
+                }
+                else if (simplyNameType == 0)
+                {
+                    obj.SimplyPrefabName();
+                }
 
-            // 检查有没有这一层
-            if (GameObjectPoolDataDic.TryGetValue(prefab.name, out GameObjectPoolData poolData)
-                && poolData.PoolQueue.Count > 0)
-            {
-                //如果队列中有，那就从队列中获取
-                obj = poolData.GetObj(parent, isActiveStart);
-                //如果父物体为空 放进默认父物体中
-                if (parent == null) obj.transform.SetParent(ParentInGameScene.transform);
-            }
-            else //没有对象那就新生成一个
-            {
-                obj = Object.Instantiate(prefab, parent, false);
-                //如果父物体为空 放进默认父物体中
-                if (parent == null) obj.transform.SetParent(ParentInGameScene.transform);
-            }
-
-            obj.SetActive(isActiveStart);
-
-            //简化预制体名称
-            if (simplyNameType == -1)
-            {
-                obj.KooCompleteSimplyPrefabName();
-            }
-            else if (simplyNameType == 0)
-            {
-                obj.KooSimplyPrefabName();
+                component = obj.GetComponent<T>();
             }
 
             //回调函数
-            callBack?.Invoke(obj.GetComponent<T>());
+            callBack?.Invoke(component);
 
-
-            return obj.GetComponent<T>();
+            return component;
         }
 
-
-        public void PushGameObject(GameObject go)
-        {
-            PushGameObject(go.name, go);
-        }
-
+        /// <summary>
+        /// 把GameObject推进对象池
+        /// </summary>
+        /// <param name="keyName">对象池的key</param>
+        /// <param name="obj">要推入对象池的GameObject</param>
         public bool PushGameObject(string keyName, GameObject obj)
         {
-            // 现在有没有这一层
+            //如果GameObject为空或者key为空那就推入失败
+            if (obj == null || string.IsNullOrEmpty(keyName)) return false;
+            
+            //获取池子然后推入
             if (GameObjectPoolDataDic.TryGetValue(keyName, out GameObjectPoolData poolData))
             {
                 return poolData.PushObj(obj);
             }
+            //如果还没有池子
             else
             {
+                //那就创建池子然后推入
                 poolData = CreateGameObjectPoolData(keyName);
                 return poolData.PushObj(obj);
             }
         }
 
+        /// <summary>
+        /// 把GameObject推进对象池
+        /// </summary>
+        public void PushGameObject(GameObject go)
+        {
+            //如果GameObject为空那就不能推入
+            if(go == null) return;
+            PushGameObject(go.name, go);
+        }
+        /// <summary>
+        /// 清空指定的对象池
+        /// </summary>
+        /// <param name="keyName">要清空的对象池的key</param>
         public void Clear(string keyName)
         {
+            //获取对象池，如果有的话那就清空
             if (GameObjectPoolDataDic.TryGetValue(keyName, out GameObjectPoolData gameObjectPoolData))
             {
-                gameObjectPoolData.Desotry(true); //摧毁数据 并把自己也推入对象池
+                gameObjectPoolData.Destroy(true); //摧毁数据 并把自己也推入对象池
                 GameObjectPoolDataDic.Remove(keyName);
             }
         }
-
+        /// <summary>
+        /// 清空所有对象池
+        /// </summary>
         public void ClearAll()
         {
+            //逐个遍历清空
             var enumerator = GameObjectPoolDataDic.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                enumerator.Current.Value.Desotry(false);
+                enumerator.Current.Value.Destroy(false);
             }
 
             GameObjectPoolDataDic.Clear();

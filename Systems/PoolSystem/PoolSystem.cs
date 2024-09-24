@@ -113,7 +113,7 @@ namespace KFrame.Systems
         /// <returns>取出的GO</returns>
         public static T GetOrNewGameObject<T>(string assetName, Transform parent = null,
             bool isActiveStart = true,
-            UnityAction<T> callBack = null, bool isAsync = true) where T : class
+            UnityAction<T> callBack = null, bool isAsync = true) where T : Component
         {
             T go =
                 gameObjectPoolModule.GetOrNewGameObject<T>(assetName, parent, isActiveStart, callBack, isAsync);
@@ -148,7 +148,7 @@ namespace KFrame.Systems
 
         public static T GetOrNewGameObject<T>(GameObject prefab, Transform parent = null,
             bool isActiveStart = true,
-            UnityAction<T> callBack = null)
+            UnityAction<T> callBack = null) where T : Component
         {
             T go = gameObjectPoolModule.GetOrNewGameObject<T>(prefab, parent, isActiveStart, callBack);
 

@@ -24,7 +24,7 @@ namespace KFrame.Utilities
         /// <param name="target">要实例化的 GameObject。</param>
         /// <param name="parent">新实例的父级 Component。</param>
         /// <returns>新实例化的 GameObject；如果目标为空，则返回 null。</returns>
-        public static GameObject KooInstantiateSelf(this GameObject target)
+        public static GameObject InstantiateSelf(this GameObject target)
         {
             return Object.Instantiate(target);
         }
@@ -35,7 +35,7 @@ namespace KFrame.Utilities
         /// <param name="target">要实例化的 GameObject。</param>
         /// <param name="parent">新实例的父级 Transform。</param>
         /// <returns>新实例化的 GameObject。</returns>
-        public static GameObject KooInstantiateSelf(this GameObject target, Transform parent,
+        public static GameObject InstantiateSelf(this GameObject target, Transform parent,
             bool worldPositionStays = false)
         {
             if (parent is not null)
@@ -55,10 +55,10 @@ namespace KFrame.Utilities
         /// <param name="target">要实例化的 GameObject。</param>
         /// <param name="parent">新实例的父级 Component。</param>
         /// <returns>新实例化的 GameObject；如果目标为空，则返回 null。</returns>
-        public static GameObject KooInstantiateSelf(this GameObject target, Component parent)
+        public static GameObject InstantiateSelf(this GameObject target, Component parent)
         {
             Transform parentTransform = parent?.transform;
-            return KooInstantiateSelf(target, parentTransform);
+            return InstantiateSelf(target, parentTransform);
         }
 
         /// <summary>
@@ -67,9 +67,9 @@ namespace KFrame.Utilities
         /// <param name="target">要实例化的 GameObject。</param>
         /// <param name="parent">新实例的父级 Component。</param>
         /// <returns>新实例化的 GameObject；如果目标为空，则返回 null。</returns>
-        public static GameObject KooInstantiateSelf(this GameObject target, GameObject parent)
+        public static GameObject InstantiateSelf(this GameObject target, GameObject parent)
         {
-            return KooInstantiateSelf(target, parent?.transform);
+            return InstantiateSelf(target, parent?.transform);
         }
 
         /// <summary>
@@ -78,9 +78,9 @@ namespace KFrame.Utilities
         /// <param name="target">要实例化的 GameObject。</param>
         /// <param name="parent">新实例的父级 Component。</param>
         /// <returns>新实例化的 GameObject；如果目标为空，则返回 null。</returns>
-        public static GameObject KooInstantiateSelf(this Component target, Component parent)
+        public static GameObject InstantiateSelf(this Component target, Component parent)
         {
-            return KooInstantiateSelf(target?.gameObject, parent?.transform);
+            return InstantiateSelf(target?.gameObject, parent?.transform);
         }
 
         /// <summary>
@@ -89,9 +89,9 @@ namespace KFrame.Utilities
         /// <param name="target">要实例化的 GameObject。</param>
         /// <param name="parent">新实例的父级 Component。</param>
         /// <returns>新实例化的 GameObject；如果目标为空，则返回 null。</returns>
-        public static GameObject KooInstantiateSelf(this Component target, GameObject parent)
+        public static GameObject InstantiateSelf(this Component target, GameObject parent)
         {
-            return KooInstantiateSelf(target?.gameObject, parent?.transform);
+            return InstantiateSelf(target?.gameObject, parent?.transform);
         }
 
         #endregion
@@ -104,7 +104,7 @@ namespace KFrame.Utilities
         /// 销毁目标 GameObject。
         /// </summary>
         /// <param name="target">要销毁的 GameObject。</param>
-        public static void KooDestroyGameObject(this GameObject target)
+        public static void DestroyGameObject(this GameObject target)
         {
             if (target == null)
             {
@@ -118,7 +118,7 @@ namespace KFrame.Utilities
         /// 立即销毁目标 GameObject。
         /// </summary>
         /// <param name="target">要销毁的 GameObject。</param>
-        public static void KooDestroyGameObjectImmediate(this GameObject target)
+        public static void DestroyGameObjectImmediate(this GameObject target)
         {
             if (target == null)
             {
@@ -132,18 +132,18 @@ namespace KFrame.Utilities
         /// 销毁目标 GameObject。
         /// </summary>
         /// <param name="target">要销毁的 GameObject。</param>
-        public static void KooDestroyGameObject(this Component target)
+        public static void DestroyGameObject(this Component target)
         {
-            KooDestroyGameObject(target?.gameObject);
+            DestroyGameObject(target?.gameObject);
         }
 
         /// <summary>
         /// 立即销毁目标 GameObject。
         /// </summary>
         /// <param name="target">要销毁的 GameObject。</param>
-        public static void KooDestroyGameObjectImmediate(this Component target)
+        public static void DestroyGameObjectImmediate(this Component target)
         {
-            KooDestroyGameObjectImmediate(target?.gameObject);
+            DestroyGameObjectImmediate(target?.gameObject);
         }
 
         #endregion
@@ -155,7 +155,7 @@ namespace KFrame.Utilities
         /// </summary>
         /// <param name="target">要销毁的 GameObject。</param>
         /// <param name="time">延时时间，以秒为单位。</param>
-        public static void KooDestroyGameObjectDelay(this GameObject target, float time)
+        public static void DestroyGameObjectDelay(this GameObject target, float time)
         {
             if (target == null)
             {
@@ -170,9 +170,9 @@ namespace KFrame.Utilities
         /// </summary>
         /// <param name="target">要销毁的 GameObject。</param>
         /// <param name="time">延时时间，以秒为单位。</param>
-        public static void KooDestroyGameObjectDelay(this Component target, float time)
+        public static void DestroyGameObjectDelay(this Component target, float time)
         {
-            KooDestroyGameObjectDelay(target?.gameObject, time);
+            DestroyGameObjectDelay(target?.gameObject, time);
         }
 
         #endregion
@@ -184,7 +184,7 @@ namespace KFrame.Utilities
         /// </summary>
         /// <param name="target">要清空子物体的 Transform</param>
         /// <param name="index">需要清空到第几个子节点为止，默认为0，即全部清除</param>
-        public static void KooDestroyChildren(this Transform target, int index = 0)
+        public static void DestroyChildren(this Transform target, int index = 0)
         {
             if (target == null)
             {
@@ -204,7 +204,7 @@ namespace KFrame.Utilities
         /// </summary>
         /// <param name="target">要清空子物体的 Transform</param>
         /// <param name="index">需要清空到第几个子节点为止，默认为0，即全部清除</param>
-        public static void KooDestroyChildrenImmediate(this Transform target, int index = 0)
+        public static void DestroyChildrenImmediate(this Transform target, int index = 0)
         {
             if (target == null)
             {
@@ -224,9 +224,9 @@ namespace KFrame.Utilities
         /// </summary>
         /// <param name="target">要清空子物体的 Transform</param>
         /// <param name="index">需要清空到第几个子节点为止，默认为0，即全部清除</param>
-        public static void KooDestroyChildren(this Component target, int index = 0)
+        public static void DestroyChildren(this Component target, int index = 0)
         {
-            KooDestroyChildren(target?.transform, index);
+            DestroyChildren(target?.transform, index);
         }
 
         /// <summary>
@@ -234,9 +234,9 @@ namespace KFrame.Utilities
         /// </summary>
         /// <param name="target">要清空子物体的 Transform</param>
         /// <param name="index">需要清空到第几个子节点为止，默认为0，即全部清除</param>
-        public static void KooDestroyChildren(this GameObject target, int index = 0)
+        public static void DestroyChildren(this GameObject target, int index = 0)
         {
-            KooDestroyChildren(target?.transform, index);
+            DestroyChildren(target?.transform, index);
         }
         
         /// <summary>
@@ -244,9 +244,9 @@ namespace KFrame.Utilities
         /// </summary>
         /// <param name="target">要清空子物体的 Transform</param>
         /// <param name="index">需要清空到第几个子节点为止，默认为0，即全部清除</param>
-        public static void KooDestroyChildrenIm(this GameObject target, int index = 0)
+        public static void DestroyChildrenIm(this GameObject target, int index = 0)
         {
-            KooDestroyChildren(target?.transform, index);
+            DestroyChildren(target?.transform, index);
         }
 
         #endregion
@@ -261,7 +261,7 @@ namespace KFrame.Utilities
         /// <typeparam name="T">要获取或添加的组件类型。</typeparam>
         /// <param name="obj">目标 GameObject。</param>
         /// <returns>获取或添加的组件实例。</returns>
-        public static T KooGetOrAddComponent<T>(this GameObject obj) where T : Component
+        public static T GetOrAddComponent<T>(this GameObject obj) where T : Component
         {
             if (obj == null)
             {
@@ -283,9 +283,9 @@ namespace KFrame.Utilities
         /// <typeparam name="T">要获取或添加的组件类型。</typeparam>
         /// <param name="target">给定的 Component。</param>
         /// <returns>获取或添加的组件实例。</returns>
-        public static T KooGetOrAddComponent<T>(this Component target) where T : Component
+        public static T GetOrAddComponent<T>(this Component target) where T : Component
         {
-            return KooGetOrAddComponent<T>(target?.gameObject);
+            return GetOrAddComponent<T>(target?.gameObject);
         }
 
         /// <summary>
@@ -294,7 +294,7 @@ namespace KFrame.Utilities
         /// <param name="target">给定的 GameObject。</param>
         /// <param name="type">要获取或添加的组件类型。</param>
         /// <returns>获取或添加的组件实例。</returns>
-        public static Component KooGetOrAddComponent(this GameObject target, System.Type type)
+        public static Component GetOrAddComponent(this GameObject target, System.Type type)
         {
             if (target == null || type == null)
             {
@@ -316,9 +316,9 @@ namespace KFrame.Utilities
         /// <param name="target">给定的 GameObject。</param>
         /// <param name="type">要获取或添加的组件类型。</param>
         /// <returns>获取或添加的组件实例。</returns>
-        public static Component KooGetOrAddComponent(this Component target, System.Type type)
+        public static Component GetOrAddComponent(this Component target, System.Type type)
         {
-            return KooGetOrAddComponent(target?.gameObject, type);
+            return GetOrAddComponent(target?.gameObject, type);
         }
 
         #endregion
@@ -332,7 +332,7 @@ namespace KFrame.Utilities
         /// <param name="searchName">子物体名称</param>
         /// <typeparam name="T">组件类型</typeparam>
         /// <returns></returns>
-        public static T KooFindComponentByChildName<T>(this GameObject gameObject, string searchName)
+        public static T FindComponentByChildName<T>(this GameObject gameObject, string searchName)
             where T : Component
         {
             var componentsInChildren = gameObject.GetComponentsInChildren<T>(true);
@@ -356,7 +356,7 @@ namespace KFrame.Utilities
         /// <param name="searchName">子物体名称</param>
         /// <typeparam name="T">组件类型</typeparam>
         /// <returns></returns>
-        public static T KooFindComponentByChildName<T>(this Transform transform, string searchName) where T : Component
+        public static T FindComponentByChildName<T>(this Transform transform, string searchName) where T : Component
         {
             var componentsInChildren = transform.GetComponentsInChildren<T>(true);
             var length = componentsInChildren.Length;
@@ -381,7 +381,7 @@ namespace KFrame.Utilities
         /// </summary>
         /// <param name="target">指定的 Component。</param>
         /// <returns>子物体数量。</returns>
-        public static int KooGetChildCount(this Component target)
+        public static int GetChildCount(this Component target)
         {
             if (target == null)
             {
@@ -396,7 +396,7 @@ namespace KFrame.Utilities
         /// </summary>
         /// <param name="target">指定的 GameObject。</param>
         /// <returns>子物体数量。</returns>
-        public static int KooGetChildCount(this GameObject target)
+        public static int GetChildCount(this GameObject target)
         {
             if (target == null)
             {
@@ -462,7 +462,7 @@ namespace KFrame.Utilities
         /// </summary>
         /// <param name="prefab">要获取名称的预制体 GameObject 对象。</param>
         /// <returns>返回预制体的名称，去除 "(XXX)" 后缀。</returns>
-        public static void KooCompleteSimplyPrefabName(this GameObject prefab)
+        public static void CompleteSimplyPrefabName(this GameObject prefab)
         {
             if (prefab == null)
             {
@@ -494,7 +494,7 @@ namespace KFrame.Utilities
         /// </summary>
         /// <param name="prefab">要获取名称的预制体 GameObject 对象。</param>
         /// <returns>返回预制体的名称，去除 "(Clone)" 后缀。</returns>
-        public static void KooSimplyPrefabName(this GameObject prefab)
+        public static void SimplyPrefabName(this GameObject prefab)
         {
             string name = prefab.transform.name;
             // 去除 "(Clone)" 后缀并返回
@@ -511,7 +511,7 @@ namespace KFrame.Utilities
         /// </summary>
         /// <param name="prefab">要获取名称的预制体 GameObject 对象。</param>
         /// <returns>返回预制体的名称，去除 "(Clone)" 后缀。</returns>
-        public static string KooGetSimplyPrefabName(this GameObject prefab)
+        public static string GetSimplyPrefabName(this GameObject prefab)
         {
             string name = prefab.transform.name;
             // 去除 "(Clone)" 后缀并返回
@@ -529,7 +529,7 @@ namespace KFrame.Utilities
         /// </summary>
         /// <param name="prefab">要获取名称的预制体 GameObject 对象。</param>
         /// <returns>返回预制体的名称，去除 "(XXX)" 后缀。</returns>
-        public static string KooGetCompleteSimplyName(this GameObject prefab)
+        public static string GetCompleteSimplyName(this GameObject prefab)
         {
             if (prefab == null)
             {
@@ -565,7 +565,7 @@ namespace KFrame.Utilities
         /// </summary>
         /// <param name="prefab">要处理的预制体 GameObject 对象。</param>
         /// <returns>返回处理后的预制体 GameObject。</returns>
-        public static GameObject GetSimplyNamePrefab(GameObject prefab)
+        public static GameObject GetSimplyNamePrefab(this GameObject prefab)
         {
             string name = prefab.transform.name;
 
@@ -578,26 +578,7 @@ namespace KFrame.Utilities
 
             return prefab;
         }
-
-        /// <summary>
-        /// 通过简化名称获取预制体，如果存在 "(Clone)" 后缀则移除。
-        /// </summary>
-        /// <param name="prefab">原始预制体 GameObject。</param>
-        /// <returns>经过修改的预制体 GameObject。</returns>
-        public static GameObject KooGetSimplyNamePrefab(this GameObject prefab)
-        {
-            string name = prefab.transform.name;
-
-            // 如果名称包含 "(Clone)" 后缀，进行修改并返回
-            if (name.Contains("(Clone)"))
-            {
-                name = name.Substring(0, name.Length - 7);
-                prefab.transform.name = name;
-            }
-
-            return prefab;
-        }
-
+        
         #endregion
     }
 }
