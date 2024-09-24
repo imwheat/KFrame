@@ -7,6 +7,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
 
 namespace KFrame.Systems
 {
@@ -18,7 +19,7 @@ namespace KFrame.Systems
         /// 获取实例-普通Class
         /// 如果类型需要缓存，会从对象池中获取
         /// 如果对象池没有或new一个返回
-        /// <summary>
+        /// </summary>
         public static T GetOrNew<T>() where T : class, new()
         {
             T obj = PoolSystem.GetObject<T>();
@@ -31,7 +32,7 @@ namespace KFrame.Systems
         /// 获取实例-普通Class
         /// 如果类型需要缓存，会从对象池中获取
         /// 如果对象池没有或new一个返回
-        /// <summary>
+        /// </summary>
         /// <param name="keyName">对象池中的名称</param>
         public static T GetOrNew<T>(string keyName) where T : class, new()
         {
@@ -163,17 +164,25 @@ namespace KFrame.Systems
         /// 加载游戏物体
         /// 会自动检查对象池中是否包含，如果包含则返回对象池中的
         /// </summary>
-        /// <param name="keyName">对象池中的分组名称</param>
+        /// <param name="keyName">对象池中的名称</param>
         /// <param name="parent">父物体</param>
         /// <param name="autoRelease">物体销毁时，会自动去调用一次Addressables.Release</param>
         public static GameObject InstantiateGameObject(Transform parent, string keyName, bool autoRelease = true)
         {
-            GameObject go;
-            go = PoolSystem.GetGameObject(keyName, parent);
-            if (go.IsNull() == false) return go;
+            //先尝试从对象池中获取Gameobject
+            GameObject go = PoolSystem.GetGameObject(keyName, parent);
+            if (go== null) return go;
             else
             {
-                go = Addressables.InstantiateAsync(keyName, parent).WaitForCompletion();
+                //如果没有那就加载预制体后生成
+                GameObject prefab = LoadAsset<GameObject>(keyName);
+                if (prefab == null)
+                {
+                    //找不到预制体就返回null
+                    return null;
+                }
+
+                go = Object.Instantiate(prefab, parent);
                 if (autoRelease)
                 {
                     go.transform.OnReleaseAddressableAsset(AutomaticReleaseAssetAction);
@@ -193,43 +202,34 @@ namespace KFrame.Systems
         /// <param name="parent">父物体</param>
         /// <param name="callback">加载完成后的回调</param>
         /// <param name="autoRelease">物体销毁时，会自动去调用一次Addressables.Release</param>
-        public static void InstantiateGameObjectAsync(Transform parent, string keyName, Action<GameObject> callback,
+        public static async void InstantiateGameObjectAsync(Transform parent, string keyName, Action<GameObject> callback,
             bool autoRelease = true)
         {
-            GameObject go;
-            go = PoolSystem.GetGameObject(keyName, parent);
-            if (go.IsNull() == false) callback?.Invoke(go);
+            GameObject go = PoolSystem.GetGameObject(keyName, parent);
+            
+            if (go == null) callback?.Invoke(go);
             else
             {
-                Addressables.InstantiateAsync(keyName, parent).Completed += (handle) =>
+                //如果没有那就加载预制体后生成
+                LoadAssetAsync<GameObject>(keyName, (prefab) =>
                 {
-                    OnInstantiateGameObjectAsyncCompleted(handle, callback, keyName, autoRelease);
-                };
+                    if (prefab == null)
+                    {
+                        //找不到预制体就返回
+                        return;
+                    }
+
+                    go = Object.Instantiate(prefab, parent);
+                    if (autoRelease)
+                    {
+                        go.transform.OnReleaseAddressableAsset(AutomaticReleaseAssetAction);
+                    }
+
+                    go.name = keyName;
+                    callback?.Invoke(go);
+                });
+
             }
-        }
-
-        private static void OnInstantiateGameObjectAsyncCompleted(AsyncOperationHandle<GameObject> handle,
-            Action<GameObject> callback, string gameObjectName, bool autoRelease = true)
-        {
-            handle.Result.name = gameObjectName;
-            if (autoRelease)
-            {
-                handle.Result.transform.OnReleaseAddressableAsset(AutomaticReleaseAssetAction);
-            }
-
-            callback?.Invoke(handle.Result);
-        }
-
-        private static void OnInstantiateGameObjectAsyncCompleted<T>(AsyncOperationHandle<GameObject> handle,
-            Action<T> callback, string gameObjectName, bool autoRelease = true) where T : Component
-        {
-            handle.Result.name = gameObjectName;
-            if (autoRelease)
-            {
-                handle.Result.transform.OnReleaseAddressableAsset(AutomaticReleaseAssetAction);
-            }
-
-            callback?.Invoke(handle.Result.GetComponent<T>());
         }
 
 
@@ -244,19 +244,26 @@ namespace KFrame.Systems
         public static GameObject InstantiateGameObject(string assetName, Transform parent = null, string keyName = null,
             bool autoRelease = true)
         {
-            GameObject go;
-            if (keyName == null) go = PoolSystem.GetGameObject(assetName, parent);
-            else go = PoolSystem.GetGameObject(keyName, parent);
-            if (go.IsNull() == false) return go;
+            //先尝试从对象池中获取Gameobject
+            GameObject go = PoolSystem.GetGameObject(keyName, parent);
+            if (go== null) return go;
             else
             {
-                go = Addressables.InstantiateAsync(assetName, parent).WaitForCompletion();
+                //如果没有那就加载预制体后生成
+                GameObject prefab = LoadAsset<GameObject>(assetName);
+                if (prefab == null)
+                {
+                    //找不到预制体就返回null
+                    return null;
+                }
+
+                go = Object.Instantiate(prefab, parent);
                 if (autoRelease)
                 {
                     go.transform.OnReleaseAddressableAsset(AutomaticReleaseAssetAction);
                 }
 
-                go.name = keyName != null ? keyName : assetName;
+                go.name = string.IsNullOrEmpty(keyName) ? assetName : keyName;
             }
 
             return go;
@@ -275,17 +282,31 @@ namespace KFrame.Systems
             Transform parent = null, string keyName = null, bool autoRelease = true)
         {
             GameObject go;
-            if (keyName == null) go = PoolSystem.GetGameObject(assetName, parent);
+            if (string.IsNullOrEmpty(keyName)) go = PoolSystem.GetGameObject(assetName, parent);
             else go = PoolSystem.GetGameObject(keyName, parent);
 
             if (go.IsNull() == false) callback?.Invoke(go);
             else
             {
-                Addressables.InstantiateAsync(assetName, parent).Completed += (handle) =>
+                //如果没有那就加载预制体后生成
+                LoadAssetAsync<GameObject>(keyName, (prefab) =>
                 {
-                    OnInstantiateGameObjectAsyncCompleted(handle, callback, keyName != null ? keyName : assetName,
-                        autoRelease);
-                };
+                    if (prefab == null)
+                    {
+                        //找不到预制体就返回
+                        return;
+                    }
+
+                    go = Object.Instantiate(prefab, parent);
+                    if (autoRelease)
+                    {
+                        go.transform.OnReleaseAddressableAsset(AutomaticReleaseAssetAction);
+                    }
+
+                    go.name = string.IsNullOrEmpty(keyName) ? assetName : keyName;
+                    callback?.Invoke(go);
+                });
+                
             }
         }
 
@@ -336,6 +357,7 @@ namespace KFrame.Systems
         /// <param name="callback">实例化后的回调函数</param>
         /// <param name="parent">父物体</param>
         /// <param name="keyName">对象池中的分组名称，可为Null</param>
+        /// <param name="autoRelease">自动释放资源</param>
         public static void InstantiateGameObjectAsync<T>(string assetName, Action<T> callback = null,
             Transform parent = null, string keyName = null, bool autoRelease = true) where T : Component
         {
@@ -349,13 +371,26 @@ namespace KFrame.Systems
                 callback?.Invoke(go.GetComponent<T>());
                 return;
             }
-
-            // 不通过缓存池
-            Addressables.InstantiateAsync(assetName, parent).Completed += (handle) =>
+            
+            //如果没有那就加载预制体后生成
+            LoadAssetAsync<GameObject>(keyName, (prefab) =>
             {
-                OnInstantiateGameObjectAsyncCompleted<T>(handle, callback, keyName != null ? keyName : assetName,
-                    autoRelease);
-            };
+                if (prefab == null)
+                {
+                    //找不到预制体就返回
+                    return;
+                }
+
+                go = Object.Instantiate(prefab, parent);
+                if (autoRelease)
+                {
+                    go.transform.OnReleaseAddressableAsset(AutomaticReleaseAssetAction);
+                }
+
+                go.name = string.IsNullOrEmpty(keyName) ? assetName : keyName;
+                callback?.Invoke(go.GetComponent<T>());
+            });
+
         }
 
         #endregion
@@ -388,28 +423,26 @@ namespace KFrame.Systems
         /// </summary>
         /// <typeparam name="T">资源类型</typeparam>
         /// <param name="assetName">AB资源名称</param>
-        /// <param name="callBack">回调函数</param>
-        public static void LoadAssetAsync<T>(string assetName, Action<T> callback = null) where T : UnityEngine.Object
+        /// <param name="callback">回调函数</param>
+        public static async void LoadAssetAsync<T>(string assetName, Action<T> callback = null) where T : UnityEngine.Object
         {
+            var locationHandle = await Addressables.LoadResourceLocationsAsync(assetName).Task;
             
-            Addressables.LoadAssetAsync<T>(assetName).Completed += (handle) =>
+            if (locationHandle.Count > 0)
             {
-                OnLoadAssetAsyncCompleted<T>(handle, callback);
-            };
-        }
+                var handle = await Addressables.LoadAssetAsync<T>(locationHandle).Task;
+                
+                callback?.Invoke(handle);
+            }
 
-        private static void OnLoadAssetAsyncCompleted<T>(AsyncOperationHandle<T> handle, Action<T> callback = null)
-            where T : UnityEngine.Object
-        {
-            callback?.Invoke(handle.Result);
         }
-
+        
         /// <summary>
         /// 加载指定Key的所有资源
         /// 注意:批量加载时，如果释放资源要释放掉handle，直接去释放资源是无效的
         /// </summary>
         /// <typeparam name="T">加载类型</typeparam>
-        /// <param name="keyName">一般是lable</param>
+        /// <param name="keyName">一般是label</param>
         /// <param name="handle">用来Release时使用</param>
         /// <param name="callBackOnEveryOne">注意这里是针对每一个资源的回调</param>
         /// <returns>所有资源</returns>
@@ -426,7 +459,7 @@ namespace KFrame.Systems
         /// 注意2:回调后使用callBack中的参数使用(.Result)即可访问资源列表
         /// </summary>
         /// <typeparam name="T">加载类型</typeparam>
-        /// <param name="keyName">一般是lable</param>
+        /// <param name="keyName">一般是label</param>
         /// <param name="callBack">所有资源列表的统一回调，注意这是很必要的，因为Release时需要这个handle</param>
         /// <param name="callBackOnEveryOne">注意这里是针对每一个资源的回调,可以是Null</param>
         public static void LoadAssetsAsync<T>(string keyName, Action<AsyncOperationHandle<IList<T>>> callBack,
