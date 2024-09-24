@@ -1,3 +1,9 @@
+//****************** 代码文件申明 ***********************
+//* 文件：GameObjectPoolModule
+//* 作者：wheat
+//* 创建时间：2024/09/24 13:11:25 星期二
+//* 描述：GameObject对象池的管理器
+//*******************************************************
 using System.Collections.Generic;
 using KFrame.Utilities;
 using UnityEngine;

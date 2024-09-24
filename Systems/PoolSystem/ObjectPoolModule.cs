@@ -1,6 +1,11 @@
+//****************** 代码文件申明 ***********************
+//* 文件：ObjectPoolModule
+//* 作者：wheat
+//* 创建时间：2024/09/24 13:23:22 星期二
+//* 描述：Object对象池的管理器
+//*******************************************************
 using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
 using KFrame.Utilities;
 
 namespace KFrame.Systems
@@ -240,9 +245,8 @@ namespace KFrame.Systems
         /// </summary>
         /// <param name="obj">要推入池子中的对象</param>
         /// <returns>成功推入就返回true</returns>
-        public bool PushObject([NotNull] object obj)
+        public bool PushObject(object obj)
         {
-            if (obj == null) throw new ArgumentNullException(nameof(obj));
             return PushObject(obj, obj.GetType().GetNiceName());
         }
 
@@ -252,10 +256,8 @@ namespace KFrame.Systems
         /// <param name="obj">要推入池子中的对象</param>
         /// <param name="keyName">对象池key</param>
         /// <returns>成功推入就返回true</returns>
-        public bool PushObject([NotNull] object obj, string keyName)
+        public bool PushObject(object obj, string keyName)
         {
-            if (obj == null) throw new ArgumentNullException(nameof(obj));
-            
             //获取对象池数据
             ObjectPoolData poolData;
             

@@ -1,3 +1,9 @@
+//****************** 代码文件申明 ***********************
+//* 文件：MonoSystem
+//* 作者：wheat
+//* 创建时间：2024/09/24 13:53:59 星期二
+//* 描述：一个统一管理的Mono对象
+//*******************************************************
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,7 +12,7 @@ using UnityEngine;
 namespace KFrame.Systems
 {
     /// <summary>
-    /// 整个游戏只有一个Update、LateUpdate等
+    /// 一个统一管理的Mono对象
     /// </summary>
     [AddComponentMenu("KFrame/System/MonoSystem")]
     public class MonoSystem : MonoBehaviour
@@ -18,11 +24,11 @@ namespace KFrame.Systems
         private Action lateUpdateEvent;
         private Action fixedUpdateEvent;
 
-        // [ShowInInspector]
-        // public static List<KooGameTimeTool> PeriodicFuncs = new List<KooGameTimeTool>();
-
         public static MonoSystem Instance => instance;
-
+        
+        /// <summary>
+        /// 初始化
+        /// </summary>
         public static void Init()
         {
             instance = FrameRoot.RootTransform.GetComponent<MonoSystem>();
