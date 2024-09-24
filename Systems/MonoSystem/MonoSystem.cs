@@ -115,8 +115,8 @@ namespace KFrame.Systems
 
         #region 协程
 
-        private Dictionary<object, List<Coroutine>> coroutineDic = new Dictionary<object, List<Coroutine>>();
-        private static ObjectPoolModule poolModule = new ObjectPoolModule();
+        private readonly Dictionary<object, List<Coroutine>> coroutineDic = new Dictionary<object, List<Coroutine>>();
+        private static readonly ObjectPoolModule poolModule = new ObjectPoolModule();
 
         /// <summary>
         /// 启动一个协程序
