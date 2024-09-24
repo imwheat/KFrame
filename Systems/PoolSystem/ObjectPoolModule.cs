@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
-using UnityEngine;
+using JetBrains.Annotations;
+using KFrame.Utilities;
 
 namespace KFrame.Systems
 {
@@ -10,50 +12,47 @@ namespace KFrame.Systems
         /// <summary>
         /// 普通类 对象容器
         /// </summary>
-        public Dictionary<string, ObjectPoolData> ObjectPoolDataDic { get; private set; } =
+        public readonly Dictionary<string, ObjectPoolData> ObjectPoolDataDic =
             new Dictionary<string, ObjectPoolData>();
 
         /// <summary>
         /// 初始化对象池并设置容量
         /// </summary>
+        /// <param name="keyName">对象池key</param>
         /// <param name="maxCapacity">容量限制，超出时会销毁而不是进入对象池，-1代表无限</param>
         /// <param name="defaultQuantity">默认容量，填写会向池子中放入对应数量的对象，0代表不预先放入</param>
         public void InitObjectPool<T>(string keyName, int maxCapacity = -1, int defaultQuantity = 0) where T : new()
         {
-            //设置的对象池已经存在
-            if (ObjectPoolDataDic.TryGetValue(keyName, out ObjectPoolData poolData))
-            {
-                //更新容量限制
-                poolData.maxCapacity = maxCapacity;
-                //底层Queue自动扩容这里不管
+            ObjectPoolData poolData;
 
-                //在指定默认容量时才有意义
-                if (defaultQuantity != 0)
-                {
-                    int nowCapacity = poolData.PoolQueue.Count;
-                    // 生成差值容量个数的物体放入对象池
-                    for (int i = 0; i < defaultQuantity - nowCapacity; i++)
-                    {
-                        T obj = new T();
-                        PushObject(obj, keyName);
-                    }
-                }
+            lock (ObjectPoolDataDic)
+            {
+                //尝试获取对象池
+                ObjectPoolDataDic.TryGetValue(keyName, out poolData);
             }
-            //设置的对象池不存在
+            
+            //如果无法获取到
+            if (poolData == null)
+            {
+                //那就创建新的对象池
+                poolData = CreateObjectPoolData(keyName, maxCapacity);
+            }
+            //获取到了
             else
             {
-                //创建对象池
-                poolData = CreateObjectPoolData(keyName, maxCapacity);
-
-                //在指定默认容量和默认对象时才有意义
-                if (defaultQuantity != 0)
+                //那就更新一下容量限制
+                poolData.maxCapacity = maxCapacity;
+            }
+            
+            //如果要在初始化的时候生成几个对象
+            if (defaultQuantity != 0)
+            {
+                int nowCapacity = poolData.PoolQueue.Count;
+                // 生成差值容量个数的物体放入对象池
+                for (int i = 0; i < defaultQuantity - nowCapacity; i++)
                 {
-                    // 生成容量个数的物体放入对象池
-                    for (int i = 0; i < defaultQuantity; i++)
-                    {
-                        T obj = new T();
-                        PushObject(obj, keyName);
-                    }
+                    T obj = new T();
+                    PushObject(obj, keyName);
                 }
             }
         }
@@ -65,7 +64,7 @@ namespace KFrame.Systems
         /// <param name="defaultQuantity">默认容量，填写会向池子中放入对应数量的对象，0代表不预先放入</param>
         public void InitObjectPool<T>(int maxCapacity = -1, int defaultQuantity = 0) where T : new()
         {
-            InitObjectPool<T>(typeof(T).FullName, maxCapacity, defaultQuantity);
+            InitObjectPool<T>(typeof(T).GetNiceName(), maxCapacity, defaultQuantity);
         }
 
         /// <summary>
@@ -75,17 +74,22 @@ namespace KFrame.Systems
         /// <param name="maxCapacity">容量限制，超出时会销毁而不是进入对象池，-1代表无限</param>
         public void InitObjectPool(string keyName, int maxCapacity = -1)
         {
-            //设置的对象池已经存在
-            if (ObjectPoolDataDic.TryGetValue(keyName, out ObjectPoolData poolData))
+            ObjectPoolData poolData;
+            
+            lock (ObjectPoolDataDic)
             {
-                //更新容量限制
-                poolData.maxCapacity = maxCapacity;
-                //底层Queue自动扩容这里不管
+                //设置的对象池已经存在
+                if (ObjectPoolDataDic.TryGetValue(keyName, out poolData))
+                {
+                    //更新容量限制
+                    poolData.maxCapacity = maxCapacity;
+                }
             }
+
             //设置的对象池不存在
-            else
+            if(poolData == null)
             {
-                //创建对象池
+                //那就创建对象池
                 CreateObjectPoolData(keyName, maxCapacity);
             }
         }
@@ -95,18 +99,18 @@ namespace KFrame.Systems
         /// </summary>
         /// <param name="type">资源类型</param>
         /// <param name="maxCapacity">容量限制，超出时会销毁而不是进入对象池，-1代表无限</param>
-        public void InitObjectPool(System.Type type, int maxCapacity = -1)
+        public void InitObjectPool(Type type, int maxCapacity = -1)
         {
-            InitObjectPool(type.FullName, maxCapacity);
+            InitObjectPool(type.GetNiceName(), maxCapacity);
         }
 
         /// <summary>
         /// 创建一条新的对象池数据
         /// </summary>
-        private ObjectPoolData CreateObjectPoolData(string layerName, int capacity = -1)
+        private ObjectPoolData CreateObjectPoolData(string keyName, int capacity = -1)
         {
             // 交由Object对象池拿到poolData的类
-            ObjectPoolData poolData = this.GetObject<ObjectPoolData>();
+            ObjectPoolData poolData = GetObject<ObjectPoolData>();
 
             //Object对象池中没有再new
             if (poolData == null)
@@ -116,7 +120,10 @@ namespace KFrame.Systems
 
             //对拿到的poolData副本进行初始化（覆盖之前的数据）
             poolData.maxCapacity = capacity;
-            ObjectPoolDataDic.Add(layerName, poolData);
+            lock (ObjectPoolDataDic)
+            {
+                ObjectPoolDataDic.Add(keyName, poolData);
+            }
             return poolData;
         }
 
@@ -125,106 +132,202 @@ namespace KFrame.Systems
         #region ObjectPool相关功能
 
         /// <summary>
-        /// 尝试获取对象，如果没有则需要新初始化一个默认的对象池
+        /// 尝试获取对象，如果没有那就直接创建一个
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">对象类型</typeparam>
         /// <returns></returns>
         public T GetOrNewObject<T>() where T : new()
         {
-            Debug.Log(11);
             object obj = null;
-            var fullName = typeof(T).FullName;
-            if (fullName != null && ObjectPoolDataDic.TryGetValue(fullName, out ObjectPoolData objectPoolData) && objectPoolData.PoolQueue.Count > 0)
+            var keyName = typeof(T).GetNiceName();
+            ObjectPoolData poolData;
+            
+            //获取数据
+            lock (ObjectPoolDataDic)
             {
-                obj = ObjectPoolDataDic[fullName].GetObj();
+                ObjectPoolDataDic.TryGetValue(keyName, out poolData);
+            }
+            //如果获取到了对象池数据
+            if (poolData != null)
+            {
+                lock (poolData)
+                {
+                    //并且对象池里面还有对象，那就获取
+                    if (poolData.PoolQueue.Count > 0)
+                    {
+                        obj = poolData.GetObj();
 #if UNITY_EDITOR
-				if (obj != null)
-				{
-					if (FrameRoot.EditorEventModule != null)
-						FrameRoot.EditorEventModule.EventTrigger<string, int>("OnGetObject", typeof(T).FullName, 1);
-				}
+                        if (FrameRoot.EditorEventModule != null)
+                            FrameRoot.EditorEventModule.EventTrigger("OnGetObject", typeof(T).GetNiceName(), 1);
 #endif
-			}
-			else
+                    }
+                }
+            }
+            
+            //如果为空那就新建
+            if (obj == null)
             {
-				obj = new T();
+                obj = new T();
+            }
 
-			}
-
+            //返回结果
             return (T)obj;
         }
-
+        /// <summary>
+        /// 从对象池中获取对象
+        /// </summary>
+        /// <param name="keyName">对象的key</param>
+        /// <returns>找不到就返回null</returns>
         public object GetObject(string keyName)
         {
             object obj = null;
-            if (ObjectPoolDataDic.TryGetValue(keyName, out ObjectPoolData objectPoolData) && objectPoolData.PoolQueue.Count > 0)
+            ObjectPoolData poolData;
+            
+            //获取数据
+            lock (ObjectPoolDataDic)
             {
-                obj = ObjectPoolDataDic[keyName].GetObj();
+                ObjectPoolDataDic.TryGetValue(keyName, out poolData);
+            }
+            //如果获取到了对象池数据
+            if (poolData != null)
+            {
+                lock (poolData)
+                {
+                    //并且对象池里面还有对象，那就获取
+                    if (poolData.PoolQueue.Count > 0)
+                    {
+                        obj = poolData.GetObj();
+#if UNITY_EDITOR
+                        if (FrameRoot.EditorEventModule != null)
+                            FrameRoot.EditorEventModule.EventTrigger("OnGetObject", keyName, 1);
+#endif
+                    }
+                }
             }
 
             return obj;
         }
-
-        public object GetObject(System.Type type)
+        /// <summary>
+        /// 从对象池中获取对象
+        /// </summary>
+        /// <param name="type">对象类型</param>
+        /// <returns>如果池子中没有就返回null</returns>
+        public object GetObject(Type type)
         {
-            return GetObject(type.FullName);
+            return GetObject(type.GetNiceName());
         }
-
+        /// <summary>
+        /// 从对象池中获取对象
+        /// </summary>
+        /// <typeparam name="T">对象类型</typeparam>
+        /// <returns>如果池子中没有就返回null</returns>
         public T GetObject<T>() where T : class
         {
             return (T)GetObject(typeof(T));
         }
-
+        /// <summary>
+        /// 从对象池中获取对象
+        /// </summary>
+        /// <param name="keyName">对象池key</param>
+        /// <typeparam name="T">对象类型</typeparam>
+        /// <returns>如果池子中没有就返回null</returns>
         public T GetObject<T>(string keyName) where T : class
         {
             return (T)GetObject(keyName);
         }
-
-        public bool PushObject(object obj)
+        /// <summary>
+        /// 把object推进池子
+        /// </summary>
+        /// <param name="obj">要推入池子中的对象</param>
+        /// <returns>成功推入就返回true</returns>
+        public bool PushObject([NotNull] object obj)
         {
-            return PushObject(obj, obj.GetType().FullName);
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
+            return PushObject(obj, obj.GetType().GetNiceName());
         }
 
-        public bool PushObject(object obj, string keyName)
+        /// <summary>
+        /// 把object推进池子
+        /// </summary>
+        /// <param name="obj">要推入池子中的对象</param>
+        /// <param name="keyName">对象池key</param>
+        /// <returns>成功推入就返回true</returns>
+        public bool PushObject([NotNull] object obj, string keyName)
         {
-            if (ObjectPoolDataDic.TryGetValue(keyName, out ObjectPoolData poolData) == false)
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
+            
+            //获取对象池数据
+            ObjectPoolData poolData;
+            
+            lock (ObjectPoolDataDic)
             {
-                poolData = CreateObjectPoolData(keyName);
+                //如果还没有对象池的话那就创建
+                if (ObjectPoolDataDic.TryGetValue(keyName, out poolData) == false)
+                {
+                    poolData = CreateObjectPoolData(keyName);
+                }
             }
-
-            return poolData.PushObj(obj);
+            
+            //然后把对象推进池子
+            lock (poolData)
+            {
+                return poolData.PushObj(obj);
+            }
+            
         }
 
-        
+        /// <summary>
+        /// 清理所有对象池
+        /// </summary>
         public void ClearAll()
         {
-            var enumerator = ObjectPoolDataDic.GetEnumerator();
-            while (enumerator.MoveNext())
+            lock (ObjectPoolDataDic)
             {
-                enumerator.Current.Value.Destroy(false);
+                //遍历逐个清理对象池
+                var enumerator = ObjectPoolDataDic.GetEnumerator();
+                while (enumerator.MoveNext())
+                {
+                    enumerator.Current.Value.Destroy();
+                }
+                
+                //清空字典
+                ObjectPoolDataDic.Clear();
             }
 
-            ObjectPoolDataDic.Clear();
         }
-
-        public void ClearObject<T>()
-        {
-            ClearObject(typeof(T).FullName);
-        }
-
-        public void ClearObject(System.Type type)
-        {
-            ClearObject(type.FullName);
-        }
-
+        /// <summary>
+        /// 清空某个类型的对象池
+        /// </summary>
+        /// <param name="keyName">对象池key</param>
         public void ClearObject(string keyName)
         {
-            if (ObjectPoolDataDic.TryGetValue(keyName, out ObjectPoolData objectPoolData))
+            lock (ObjectPoolDataDic)
             {
+                //如果没有数据那就返回
+                if (!ObjectPoolDataDic.TryGetValue(keyName, out ObjectPoolData objectPoolData)) return;
+                
                 objectPoolData.Destroy(true);
                 ObjectPoolDataDic.Remove(keyName);
             }
+            
         }
+        /// <summary>
+        /// 清空某个类型的对象池
+        /// </summary>
+        /// <typeparam name="T">对象类型</typeparam>
+        public void ClearObject<T>()
+        {
+            ClearObject(typeof(T).GetNiceName());
+        }
+        /// <summary>
+        /// 清空某个类型的对象池
+        /// </summary>
+        /// <param name="type">对象类型</param>
+        public void ClearObject(Type type)
+        {
+            ClearObject(type.GetNiceName());
+        }
+
         #endregion
 
     }

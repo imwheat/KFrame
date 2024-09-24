@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using KFrame.Utilities;
 using UnityEngine;
@@ -55,7 +56,7 @@ namespace KFrame.Systems
             gameObjectPoolModule.InitGameObjectPool(keyName, maxCapacity, prefab, defaultQuantity);
 #if UNITY_EDITOR
             if (FrameRoot.EditorEventModule != null)
-                FrameRoot.EditorEventModule.EventTrigger<string, int>("OnInitGameObjectPool", keyName, defaultQuantity);
+                FrameRoot.EditorEventModule.EventTrigger("OnInitGameObjectPool", keyName, defaultQuantity);
 #endif
         }
 
@@ -69,10 +70,10 @@ namespace KFrame.Systems
         {
             gameObjectPoolModule.InitGameObjectPool(keyName, maxCapacity, gameObjects);
 #if UNITY_EDITOR
-            if (FrameRoot.EditorEventModule != null)
-                if (gameObjects != null)
-                    FrameRoot.EditorEventModule.EventTrigger<string, int>("OnInitGameObjectPool", keyName,
-                        gameObjects.Length);
+            if (FrameRoot.EditorEventModule == null) return;
+            if (gameObjects != null)
+                FrameRoot.EditorEventModule.EventTrigger("OnInitGameObjectPool", keyName,
+                    gameObjects.Length);
 #endif
         }
 
@@ -106,7 +107,7 @@ namespace KFrame.Systems
                 gameObjectPoolModule.GetOrNewGameObject(assetName, parent, isActiveStart, callBack, isAsync);
 #if UNITY_EDITOR
             if (go != null && FrameRoot.EditorEventModule != null)
-                FrameRoot.EditorEventModule.EventTrigger<string, int>("OnGetGameObject", assetName, 1);
+                FrameRoot.EditorEventModule.EventTrigger("OnGetGameObject", assetName, 1);
 #endif
             return go;
         }
@@ -126,10 +127,10 @@ namespace KFrame.Systems
             UnityAction<T> callBack = null, bool isAsync = true) where T : Component
         {
             T go =
-                gameObjectPoolModule.GetOrNewGameObject<T>(assetName, parent, isActiveStart, callBack, isAsync);
+                gameObjectPoolModule.GetOrNewGameObject(assetName, parent, isActiveStart, callBack, isAsync);
 #if UNITY_EDITOR
             if (go != null && FrameRoot.EditorEventModule != null)
-                FrameRoot.EditorEventModule.EventTrigger<string, int>("OnGetGameObject", assetName, 1);
+                FrameRoot.EditorEventModule.EventTrigger("OnGetGameObject", assetName, 1);
 #endif
             return go;
         }
@@ -150,8 +151,8 @@ namespace KFrame.Systems
         {
             GameObject go = gameObjectPoolModule.GetOrNewGameObject(prefab, parent, isActiveStart, callBack);
 #if UNITY_EDITOR
-            if (go != null && FrameRoot.EditorEventModule != null)
-                FrameRoot.EditorEventModule.EventTrigger<string, int>("OnGetGameObject", prefab.name, 1);
+            if (go && FrameRoot.EditorEventModule != null)
+                FrameRoot.EditorEventModule.EventTrigger("OnGetGameObject", prefab.name, 1);
 #endif
             return go;
         }
@@ -160,7 +161,7 @@ namespace KFrame.Systems
             bool isActiveStart = true,
             UnityAction<T> callBack = null) where T : Component
         {
-            T go = gameObjectPoolModule.GetOrNewGameObject<T>(prefab, parent, isActiveStart, callBack);
+            T go = gameObjectPoolModule.GetOrNewGameObject(prefab, parent, isActiveStart, callBack);
 
             return go;
         }
@@ -174,8 +175,8 @@ namespace KFrame.Systems
         {
             GameObject go = gameObjectPoolModule.GetGameObject(keyName, parent, isActiveStart, callBack);
 #if UNITY_EDITOR
-            if (go != null && FrameRoot.EditorEventModule != null)
-                FrameRoot.EditorEventModule.EventTrigger<string, int>("OnGetGameObject", keyName, 1);
+            if (go && FrameRoot.EditorEventModule != null)
+                FrameRoot.EditorEventModule.EventTrigger("OnGetGameObject", keyName, 1);
 #endif
             return go;
         }
@@ -192,7 +193,7 @@ namespace KFrame.Systems
 
 #if UNITY_EDITOR
             if (go != null && FrameRoot.EditorEventModule != null)
-                FrameRoot.EditorEventModule.EventTrigger<string, int>("OnGetGameObject", prefab.name, 1);
+                FrameRoot.EditorEventModule.EventTrigger("OnGetGameObject", prefab.name, 1);
 #endif
             return go;
         }
@@ -207,7 +208,7 @@ namespace KFrame.Systems
             GameObject go = GetGameObject(keyName, parent);
 #if UNITY_EDITOR
             if (go != null && FrameRoot.EditorEventModule != null)
-                FrameRoot.EditorEventModule.EventTrigger<string, int>("OnGetGameObject", keyName, 1);
+                FrameRoot.EditorEventModule.EventTrigger("OnGetGameObject", keyName, 1);
 #endif
             return go != null ? go.GetComponent<T>() : null;
         }
@@ -224,15 +225,13 @@ namespace KFrame.Systems
                 bool res = gameObjectPoolModule.PushGameObject(keyName, obj);
 #if UNITY_EDITOR
                 if (FrameRoot.EditorEventModule != null && res)
-                    FrameRoot.EditorEventModule.EventTrigger<string, int>("OnPushGameObject", keyName, 1);
+                    FrameRoot.EditorEventModule.EventTrigger("OnPushGameObject", keyName, 1);
 #endif
                 return res;
             }
-            else
-            {
-                Debug.LogWarning("您正在将Null放置对象池");
-                return false;
-            }
+
+            Debug.LogWarning("不能将Null放置对象池");
+            return false;
         }
 
         /// <summary>
@@ -249,7 +248,7 @@ namespace KFrame.Systems
             gameObjectPoolModule.Clear(keyName);
 #if UNITY_EDITOR
             if (FrameRoot.EditorEventModule != null)
-                FrameRoot.EditorEventModule.EventTrigger<string>("OnClearGameObject", keyName);
+                FrameRoot.EditorEventModule.EventTrigger("OnClearGameObject", keyName);
 #endif
         }
 
@@ -269,7 +268,7 @@ namespace KFrame.Systems
             objectPoolModule.InitObjectPool<T>(keyName, maxCapacity, defaultQuantity);
 #if UNITY_EDITOR
             if (FrameRoot.EditorEventModule != null)
-                FrameRoot.EditorEventModule.EventTrigger<string, int>("OnInitObjectPool", keyName, defaultQuantity);
+                FrameRoot.EditorEventModule.EventTrigger("OnInitObjectPool", keyName, defaultQuantity);
 #endif
         }
 
@@ -293,7 +292,7 @@ namespace KFrame.Systems
             objectPoolModule.InitObjectPool(keyName, maxCapacity);
 #if UNITY_EDITOR
             if (FrameRoot.EditorEventModule != null)
-                FrameRoot.EditorEventModule.EventTrigger<string, int>("OnInitObjectPool", keyName, 0);
+                FrameRoot.EditorEventModule.EventTrigger("OnInitObjectPool", keyName, 0);
 #endif
         }
 
@@ -302,12 +301,12 @@ namespace KFrame.Systems
         /// </summary>
         /// <param name="type">资源类型</param>
         /// <param name="maxCapacity">容量限制，超出时会销毁而不是进入对象池，-1代表无限</param>
-        public static void InitObjectPool(System.Type type, int maxCapacity = -1)
+        public static void InitObjectPool(Type type, int maxCapacity = -1)
         {
             objectPoolModule.InitObjectPool(type, maxCapacity);
 #if UNITY_EDITOR
             if (FrameRoot.EditorEventModule != null)
-                FrameRoot.EditorEventModule.EventTrigger<string, int>("OnInitObjectPool", type.FullName, 0);
+                FrameRoot.EditorEventModule.EventTrigger("OnInitObjectPool", type.FullName, 0);
 #endif
         }
 
@@ -335,13 +334,13 @@ namespace KFrame.Systems
         {
             object obj = GetObject(keyName);
             if (obj == null) return null;
-            else return (T)obj;
+            return (T)obj;
         }
 
         /// <summary>
         /// 获取普通对象（非GameObject）
         /// </summary>
-        public static object GetObject(System.Type type) { return GetObject(type.FullName); }
+        public static object GetObject(Type type) { return GetObject(type.FullName); }
 
         /// <summary>
         /// 获取普通对象（非GameObject）
@@ -353,7 +352,7 @@ namespace KFrame.Systems
             if (obj != null)
             {
                 if (FrameRoot.EditorEventModule != null)
-                    FrameRoot.EditorEventModule.EventTrigger<string, int>("OnGetObject", keyName, 1);
+                    FrameRoot.EditorEventModule.EventTrigger("OnGetObject", keyName, 1);
             }
 #endif
 
@@ -377,17 +376,15 @@ namespace KFrame.Systems
                 Debug.LogWarning("您正在将Null放置对象池");
                 return false;
             }
-            else
-            {
-                bool res = objectPoolModule.PushObject(obj, keyName);
+
+            bool res = objectPoolModule.PushObject(obj, keyName);
 #if UNITY_EDITOR
-                if (FrameRoot.EditorEventModule != null && res)
-                {
-                    FrameRoot.EditorEventModule.EventTrigger<string, int>("OnPushObject", keyName, 1);
-                }
-#endif
-                return res;
+            if (FrameRoot.EditorEventModule != null && res)
+            {
+                FrameRoot.EditorEventModule.EventTrigger("OnPushObject", keyName, 1);
             }
+#endif
+            return res;
         }
 
         /// <summary>
@@ -398,7 +395,7 @@ namespace KFrame.Systems
         /// <summary>
         /// 清理某个C#类型数据
         /// </summary>
-        public static void ClearObject(System.Type type) { ClearObject(type.FullName); }
+        public static void ClearObject(Type type) { ClearObject(type.FullName); }
 
         /// <summary>
         /// 清理某个C#类型数据
@@ -408,7 +405,7 @@ namespace KFrame.Systems
 #if UNITY_EDITOR
             if (FrameRoot.EditorEventModule != null)
             {
-                FrameRoot.EditorEventModule.EventTrigger<string>("OnClearnObject", keyName);
+                FrameRoot.EditorEventModule.EventTrigger("OnClearnObject", keyName);
             }
 #endif
             objectPoolModule.ClearObject(keyName);

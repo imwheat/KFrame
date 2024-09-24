@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using KFrame.Utilities;
 using UnityEngine;
@@ -76,57 +75,46 @@ namespace KFrame.Systems
                 Debug.LogWarning("默认容量超出最大容量限制");
                 return;
             }
-
+            
+            //先获取对象池数据
+            GameObjectPoolData poolData;
+            lock (GameObjectPoolDataDic)
+            {
+                GameObjectPoolDataDic.TryGetValue(keyName, out poolData);
+            }
+            
             //设置的对象池已经存在
-            if (GameObjectPoolDataDic.TryGetValue(keyName, out GameObjectPoolData poolData))
+            if (poolData != null)
             {
                 //更新容量限制
                 poolData.MaxCapacity = maxCapacity;
 
-                //在指定默认容量和默认对象时才有意义
-                if (defaultQuantity > 0)
-                {
-                    if (prefab != null)
-                    {
-                        int nowCapacity = poolData.PoolQueue.Count;
-                        // 生成差值容量个数的物体放入对象池
-                        for (int i = 0; i < defaultQuantity - nowCapacity; i++)
-                        {
-                            GameObject go = Object.Instantiate(prefab);
-                            go.name = prefab.name;
-                            poolData.PushObj(go);
-                        }
-                    }
-                    else
-                    {
-                        Debug.LogWarning("默认对象未指定");
-                    }
-                }
             }
             //设置的对象池不存在
             else
             {
                 //创建对象池
                 poolData = CreateGameObjectPoolData(keyName, maxCapacity);
-
-                //在指定默认容量和默认对象时才有意义
-                if (defaultQuantity != 0)
+            }
+            
+            
+            //如果要新建几个对象放入
+            if (defaultQuantity <= 0) return;
+            
+            if (prefab != null)
+            {
+                int nowCapacity = poolData.PoolQueue.Count;
+                // 生成差值容量个数的物体放入对象池
+                for (int i = 0; i < defaultQuantity - nowCapacity; i++)
                 {
-                    if (prefab != null)
-                    {
-                        // 生成容量个数的物体放入对象池
-                        for (int i = 0; i < defaultQuantity; i++)
-                        {
-                            GameObject go = Object.Instantiate(prefab);
-                            go.name = prefab.name;
-                            poolData.PushObj(go);
-                        }
-                    }
-                    else
-                    {
-                        Debug.LogWarning("默认容量或默认对象未指定");
-                    }
+                    GameObject go = Object.Instantiate(prefab);
+                    go.name = prefab.name;
+                    poolData.PushObj(go);
                 }
+            }
+            else
+            {
+                Debug.LogWarning("默认对象未指定");
             }
         }
 
@@ -155,9 +143,16 @@ namespace KFrame.Systems
                 Debug.LogWarning("默认容量超出最大容量限制");
                 return;
             }
+            
+            //先获取对象池数据
+            GameObjectPoolData poolData;
+            lock (GameObjectPoolDataDic)
+            {
+                GameObjectPoolDataDic.TryGetValue(keyName, out poolData);
+            }
 
             //设置的对象池已经存在
-            if (GameObjectPoolDataDic.TryGetValue(keyName, out GameObjectPoolData poolData))
+            if (poolData != null)
             {
                 //更新容量限制
                 poolData.MaxCapacity = maxCapacity;
@@ -169,22 +164,21 @@ namespace KFrame.Systems
                 poolData = CreateGameObjectPoolData(keyName, maxCapacity);
             }
 
-            //在指定默认容量和默认对象时才有意义
-            if (gameObjects != null && gameObjects.Length > 0)
+            //如果要新建几个对象放入对象池
+            if (gameObjects is not { Length: > 0 }) return;
+            
+            int nowCapacity = poolData.PoolQueue.Count;
+            // 生成差值容量个数的物体放入对象池
+            for (int i = 0; i < gameObjects.Length; i++)
             {
-                int nowCapacity = poolData.PoolQueue.Count;
-                // 生成差值容量个数的物体放入对象池
-                for (int i = 0; i < gameObjects.Length; i++)
+                if (i < gameObjects.Length - nowCapacity)
                 {
-                    if (i < gameObjects.Length - nowCapacity)
-                    {
-                        gameObjects[i].gameObject.name = keyName;
-                        poolData.PushObj(gameObjects[i].gameObject);
-                    }
-                    else
-                    {
-                        Object.Destroy(gameObjects[i].gameObject);
-                    }
+                    gameObjects[i].gameObject.name = keyName;
+                    poolData.PushObj(gameObjects[i].gameObject);
+                }
+                else
+                {
+                    Object.Destroy(gameObjects[i].gameObject);
                 }
             }
         }
@@ -202,7 +196,10 @@ namespace KFrame.Systems
 
             //对拿到的poolData副本进行初始化（覆盖之前的数据）
             poolData.Init(keyName, poolRootTransform, maxCapacity);
-            GameObjectPoolDataDic.Add(keyName, poolData);
+            lock (GameObjectPoolDataDic)
+            {
+                GameObjectPoolDataDic.Add(keyName, poolData);
+            }
             return poolData;
         }
 
@@ -222,7 +219,7 @@ namespace KFrame.Systems
             UnityAction<GameObject> callBack = null)
         {
             GameObject obj = null;
-            GameObjectPoolData poolData = null;
+            GameObjectPoolData poolData;
             
             //先尝试获取PoolData
             lock (GameObjectPoolDataDic)
@@ -264,7 +261,7 @@ namespace KFrame.Systems
             UnityAction<GameObject> callBack = null, bool isAsync = true)
         {
             GameObject obj = null;
-            GameObjectPoolData poolData = null;
+            GameObjectPoolData poolData;
             
             //先尝试获取PoolData
             lock (GameObjectPoolDataDic)
@@ -294,7 +291,7 @@ namespace KFrame.Systems
             {
                 obj.SetActive(isActiveStart);
                 obj.name = assetName;
-                obj.transform.SetParent(parent == null ? DefaultDefaultParentInGameScene.transform : parent);
+                obj.transform.SetParent(!parent ? DefaultDefaultParentInGameScene.transform : parent);
                 callBack?.Invoke(obj);
             }
                 
@@ -365,7 +362,7 @@ namespace KFrame.Systems
         public GameObject GetOrNewGameObject(GameObject prefab, Transform parent = null, bool isActiveStart = true,
             UnityAction<GameObject> callBack = null, int simplyNameType = 0)
         {
-            GameObject obj = GetOrNewGameObject(prefab.name, parent, isActiveStart, null);
+            GameObject obj = GetOrNewGameObject(prefab.name, parent, isActiveStart);
             
             //如果obj不为空
             if (obj)
@@ -399,7 +396,7 @@ namespace KFrame.Systems
         public T GetOrNewGameObject<T>(GameObject prefab, Transform parent = null, bool isActiveStart = true,
             UnityAction<T> callBack = null, int simplyNameType = 0) where T : Component
         {
-            GameObject obj = GetOrNewGameObject(prefab.name, parent, isActiveStart, null);
+            GameObject obj = GetOrNewGameObject(prefab.name, parent, isActiveStart);
             T component = null;
             
             //如果obj不为空
@@ -433,19 +430,22 @@ namespace KFrame.Systems
         {
             //如果GameObject为空或者key为空那就推入失败
             if (!obj || string.IsNullOrEmpty(keyName)) return false;
+
+            GameObjectPoolData poolData;
             
-            //获取池子然后推入
-            if (GameObjectPoolDataDic.TryGetValue(keyName, out GameObjectPoolData poolData))
+            lock (GameObjectPoolDataDic)
             {
-                return poolData.PushObj(obj);
+                //获取池子然后推入
+                if (GameObjectPoolDataDic.TryGetValue(keyName, out poolData))
+                {
+                    return poolData.PushObj(obj);
+                }
             }
+
             //如果还没有池子
-            else
-            {
-                //那就创建池子然后推入
-                poolData = CreateGameObjectPoolData(keyName);
-                return poolData.PushObj(obj);
-            }
+            //那就创建池子然后推入
+            poolData = CreateGameObjectPoolData(keyName);
+            return poolData.PushObj(obj);
         }
 
         /// <summary>
@@ -464,11 +464,16 @@ namespace KFrame.Systems
         public void Clear(string keyName)
         {
             //获取对象池，如果有的话那就清空
-            if (GameObjectPoolDataDic.TryGetValue(keyName, out GameObjectPoolData gameObjectPoolData))
+            lock (GameObjectPoolDataDic)
             {
-                gameObjectPoolData.Dispose(true); //释放数据 并把自己也推入对象池
-                GameObjectPoolDataDic.Remove(keyName);
+                if (GameObjectPoolDataDic.TryGetValue(keyName, out GameObjectPoolData gameObjectPoolData))
+                {
+                    //释放数据 并把自己也推入对象池
+                    gameObjectPoolData.Dispose(true);
+                    GameObjectPoolDataDic.Remove(keyName);
+                }
             }
+
         }
         /// <summary>
         /// 清空所有对象池
@@ -476,13 +481,17 @@ namespace KFrame.Systems
         public void ClearAll()
         {
             //逐个遍历清空
-            var enumerator = GameObjectPoolDataDic.GetEnumerator();
-            while (enumerator.MoveNext())
+            lock (GameObjectPoolDataDic)
             {
-                enumerator.Current.Value.Dispose(false);
+                var enumerator = GameObjectPoolDataDic.GetEnumerator();
+                while (enumerator.MoveNext())
+                {
+                    enumerator.Current.Value.Dispose();
+                }
+                //清空字典
+                GameObjectPoolDataDic.Clear();
             }
 
-            GameObjectPoolDataDic.Clear();
         }
 
         #endregion
