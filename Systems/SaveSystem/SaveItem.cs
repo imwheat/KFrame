@@ -53,17 +53,13 @@ namespace KFrame.Systems
         /// 存档文件路径
         /// </summary>
         [NonSerialized]
-        public string SaveFilePath;
+        public readonly string SaveFilePath;
 
-        public SaveItem(int saveID, DateTime lastSaveTime)
+        public SaveItem(int saveID, DateTime lastSaveTime, string saveFilePath)
         {
             this.SaveID = saveID;
             LastSaveTime = lastSaveTime;
-        }
-        public SaveItem(int saveID, string lastSaveTimeString)
-        {
-            this.SaveID = saveID;
-            this.lastSaveTimeString = lastSaveTimeString;
+            SaveFilePath = saveFilePath;
         }
         /// <summary>
         /// 更新保存时间

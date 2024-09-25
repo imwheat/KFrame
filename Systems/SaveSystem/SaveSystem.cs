@@ -75,10 +75,6 @@ namespace KFrame.Systems
         /// </summary>
         private const string SaveFileName = "PlayerSave";
         /// <summary>
-        /// 游戏设置存档文件名称
-        /// </summary>
-        private const string SettingFileName = "Settings";
-        /// <summary>
         /// 保存文件后缀
         /// </summary>
         private const string SaveFileSuffix = ".sav";
@@ -93,15 +89,7 @@ namespace KFrame.Systems
         /// </summary>
         private static string settingDirPath;
 
-        /// <summary>
-        /// 存档中对象的缓存字典
-        /// (存档ID,(文件名称，实际的对象))
-        /// </summary>
-        private static readonly Dictionary<int, Dictionary<string, object>> cacheDic =
-            new Dictionary<int, Dictionary<string, object>>();
-
-
-        public static IBinarySerializer binarySerializer;
+        private static IBinarySerializer binarySerializer;
         
 
         #endregion
@@ -151,8 +139,10 @@ namespace KFrame.Systems
         /// </summary>
         public static void Init()
         {
+            //初始化路径
             SaveDirPath = Application.persistentDataPath + "/" + SaveDirName + "/";
             settingDirPath = Application.persistentDataPath + "/" + SettingDirName + "/";
+            
 #if UNITY_EDITOR
             if (!UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode || inited)
             {
@@ -164,10 +154,7 @@ namespace KFrame.Systems
             InitSaveSystemData();
 
 #if UNITY_EDITOR
-
             inited = true;
-            // 避免Editor环境下使用了上一次运行的缓存
-            CleanCache();
 #endif
         }
 
@@ -209,14 +196,20 @@ namespace KFrame.Systems
         /// <returns></returns>
         public static List<SaveItem> GetAllSaveItemByUpdateTime()
         {
-            List<SaveItem> saveItems = new List<SaveItem>(saveSystemData.SaveItemList.Count);
-            for (int i = 0; i < saveSystemData.SaveItemList.Count; i++)
+            var saveItems = new List<SaveItem>(saveSystemData.SaveItemList);
+            
+            saveItems.Sort((x, y) =>
             {
-                saveItems.Add(saveSystemData.SaveItemList[i]);
-            }
-
-            OrderByUpdateTimeComparer orderBy = new OrderByUpdateTimeComparer();
-            saveItems.Sort(orderBy);
+                if (x.LastSaveTime > y.LastSaveTime)
+                {
+                    return -1;
+                }
+                else
+                {
+                    return 1;
+                }
+            });
+            
             return saveItems;
         }
 
@@ -227,31 +220,13 @@ namespace KFrame.Systems
         /// <returns></returns>
         public static List<SaveItem> GetAllSaveItemBySaveId()
         {
-            List<SaveItem> saveItems = new List<SaveItem>(saveSystemData.SaveItemList.Count);
-            for (int i = 0; i < saveSystemData.SaveItemList.Count; i++)
-            {
-                saveItems.Add(saveSystemData.SaveItemList[i]);
-            }
+            var saveItems = new List<SaveItem>(saveSystemData.SaveItemList);
 
             saveItems.Sort((a, b) => a.SaveID - b.SaveID);
+            
             return saveItems;
         }
-
-        private class OrderByUpdateTimeComparer : IComparer<SaveItem>
-        {
-            public int Compare(SaveItem x, SaveItem y)
-            {
-                if (x.LastSaveTime > y.LastSaveTime)
-                {
-                    return -1;
-                }
-                else
-                {
-                    return 1;
-                }
-            }
-        }
-
+        
         /// <summary>
         /// 获取所有存档
         /// 万能解决方案
@@ -283,7 +258,6 @@ namespace KFrame.Systems
 
         public static void DeleteAll()
         {
-            CleanCache();
             DeleteAllSaveItem();
             DeleteAllSetting();
         }
@@ -322,8 +296,14 @@ namespace KFrame.Systems
         /// <returns></returns>
         public static SaveItem CreateSaveItem(int saveID)
         {
-            //创建一个新的存档
-            SaveItem saveItem = new SaveItem(saveID, DateTime.Now);
+            //先搜索是否已经有这个id的存档了，如果有了那就返回
+            SaveItem find = GetSaveItem(saveID);
+            if (find != null) return find;
+            
+            //没有那就创建一个新的存档
+            string savePath = GetSavePath(saveID);
+            SaveItem saveItem = new SaveItem(saveID, DateTime.Now, savePath);
+            SaveFile(saveItem, savePath);
             
             //加入存档列表
             saveSystemData.SaveItemList.Add(saveItem);
@@ -340,273 +320,44 @@ namespace KFrame.Systems
             return CreateSaveItem(saveSystemData.GetMinAvailableSaveId());
         }
 
+        
+        /// <summary>
+        /// 删除存档
+        /// </summary>
+        /// <param name="saveItem">存档</param>
+        public static void DeleteSaveItem(SaveItem saveItem)
+        {
+            //乳沟存档为空那就返回
+            if(saveItem == null) return;
+            
+            string savePath = GetSavePath(saveItem.SaveID);
+            //文件存在那就删除
+            if (File.Exists(savePath))
+            {
+                File.Delete(savePath);
+            }
+            
+            //从列表移除
+            saveSystemData.SaveItemList.Remove(saveItem);
+        }
+        
         /// <summary>
         /// 删除存档
         /// </summary>
         /// <param name="saveID">存档的ID</param>
         public static void DeleteSaveItem(int saveID)
         {
-            string itemDir = GetSavePath(saveID, false);
-            // 如果路径存在 且 有效
-            if (itemDir != null)
-            {
-                // 把这个存档下的文件递归删除
-                Directory.Delete(itemDir, true);
-            }
-
-            saveSystemData.SaveItemList.Remove(GetSaveItem(saveID));
-            // 移除缓存
-            RemoveCache(saveID);
+            DeleteSaveItem(GetSaveItem(saveID));
         }
 
-        /// <summary>
-        /// 删除存档
-        /// </summary>
-        public static void DeleteSaveItem(SaveItem saveItem)
-        {
-            DeleteSaveItem(saveItem.SaveID);
-        }
 
         #endregion
 
-        #region 更新、获取、删除用户存档缓存
-
-        /// <summary>
-        /// 设置缓存
-        /// </summary>
-        /// <param name="saveID">存档ID</param>
-        /// <param name="fileName">文件名称</param>
-        /// <param name="saveObject">要缓存的对象</param>
-        private static void SetCache(int saveID, string fileName, object saveObject)
-        {
-            // 缓存字典中是否有这个SaveID
-            if (cacheDic.ContainsKey(saveID))
-            {
-                // 这个存档中有没有这个文件
-                if (cacheDic[saveID].ContainsKey(fileName))
-                {
-                    cacheDic[saveID][fileName] = saveObject;
-                }
-                else
-                {
-                    cacheDic[saveID].Add(fileName, saveObject);
-                }
-            }
-            else
-            {
-                cacheDic.Add(saveID, new Dictionary<string, object>() { { fileName, saveObject } });
-            }
-        }
-
-        /// <summary>
-        /// 获取缓存
-        /// </summary>
-        /// <param name="saveID">存档ID</param>
-        /// <param name="saveObject">要缓存的对象</param>
-        private static T GetCache<T>(int saveID, string fileName) where T : class
-        {
-            // 缓存字典中是否有这个SaveID
-            if (cacheDic.ContainsKey(saveID))
-            {
-                // 这个存档中有没有这个文件
-                if (cacheDic[saveID].ContainsKey(fileName))
-                {
-                    return cacheDic[saveID][fileName] as T;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// 移除缓存
-        /// </summary>
-        private static void RemoveCache(int saveID)
-        {
-            cacheDic.Remove(saveID);
-        }
-
-        /// <summary>
-        /// 移除缓存中的某一个对象
-        /// </summary>
-        private static void RemoveCache(int saveID, string fileName)
-        {
-            cacheDic[saveID].Remove(fileName);
-        }
-
-        public static void CleanCache()
-        {
-            cacheDic.Clear();
-        }
-
-        #endregion
-
-        #region 保存、获取、删除用户存档中某一对象
-
-        /// <summary>
-        /// 保存对象至某个存档中
-        /// </summary>
-        /// <param name="saveObject">要保存的对象</param>
-        /// <param name="saveFileName">保存的文件名称</param>
-        /// <param name="saveID">存档的ID</param>
-        public static void SaveObject(object saveObject, string saveFileName, int saveID = 0)
-        {
-            // 存档所在的文件夹路径
-            string dirPath = GetSavePath(saveID, true);
-            // 具体的对象要保存的路径
-            string savePath = dirPath + "/" + saveFileName;
-            // 具体的保存
-            SaveFile(saveObject, savePath);
-            // 更新存档时间
-            GetSaveItem(saveID).UpdateTime(DateTime.Now);
-
-            // 更新缓存
-            SetCache(saveID, saveFileName, saveObject);
-        }
-
-
-        /// <summary>
-        /// 保存对象至某个存档中
-        /// </summary>
-        /// <param name="saveObject">要保存的对象</param>
-        /// <param name="saveFileName">保存的文件名称</param>
-        public static void SaveObject(object saveObject, string saveFileName, SaveItem saveItem)
-        {
-            SaveObject(saveObject, saveFileName, saveItem.SaveID);
-        }
-
-        /// <summary>
-        /// 保存对象至某个存档中
-        /// </summary>
-        /// <param name="saveObject">要保存的对象</param>
-        /// <param name="saveID">存档的ID</param>
-        public static void SaveObject(object saveObject, int saveID = 0)
-        {
-            SaveObject(saveObject, saveObject.GetType().Name, saveID);
-        }
-
-        /// <summary>
-        /// 保存对象至某个存档中
-        /// </summary>
-        /// <param name="saveObject">要保存的对象</param>
-        /// <param name="saveID">存档的ID</param>
-        public static void SaveObject(object saveObject, SaveItem saveItem)
-        {
-            SaveObject(saveObject, saveObject.GetType().Name, saveItem);
-        }
-
-        /// <summary>
-        /// 从某个具体的存档中加载某个对象
-        /// </summary>
-        /// <typeparam name="T">要返回的实际类型</typeparam>
-        /// <param name="saveFileName">文件名称</param>
-        /// <param name="id">存档ID</param>
-        public static T LoadObject<T>(string saveFileName, int saveID = 0) where T : class
-        {
-            T obj = GetCache<T>(saveID, saveFileName);
-            if (obj == null)
-            {
-                // 存档所在的文件夹路径
-                string dirPath = GetSavePath(saveID);
-                if (dirPath == null) return null;
-                // 具体的对象要保存的路径
-                string savePath = dirPath + "/" + saveFileName;
-                obj = LoadFile<T>(savePath);
-                SetCache(saveID, saveFileName, obj);
-            }
-
-            return obj;
-        }
-
-        /// <summary>
-        /// 从某个具体的存档中加载某个对象
-        /// </summary>
-        /// <typeparam name="T">要返回的实际类型</typeparam>
-        /// <param name="saveFileName">文件名称</param>
-        public static T LoadObject<T>(string saveFileName, SaveItem saveItem) where T : class
-        {
-            return LoadObject<T>(saveFileName, saveItem.SaveID);
-        }
-
-
-        /// <summary>
-        /// 从某个具体的存档中加载某个对象
-        /// </summary>
-        /// <typeparam name="T">要返回的实际类型</typeparam>
-        /// <param name="id">存档ID</param>
-        public static T LoadObject<T>(int saveID = 0) where T : class
-        {
-            return LoadObject<T>(typeof(T).Name, saveID);
-        }
-
-        /// <summary>
-        /// 从某个具体的存档中加载某个对象
-        /// </summary>
-        /// <typeparam name="T">要返回的实际类型</typeparam>
-        /// <param name="saveItem">存档项</param>
-        public static T LoadObject<T>(SaveItem saveItem) where T : class
-        {
-            return LoadObject<T>(typeof(T).Name, saveItem.SaveID);
-        }
-
-        /// <summary>
-        /// 删除某个存档中的某个对象
-        /// </summary>
-        /// <param name="saveID">存档的ID</param>
-        public static void DeleteObject<T>(string saveFileName, int saveID) where T : class
-        {
-            //清空缓存中对象
-            if (GetCache<T>(saveID, saveFileName) != null)
-            {
-                RemoveCache(saveID, saveFileName);
-            }
-
-            // 存档对象所在的文件路径
-            string dirPath = GetSavePath(saveID);
-            string savePath = dirPath + "/" + saveFileName;
-            //删除对应的文件
-            File.Delete(savePath);
-        }
-
-        /// <summary>
-        /// 删除某个存档中的某个对象
-        /// </summary>
-        /// <param name="saveID">存档的ID</param>
-        public static void DeleteObject<T>(string saveFileName, SaveItem saveItem) where T : class
-        {
-            DeleteObject<T>(saveFileName, saveItem.SaveID);
-        }
-
-        /// <summary>
-        /// 删除某个存档中的某个对象
-        /// </summary>
-        /// <param name="saveID">存档的ID</param>
-        public static void DeleteObject<T>(int saveID) where T : class
-        {
-            DeleteObject<T>(typeof(T).Name, saveID);
-        }
-
-        /// <summary>
-        /// 删除某个存档中的某个对象
-        /// </summary>
-        /// <param name="saveID">存档的ID</param>
-        public static void DeleteObject<T>(SaveItem saveItem) where T : class
-        {
-            DeleteObject<T>(typeof(T).Name, saveItem.SaveID);
-        }
-
-        #endregion
 
         #region 保存、获取全局设置存档
 
         /// <summary>
-        /// 加载设置，全局生效，不关乎任何一个存档
+        /// 加载设置文件
         /// </summary>
         public static T LoadSetting<T>(string fileName) where T : class
         {
@@ -614,15 +365,15 @@ namespace KFrame.Systems
         }
 
         /// <summary>
-        /// 加载设置，全局生效，不关乎任何一个存档
+        /// 加载设置文件
         /// </summary>
         public static T LoadSetting<T>() where T : class
         {
-            return LoadSetting<T>(typeof(T).Name);
+            return LoadSetting<T>(typeof(T).GetNiceName());
         }
 
         /// <summary>
-        /// 保存设置，全局生效，不关乎任何一个存档
+        /// 保存设置文件
         /// </summary>
         public static void SaveSetting(object saveObject, string fileName)
         {
@@ -630,22 +381,25 @@ namespace KFrame.Systems
         }
 
         /// <summary>
-        /// 保存设置，全局生效，不关乎任何一个存档
+        /// 保存设置文件
         /// </summary>
         public static void SaveSetting(object saveObject)
         {
-            SaveSetting(saveObject, saveObject.GetType().Name);
+            SaveSetting(saveObject, saveObject.GetType().GetNiceName());
         }
 
-
+        /// <summary>
+        /// 删除设置文件
+        /// </summary>
         public static void DeleteAllSetting()
         {
             if (Directory.Exists(settingDirPath))
             {
-                // 直接删除目录
+                //直接删除目录
                 Directory.Delete(settingDirPath, true);
             }
-
+            
+            //然后重新创建文件夹
             CheckAndCreateDir();
         }
 
@@ -666,30 +420,13 @@ namespace KFrame.Systems
 
         /// <summary>
         /// 获取某个存档的路径
+        /// 保存路径为：存档路径/文件名称(id).后缀
         /// </summary>
         /// <param name="saveID">存档ID</param>
-        /// <param name="createDir">如果不存在这个路径，是否需要创建</param>
-        /// <returns></returns>
-        private static string GetSavePath(int saveID, bool createDir = true)
+        /// <returns>对应id的存档路径</returns>
+        private static string GetSavePath(int saveID)
         {
-            // 验证是否有某个存档
-            if (GetSaveItem(saveID) == null) throw new Exception("Frame:saveID对应的存档不存在！");
-
-            string saveDir = SaveDirPath + "/" + saveID;
-            // 确定文件夹是否存在
-            if (Directory.Exists(saveDir) == false)
-            {
-                if (createDir)
-                {
-                    Directory.CreateDirectory(saveDir);
-                }
-                else
-                {
-                    return null;
-                }
-            }
-
-            return saveDir;
+            return SaveDirPath + SaveFileName + saveID + SaveFileSuffix;
         }
 
         /// <summary>
@@ -738,7 +475,7 @@ namespace KFrame.Systems
                     {
                         FileStream file = new FileStream(path, FileMode.Open);
                         byte[] bytes = new byte[file.Length];
-                        file.Read(bytes, 0, bytes.Length);
+                        var read = file.Read(bytes, 0, bytes.Length);
                         file.Close();
                         return binarySerializer.Deserialize<T>(bytes);
                     }
