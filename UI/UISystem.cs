@@ -475,7 +475,7 @@ namespace KFrame.UI
         /// </summary>
         public static void SaveUISettings()
         {
-            SaveSystem.SaveSetting(Settings);
+            SaveSystem.SaveGlobalSave(Settings);
         }
 
         /// <summary>
@@ -484,7 +484,7 @@ namespace KFrame.UI
         public static void LoadUISettings()
         {
             //加载UI配置参数，没有就新建一个
-            Settings = SaveSystem.LoadSetting<UISettingsSave>();
+            Settings = SaveSystem.LoadGlobalSave<UISettingsSave>();
             if (Settings == null)
             {
                 Settings = new UISettingsSave();

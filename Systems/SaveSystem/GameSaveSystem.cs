@@ -5,16 +5,19 @@
 //* 描述：用于管理当前的游戏存档
 //*****************************************************
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using KFrame.Utilities;
 using KFrame.UI;
+using UnityEngine;
 
 namespace KFrame.Systems
 {
     public static class GameSaveSystem
     {
         #region 字段
+        
         /// <summary>
         /// 当前存档
         /// </summary>
@@ -23,7 +26,7 @@ namespace KFrame.Systems
         /// <summary>
         /// 当前游玩存档
         /// </summary>
-        public static SavePlayData CurSavePlayData = new SavePlayData();
+        public static SavePlayData CurSavePlayData => CurSave.SavePlayData;
 
         /// <summary>
         /// 当前的存档ID
@@ -46,19 +49,6 @@ namespace KFrame.Systems
         /// </summary>
         public static HashSet<ISaveable> Saveables;
 
-        /// <summary>
-        /// 存档文件
-        /// </summary>
-        public static GameSaveDatas SaveDatas;
-
-#if UNITY_EDITOR
-        /// <summary>
-        /// 编辑器中的存档文件
-        /// 在直接进入场景，不通过存档进入时有效
-        /// 不会被存到本地，只有当次游玩有用
-        /// </summary>
-        public static GameSaveDatas EditorSaveDatas;
-#endif
 
         /// <summary>
         /// 保存中
@@ -76,6 +66,18 @@ namespace KFrame.Systems
         {
             Saveables = new HashSet<ISaveable>();
         }
+        
+        #if UNITY_EDITOR
+
+        /// <summary>
+        /// 创建编辑器测试使用的临时存档
+        /// </summary>
+        private static void CreateEditorTempSave()
+        {
+            CurSave = new SaveItem(-1, DateTime.Now, "");
+        }
+        
+        #endif
 
         #endregion
 
@@ -109,13 +111,6 @@ namespace KFrame.Systems
                 UISystem.Show<SaveGameHintUI>();
             }
 
-            //如果当前游戏存档为空
-            if (SaveDatas == null)
-            {
-                //那就从本地获取原来的存档数据
-                LoadGameData();
-            }
-
             //保存游玩数据
             SaveGamePlayData();
 
@@ -144,7 +139,7 @@ namespace KFrame.Systems
             {
 #endif
                 //将数据保存到本地
-                SaveSystem.SaveObject(SaveDatas, CurSave);
+                SaveSystem.SaveGameSave(CurSave);
 #if UNITY_EDITOR
             }
 #endif
@@ -163,57 +158,15 @@ namespace KFrame.Systems
         }
 
         /// <summary>
-        /// 加载游戏存档
-        /// </summary>
-        public static void LoadGameData()
-        {
-            //当前存档ID小于0可能是编辑器直接打开游戏，不需要加载数据
-            if (CurSaveIndex < 0) return;
-
-            //那就从本地获取原来的存档数据
-            GameSaveDatas data = SaveSystem.LoadObject<GameSaveDatas>(CurSave);
-
-            //如果无法获取到
-            if (data == null)
-            {
-                //那就新建存档
-                data = new GameSaveDatas();
-
-                //保存
-                SaveSystem.SaveObject(data, CurSave);
-            }
-
-            //将当前的存档文件更新
-            SaveDatas = data;
-
-            //加载游玩数据
-            SavePlayData playData = SaveSystem.LoadObject<SavePlayData>(CurSave);
-
-            //如果无法获取到
-            if (playData == null)
-            {
-                //那就新建
-                playData = new SavePlayData();
-
-                //保存
-                SaveSystem.SaveObject(playData, CurSave);
-            }
-
-            CurSavePlayData = playData;
-        }
-
-        /// <summary>
         /// 卸载当前存档
         /// </summary>
         public static void UnloadGameSaveData()
         {
             //如果现在没存档就返回
-            if (CurSaveIndex == -1) return;
+            if (CurSave == null) return;
 
             CurSave = null;
-            CurSavePlayData = null;
             Saveables = new HashSet<ISaveable>();
-            SaveDatas = null;
         }
 
         /// <summary>
@@ -235,32 +188,45 @@ namespace KFrame.Systems
         /// <summary>
         /// 保存数据
         /// </summary>
-        public static void SaveData(ISaveable saveable)
+        /// <param name="saveable">可以保存数据的对象</param>
+        public static void SaveData(this ISaveable saveable)
         {
-            //当前存档ID小于0可能是编辑器直接打开游戏
-            if (CurSaveIndex < 0)
+
+            if (CurSave == null)
             {
+                
 #if UNITY_EDITOR
-                //如果是在编辑器中，可以存到本次缓存池中
-                if (EditorSaveDatas == null)
-                {
-                    EditorSaveDatas = new GameSaveDatas();
-                }
-
-                //更新数据
-                EditorSaveDatas.DataDic[saveable.SaveKey] = saveable.GetJsonData();
-#endif
+                //编辑器中如果存档为空，可能是直接打开游戏进行测试，这边创建一个临时存档
+                CreateEditorTempSave();
+#else
+                Debug.LogError("发生错误：存档为空的时候进行了保存");
                 return;
-            }
-
-            //防空
-            if (SaveDatas == null)
-            {
-                SaveDatas = new GameSaveDatas();
+#endif
             }
 
             //更新数据
-            SaveDatas.DataDic[saveable.SaveKey] = saveable.GetJsonData();
+            CurSave.SaveData(saveable);
+        }
+        /// <summary>
+        /// 加载数据
+        /// </summary>
+        /// <param name="saveable">可以保存数据的对象</param>
+        public static void LoadData(this ISaveable saveable)
+        {
+            if (CurSave == null)
+            {
+                
+#if UNITY_EDITOR
+                //编辑器中如果存档为空，可能是直接打开游戏进行测试，这边创建一个临时存档
+                CreateEditorTempSave();
+#else
+                Debug.LogError("发生错误：存档为空的时候进行了读取");
+                return;
+#endif
+            }
+            
+            //从当前存档里面加载数据
+            CurSave.LoadData(saveable);
         }
 
         /// <summary>
@@ -273,30 +239,15 @@ namespace KFrame.Systems
             {
 #if UNITY_EDITOR
                 //如果是在编辑器中，可以存到本次缓存池中
-                if (EditorSaveDatas == null)
+                if (CurSave == null)
                 {
-                    EditorSaveDatas = new GameSaveDatas();
+                    CreateEditorTempSave();
                 }
 #else
                 return;
 #endif
             }
 
-            //防空
-            if (CurSavePlayData == null)
-            {
-                CurSavePlayData = new SavePlayData();
-            }
-
-#if UNITY_EDITOR
-
-            if (CurSaveIndex == -1)
-            {
-                return;
-            }
-#endif
-            //保存到本地
-            SaveSystem.SaveObject(CurSavePlayData, CurSaveIndex);
         }
 
         #endregion

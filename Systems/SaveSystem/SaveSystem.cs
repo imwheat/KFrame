@@ -56,20 +56,18 @@ namespace KFrame.Systems
                 return min;
             }
         }
-        
         /// <summary>
         /// 存档数据
         /// </summary>
         private static SaveSystemData saveSystemData;
-
         /// <summary>
         /// 存档保存路径文件夹名称
         /// </summary>
         private const string SaveDirName = "SaveData";
         /// <summary>
-        /// 一些游戏设置的保存文件夹名称
+        /// 游戏全局相关的保存文件夹名称
         /// </summary>
-        private const string SettingDirName = "Settings";
+        private const string GlobalSaveDirName = "User";
         /// <summary>
         /// 玩家存档文件名称
         /// </summary>
@@ -78,20 +76,17 @@ namespace KFrame.Systems
         /// 保存文件后缀
         /// </summary>
         private const string SaveFileSuffix = ".sav";
-        
-        
         /// <summary>
         /// 存档文件夹路径
         /// </summary>
         public static string SaveDirPath;
         /// <summary>
-        /// 游戏设置保存路径
+        /// 游戏全局相关的保存文件夹名称
         /// </summary>
-        private static string settingDirPath;
+        private static string globalSaveDirPath;
 
         private static IBinarySerializer binarySerializer;
         
-
         #endregion
         
         #region 存档系统、存档系统数据类及所有用户存档、设置存档数据
@@ -141,7 +136,7 @@ namespace KFrame.Systems
         {
             //初始化路径
             SaveDirPath = Application.persistentDataPath + "/" + SaveDirName + "/";
-            settingDirPath = Application.persistentDataPath + "/" + SettingDirName + "/";
+            globalSaveDirPath = Application.persistentDataPath + "/" + GlobalSaveDirName + "/";
             
 #if UNITY_EDITOR
             if (!UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode || inited)
@@ -264,6 +259,77 @@ namespace KFrame.Systems
 
         #endregion
 
+        #region 保存、加载文件
+
+        /// <summary>
+        /// 保存文件
+        /// </summary>
+        /// <param name="saveObject">保存的对象</param>
+        /// <param name="path">保存的路径</param>
+        private static void SaveFile(object saveObject, string path)
+        {
+            switch (FrameRoot.Setting.SaveSystemType)
+            {
+                case SaveSystemType.Binary:
+                    // 避免框架内部的数据类型也使用外部序列化工具序列化，这一般都会出现问题
+                    if (binarySerializer == null || saveObject.GetType() == typeof(SaveSystemData))
+                    {
+                        FileExtensions.SaveFile(saveObject, path);
+                    }
+                    else
+                    {
+                        byte[] bytes = binarySerializer.Serialize(saveObject);
+                        File.WriteAllBytes(path, bytes);
+                    }
+
+                    break;
+                case SaveSystemType.Json:
+                    string jsonData = JsonUtility.ToJson(saveObject);
+                    FileExtensions.SaveJson(jsonData, path);
+                    break;
+            }
+        }
+        /// <summary>
+        /// 保存游戏存档
+        /// </summary>
+        /// <param name="saveItem">游戏存档</param>
+        public static void SaveGameSave(SaveItem saveItem)
+        {
+            if(saveItem == null) return;
+            
+            SaveFile(saveItem, saveItem.SaveFilePath);
+        }
+        
+        /// <summary>
+        /// 加载文件
+        /// </summary>
+        /// <typeparam name="T">加载后要转为的类型</typeparam>
+        /// <param name="path">加载路径</param>
+        private static T LoadFile<T>(string path) where T : class
+        {
+            switch (FrameRoot.Setting.SaveSystemType)
+            {
+                case SaveSystemType.Binary:
+                    // 避免框架内部的数据类型也使用外部序列化工具序列化，这一般都会出现问题
+                    if (binarySerializer == null || typeof(T) == typeof(SaveSystemData))
+                        return FileExtensions.LoadFile<T>(path);
+                    else
+                    {
+                        FileStream file = new FileStream(path, FileMode.Open);
+                        byte[] bytes = new byte[file.Length];
+                        var read = file.Read(bytes, 0, bytes.Length);
+                        file.Close();
+                        return binarySerializer.Deserialize<T>(bytes);
+                    }
+                case SaveSystemType.Json:
+                    return FileExtensions.LoadJson<T>(path);
+            }
+
+            return null;
+        }
+
+        #endregion
+        
         #region 创建、获取、删除某一项用户存档
 
         /// <summary>
@@ -353,39 +419,38 @@ namespace KFrame.Systems
 
         #endregion
 
-
-        #region 保存、获取全局设置存档
+        #region 保存、获取游戏全局存档
 
         /// <summary>
         /// 加载设置文件
         /// </summary>
-        public static T LoadSetting<T>(string fileName) where T : class
+        public static T LoadGlobalSave<T>(string fileName) where T : class
         {
-            return LoadFile<T>(settingDirPath + "/" + fileName);
+            return LoadFile<T>(globalSaveDirPath + "/" + fileName);
         }
 
         /// <summary>
         /// 加载设置文件
         /// </summary>
-        public static T LoadSetting<T>() where T : class
+        public static T LoadGlobalSave<T>() where T : class
         {
-            return LoadSetting<T>(typeof(T).GetNiceName());
+            return LoadGlobalSave<T>(typeof(T).GetNiceName());
         }
 
         /// <summary>
         /// 保存设置文件
         /// </summary>
-        public static void SaveSetting(object saveObject, string fileName)
+        public static void SaveGlobalSave(object saveObject, string fileName)
         {
-            SaveFile(saveObject, settingDirPath + "/" + fileName);
+            SaveFile(saveObject, globalSaveDirPath + "/" + fileName);
         }
 
         /// <summary>
         /// 保存设置文件
         /// </summary>
-        public static void SaveSetting(object saveObject)
+        public static void SaveGlobalSave(object saveObject)
         {
-            SaveSetting(saveObject, saveObject.GetType().GetNiceName());
+            SaveGlobalSave(saveObject, saveObject.GetType().GetNiceName());
         }
 
         /// <summary>
@@ -393,10 +458,10 @@ namespace KFrame.Systems
         /// </summary>
         public static void DeleteAllSetting()
         {
-            if (Directory.Exists(settingDirPath))
+            if (Directory.Exists(globalSaveDirPath))
             {
                 //直接删除目录
-                Directory.Delete(settingDirPath, true);
+                Directory.Delete(globalSaveDirPath, true);
             }
             
             //然后重新创建文件夹
@@ -414,7 +479,7 @@ namespace KFrame.Systems
         {
             //如果文件夹不存在就创建
             FileExtensions.CreateDirectoryIfNotExist(SaveDirPath);
-            FileExtensions.CreateDirectoryIfNotExist(settingDirPath);
+            FileExtensions.CreateDirectoryIfNotExist(globalSaveDirPath);
 
         }
 
@@ -429,62 +494,7 @@ namespace KFrame.Systems
             return SaveDirPath + SaveFileName + saveID + SaveFileSuffix;
         }
 
-        /// <summary>
-        /// 保存文件
-        /// </summary>
-        /// <param name="saveObject">保存的对象</param>
-        /// <param name="path">保存的路径</param>
-        private static void SaveFile(object saveObject, string path)
-        {
-            switch (FrameRoot.Setting.SaveSystemType)
-            {
-                case SaveSystemType.Binary:
-                    // 避免框架内部的数据类型也使用外部序列化工具序列化，这一般都会出现问题
-                    if (binarySerializer == null || saveObject.GetType() == typeof(SaveSystemData))
-                    {
-                        FileExtensions.SaveFile(saveObject, path);
-                    }
-                    else
-                    {
-                        byte[] bytes = binarySerializer.Serialize(saveObject);
-                        File.WriteAllBytes(path, bytes);
-                    }
-
-                    break;
-                case SaveSystemType.Json:
-                    string jsonData = JsonUtility.ToJson(saveObject);
-                    FileExtensions.SaveJson(jsonData, path);
-                    break;
-            }
-        }
-        
-        /// <summary>
-        /// 加载文件
-        /// </summary>
-        /// <typeparam name="T">加载后要转为的类型</typeparam>
-        /// <param name="path">加载路径</param>
-        private static T LoadFile<T>(string path) where T : class
-        {
-            switch (FrameRoot.Setting.SaveSystemType)
-            {
-                case SaveSystemType.Binary:
-                    // 避免框架内部的数据类型也使用外部序列化工具序列化，这一般都会出现问题
-                    if (binarySerializer == null || typeof(T) == typeof(SaveSystemData))
-                        return FileExtensions.LoadFile<T>(path);
-                    else
-                    {
-                        FileStream file = new FileStream(path, FileMode.Open);
-                        byte[] bytes = new byte[file.Length];
-                        var read = file.Read(bytes, 0, bytes.Length);
-                        file.Close();
-                        return binarySerializer.Deserialize<T>(bytes);
-                    }
-                case SaveSystemType.Json:
-                    return FileExtensions.LoadJson<T>(path);
-            }
-
-            return null;
-        }
+       
 
         #endregion
     }

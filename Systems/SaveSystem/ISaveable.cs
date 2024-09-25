@@ -62,42 +62,6 @@ namespace KFrame.Systems
             GameSaveSystem.SaveData(this);
         }
         /// <summary>
-        /// 加载数据的时候调用
-        /// </summary>
-        public void OnLoad()
-        {
-            string jsonData = "";
-
-#if UNITY_EDITOR
-
-            //如果是编辑器中,没有打开存档，那就尝试从缓存池获取
-            if (GameSaveSystem.CurSaveIndex == -1)
-            {
-                //如果为空那就新建一个
-                if(GameSaveSystem.EditorSaveDatas==null)
-                {
-                    GameSaveSystem.EditorSaveDatas = new GameSaveDatas();
-                }
-                else if(GameSaveSystem.EditorSaveDatas.DataDic.TryGetValue(SaveKey, out var cache))
-                {
-                    //如果获取到了，那就赋值
-                    jsonData = cache;
-                }
-            }
-#endif
-
-            //先初步加载
-            if (GameSaveSystem.SaveDatas != null && GameSaveSystem.SaveDatas.DataDic.TryGetValue(SaveKey, out var data))
-            {
-                //如果获取到了，那就赋值
-                jsonData = data;
-            }
-
-
-            //再调用接口方法
-            ILoad(jsonData);
-        }
-        /// <summary>
         /// 加载数据的接口方法
         /// </summary>
         public void ILoad(string jsonData);

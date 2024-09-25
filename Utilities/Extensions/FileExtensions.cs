@@ -45,6 +45,22 @@ namespace KFrame.Utilities
 
         private static BinaryFormatter binaryFormatter = new BinaryFormatter();
 
+
+        /// <summary>
+        /// 保存Json
+        /// </summary>
+        /// <param name="jsonData">Json数据</param>
+        /// <param name="path">路径</param>
+        /// <param name="suffix">文件后缀</param>
+        public static void SaveJson(string jsonData, string path, string suffix = ".json")
+        {
+            //如果路径结尾没有后缀那就加上
+            if (!path.EndsWith(suffix))
+            {
+                path += suffix;
+            }
+            File.WriteAllText(path, jsonData);
+        }
         /// <summary>
         /// 保存Json
         /// </summary>
@@ -54,24 +70,8 @@ namespace KFrame.Utilities
         {
             // 使用 Regex.Unescape 方法还原Unicode转义字符
             string unescapedJson = Regex.Unescape(jsonString);
-            File.WriteAllText(path + ".json", FormatJson(unescapedJson));
+            SaveJson(unescapedJson, path);
         }
-
-        /// <summary>
-        /// 保存Json
-        /// </summary>
-        /// <param name="jsonString">Json的字符串</param>
-        /// <param name="path">路径</param>
-        public static void SaveJson(string jsonString, string path)
-        {
-            //如果路径结尾没有.json那就加上
-            if (!path.EndsWith(".json"))
-            {
-                path += ".json";
-            }
-            File.WriteAllText(path, jsonString);
-        }
-
         /// <summary>
         /// 格式化Json字符串
         /// </summary>

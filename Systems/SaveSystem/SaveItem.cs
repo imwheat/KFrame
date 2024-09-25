@@ -7,6 +7,7 @@
 
 using System;
 using System.Globalization;
+using KFrame.Utilities;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -54,12 +55,23 @@ namespace KFrame.Systems
         /// </summary>
         [NonSerialized]
         public readonly string SaveFilePath;
+        /// <summary>
+        /// 存档的游玩数据
+        /// </summary>
+        public readonly SavePlayData SavePlayData;
+        /// <summary>
+        /// 保存数据
+        /// </summary>
+        [SerializeField]
+        private readonly Serialized_Dic<string, string> saveDatas;
 
         public SaveItem(int saveID, DateTime lastSaveTime, string saveFilePath)
         {
             this.SaveID = saveID;
             LastSaveTime = lastSaveTime;
             SaveFilePath = saveFilePath;
+            SavePlayData = new SavePlayData();
+            saveDatas = new Serialized_Dic<string, string>();
         }
         /// <summary>
         /// 更新保存时间
@@ -68,6 +80,25 @@ namespace KFrame.Systems
         public void UpdateTime(DateTime newSaveTime)
         {
             LastSaveTime = newSaveTime;
+        }
+        /// <summary>
+        /// 保存数据
+        /// </summary>
+        /// <param name="saveable">可以保存的对象</param>
+        public void SaveData(ISaveable saveable)
+        {
+            saveDatas[saveable.SaveKey] = saveable.GetJsonData();
+        }
+        /// <summary>
+        /// 加载数据
+        /// </summary>
+        /// <param name="saveable">可以保存的对象</param>
+        public void LoadData(ISaveable saveable)
+        {
+            //从数据字典里面获取数据
+            if(!saveDatas.TryGetValue(saveable.SaveKey, out string jsonData)) return;
+            //得到后加载
+            saveable.ILoad(jsonData);
         }
     }
 }
