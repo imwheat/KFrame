@@ -96,25 +96,6 @@ namespace KFrame
         static FrameRoot()
         {
             EditorEventModule = new EventModule();
-            EditorApplication.update += () => { InitForEditor(); };
-            FrameSettings.Instance.InitOnEditor();
-        }
-
-        [InitializeOnLoadMethod]
-        public static void InitForEditor()
-        {
-            // 当前是否要进行播放或准备播放中
-            if (EditorApplication.isPlayingOrWillChangePlaymode)
-            {
-                return;
-            }
-
-            if (instance == null)
-            {
-                instance = GameObject.FindObjectOfType<FrameRoot>();
-                if (instance == null) return;
-            }
-            
         }
 #endif
 

@@ -48,7 +48,12 @@ namespace KFrame.Systems
         /// Json不支持DateTime，用来持久化的
         /// </summary>
         [SerializeField] 
-        private string lastSaveTimeString; 
+        private string lastSaveTimeString;
+        /// <summary>
+        /// 存档文件路径
+        /// </summary>
+        [NonSerialized]
+        public string SaveFilePath;
 
         public SaveItem(int saveID, DateTime lastSaveTime)
         {

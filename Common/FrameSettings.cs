@@ -29,6 +29,9 @@ namespace KFrame
         Json
     }
 
+    #if UNITY_EDITOR
+    [InitializeOnLoad]
+    #endif
     /// <summary>
     /// 框架的设置SO文件
     /// </summary>
@@ -92,6 +95,13 @@ namespace KFrame
             InitOnEditor();
         }
 
+        [InitializeOnLoadMethod]
+        private static void InitEditor()
+        {
+            //如果在运行的话那就返回
+            if(Application.isPlaying) return;
+            Instance.InitOnEditor();
+        }
         public void InitOnEditor()
         {
             SetResourcesSystemType();

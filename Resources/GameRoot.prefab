@@ -325,7 +325,6 @@ GameObject:
   - component: {fileID: 2367165831930534857}
   - component: {fileID: 6156306721615670661}
   - component: {fileID: 5744407982081055581}
-  - component: {fileID: 3164743846448971231}
   - component: {fileID: 959537585}
   m_Layer: 0
   m_Name: GameRoot
@@ -378,20 +377,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   frameSetting: {fileID: 11400000, guid: f9182528a80aa5546b028d2a5409ba0b, type: 2}
   eventSystem: {fileID: 8319743222502603752}
---- !u!114 &3164743846448971231
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2367165831930534859}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8683cbae63ab45e89fd97ca83ecdf328, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  globalOdinConfig: {fileID: 11400000, guid: 0239b608a51ff7340a16720e902fcb66, type: 2}
-  languageType: 0
 --- !u!114 &959537585
 MonoBehaviour:
   m_ObjectHideFlags: 0

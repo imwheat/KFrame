@@ -23,19 +23,38 @@ namespace KFrame.Systems
 
     public static class SaveSystem
     {
-        #region 存档系统、存档系统数据类及所有用户存档、设置存档数据
+        #region 参数与路径配置
 
         /// <summary>
         /// 存档系统数据类
         /// </summary>
-        [System.Serializable]
         private class SaveSystemData
         {
-            // 当前的存档ID
-            public int currID = 0;
-
-            // 所有存档的列表
-            public List<SaveItem> saveItemList = new List<SaveItem>();
+            /// <summary>
+            /// 所有存档的列表
+            /// </summary>
+            public readonly List<SaveItem> SaveItemList = new List<SaveItem>();
+            /// <summary>
+            /// 获取最小的可用的存档id
+            /// </summary>
+            /// <returns>最小的可用的存档id</returns>
+            public int GetMinAvailableSaveId()
+            {
+                //先记录下已经有的id
+                var existId = new HashSet<int>();
+                foreach (var saveItem in SaveItemList)
+                {
+                    existId.Add(saveItem.SaveID);
+                }
+                //从1开始，如果已经存在那就+1
+                int min = 1;
+                while (existId.Contains(min))
+                {
+                    min++;
+                }
+                //返回结果
+                return min;
+            }
         }
         
         /// <summary>
@@ -46,13 +65,25 @@ namespace KFrame.Systems
         /// <summary>
         /// 存档保存路径文件夹名称
         /// </summary>
-        private const string SaveDirName = "SaveData/";
-
+        private const string SaveDirName = "SaveData";
         /// <summary>
         /// 一些游戏设置的保存文件夹名称
         /// </summary>
-        private const string SettingDirName = "Setting/";
-
+        private const string SettingDirName = "Settings";
+        /// <summary>
+        /// 玩家存档文件名称
+        /// </summary>
+        private const string SaveFileName = "PlayerSave";
+        /// <summary>
+        /// 游戏设置存档文件名称
+        /// </summary>
+        private const string SettingFileName = "Settings";
+        /// <summary>
+        /// 保存文件后缀
+        /// </summary>
+        private const string SaveFileSuffix = ".sav";
+        
+        
         /// <summary>
         /// 存档文件夹路径
         /// </summary>
@@ -71,6 +102,11 @@ namespace KFrame.Systems
 
 
         public static IBinarySerializer binarySerializer;
+        
+
+        #endregion
+        
+        #region 存档系统、存档系统数据类及所有用户存档、设置存档数据
 
 
 #if UNITY_EDITOR
@@ -82,20 +118,48 @@ namespace KFrame.Systems
 #endif
 
         /// <summary>
+        /// 获取存档系统数据
+        /// </summary>
+        /// <returns></returns>
+        private static void InitSaveSystemData()
+        {
+            //检查路径
+            CheckAndCreateDir();
+            
+            //读取本地文件，更新存档状态            
+            saveSystemData = new SaveSystemData();
+            string[] files = Directory.GetFiles(SaveDirPath);
+            foreach (string file in files)
+            {
+                //获取文件名称
+                string fileName = Path.GetFileName(file);
+                //只要文件的名称或者后缀不对那就跳过
+                if(!fileName.Contains(SaveFileName) || !fileName.EndsWith(SaveFileSuffix)) continue;
+                
+                //读取存档文件，如果不为空
+                SaveItem saveItem = LoadFile<SaveItem>(SaveDirPath + fileName);
+                if (saveItem != null)
+                {
+                    //那就添加入存档列表
+                    saveSystemData.SaveItemList.Add(saveItem);
+                }
+            }
+        }
+
+        /// <summary>
         /// 初始化
         /// </summary>
         public static void Init()
         {
-            SaveDirPath = Application.persistentDataPath + "/" + SaveDirName;
-            settingDirPath = Application.persistentDataPath + "/" + SettingDirName;
+            SaveDirPath = Application.persistentDataPath + "/" + SaveDirName + "/";
+            settingDirPath = Application.persistentDataPath + "/" + SettingDirName + "/";
 #if UNITY_EDITOR
             if (!UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode || inited)
             {
                 return;
             }
 #endif
-            //检查路径
-            CheckAndCreateDir();
+
             //初始化SaveSystemData
             InitSaveSystemData();
 
@@ -118,7 +182,7 @@ namespace KFrame.Systems
         /// <returns></returns>
         public static List<SaveItem> GetAllSaveItem()
         {
-            return saveSystemData.saveItemList;
+            return saveSystemData.SaveItemList;
         }
 
         /// <summary>
@@ -128,11 +192,11 @@ namespace KFrame.Systems
         /// <returns></returns>
         public static List<SaveItem> GetAllSaveItemByCreatTime()
         {
-            List<SaveItem> saveItems = new List<SaveItem>(saveSystemData.saveItemList.Count);
+            List<SaveItem> saveItems = new List<SaveItem>(saveSystemData.SaveItemList.Count);
 
-            for (int i = 0; i < saveSystemData.saveItemList.Count; i++)
+            for (int i = 0; i < saveSystemData.SaveItemList.Count; i++)
             {
-                saveItems.Add(saveSystemData.saveItemList[saveSystemData.saveItemList.Count - (i + 1)]);
+                saveItems.Add(saveSystemData.SaveItemList[^(i + 1)]);
             }
 
             return saveItems;
@@ -145,10 +209,10 @@ namespace KFrame.Systems
         /// <returns></returns>
         public static List<SaveItem> GetAllSaveItemByUpdateTime()
         {
-            List<SaveItem> saveItems = new List<SaveItem>(saveSystemData.saveItemList.Count);
-            for (int i = 0; i < saveSystemData.saveItemList.Count; i++)
+            List<SaveItem> saveItems = new List<SaveItem>(saveSystemData.SaveItemList.Count);
+            for (int i = 0; i < saveSystemData.SaveItemList.Count; i++)
             {
-                saveItems.Add(saveSystemData.saveItemList[i]);
+                saveItems.Add(saveSystemData.SaveItemList[i]);
             }
 
             OrderByUpdateTimeComparer orderBy = new OrderByUpdateTimeComparer();
@@ -163,10 +227,10 @@ namespace KFrame.Systems
         /// <returns></returns>
         public static List<SaveItem> GetAllSaveItemBySaveId()
         {
-            List<SaveItem> saveItems = new List<SaveItem>(saveSystemData.saveItemList.Count);
-            for (int i = 0; i < saveSystemData.saveItemList.Count; i++)
+            List<SaveItem> saveItems = new List<SaveItem>(saveSystemData.SaveItemList.Count);
+            for (int i = 0; i < saveSystemData.SaveItemList.Count; i++)
             {
-                saveItems.Add(saveSystemData.saveItemList[i]);
+                saveItems.Add(saveSystemData.SaveItemList[i]);
             }
 
             saveItems.Sort((a, b) => a.SaveID - b.SaveID);
@@ -196,11 +260,11 @@ namespace KFrame.Systems
         {
             if (isDescending)
             {
-                return saveSystemData.saveItemList.OrderByDescending(orderFunc).ToList();
+                return saveSystemData.SaveItemList.OrderByDescending(orderFunc).ToList();
             }
             else
             {
-                return saveSystemData.saveItemList.OrderBy(orderFunc).ToList();
+                return saveSystemData.SaveItemList.OrderBy(orderFunc).ToList();
             }
         }
 
@@ -233,11 +297,11 @@ namespace KFrame.Systems
         /// </summary>
         public static SaveItem GetSaveItem(int id)
         {
-            for (int i = 0; i < saveSystemData.saveItemList.Count; i++)
+            foreach (var saveItem in saveSystemData.SaveItemList)
             {
-                if (saveSystemData.saveItemList[i].SaveID == id)
+                if (saveItem.SaveID == id)
                 {
-                    return saveSystemData.saveItemList[i];
+                    return saveItem;
                 }
             }
 
@@ -249,44 +313,8 @@ namespace KFrame.Systems
         /// </summary>
         public static SaveItem GetSaveItem(SaveItem saveItem)
         {
-            GetSaveItem(saveItem.SaveID);
-            return null;
+            return GetSaveItem(saveItem.SaveID);
         }
-
-        /// <summary>
-        /// 添加一个存档
-        /// </summary>
-        /// <returns></returns>
-        public static SaveItem CreateSaveItem()
-        {
-            if (saveSystemData.saveItemList.Count == 0)
-            {
-                saveSystemData.currID = 0;
-            }
-            else
-            {
-                for (int i = 0; i < saveSystemData.saveItemList.Count; i++)
-                {
-                    if (GetSaveItem(i) == null)
-                    {
-                        saveSystemData.currID = i;
-                        break;
-                    }
-                    else
-                    {
-                        saveSystemData.currID = i + 1;
-                    }
-                }
-            }
-
-            SaveItem saveItem = new SaveItem(saveSystemData.currID, DateTime.Now);
-            saveSystemData.saveItemList.Add(saveItem);
-            saveSystemData.currID += 1;
-            // 更新SaveSystemData 写入磁盘
-            UpdateSaveSystemData();
-            return saveItem;
-        }
-
         /// <summary>
         /// 添加一个指定ID的存档
         /// </summary>
@@ -294,13 +322,22 @@ namespace KFrame.Systems
         /// <returns></returns>
         public static SaveItem CreateSaveItem(int saveID)
         {
-            SaveItem saveItem = new SaveItem(saveSystemData.currID, DateTime.Now);
-            saveSystemData.saveItemList.Add(saveItem);
-            //更新存档的ID
-            saveSystemData.currID = saveID;
-            // 更新SaveSystemData 写入磁盘
-            UpdateSaveSystemData();
+            //创建一个新的存档
+            SaveItem saveItem = new SaveItem(saveID, DateTime.Now);
+            
+            //加入存档列表
+            saveSystemData.SaveItemList.Add(saveItem);
+            //返回结果
             return saveItem;
+        }
+        /// <summary>
+        /// 添加一个存档
+        /// </summary>
+        /// <returns></returns>
+        public static SaveItem CreateSaveItem()
+        {
+            //自动搜索一个最小的可用存档id然后创建存档
+            return CreateSaveItem(saveSystemData.GetMinAvailableSaveId());
         }
 
         /// <summary>
@@ -317,11 +354,9 @@ namespace KFrame.Systems
                 Directory.Delete(itemDir, true);
             }
 
-            saveSystemData.saveItemList.Remove(GetSaveItem(saveID));
+            saveSystemData.SaveItemList.Remove(GetSaveItem(saveID));
             // 移除缓存
             RemoveCache(saveID);
-            // 更新SaveSystemData 写入磁盘
-            UpdateSaveSystemData();
         }
 
         /// <summary>
@@ -430,8 +465,6 @@ namespace KFrame.Systems
             SaveFile(saveObject, savePath);
             // 更新存档时间
             GetSaveItem(saveID).UpdateTime(DateTime.Now);
-            // 更新SaveSystemData 写入磁盘
-            UpdateSaveSystemData();
 
             // 更新缓存
             SetCache(saveID, saveFileName, saveObject);
@@ -621,76 +654,6 @@ namespace KFrame.Systems
         #region 内部工具函数
 
         /// <summary>
-        /// 获取存档系统数据
-        /// </summary>
-        /// <returns></returns>
-        private static void InitSaveSystemData()
-        {
-            saveSystemData = LoadFile<SaveSystemData>(SaveDirPath + "/SaveSystemData");
-            if (saveSystemData == null)
-            {
-                saveSystemData = new SaveSystemData();
-                UpdateSaveSystemData();
-            }
-
-            //检查一下存档有没有被删了
-            CheckSaveExist();
-        }
-
-        /// <summary>
-        /// 检查存档是否存在
-        /// </summary>
-        public static void CheckSaveExist()
-        {
-            //记录一下是否有更新
-            bool update = false;
-            string saveDataName = "GameSaveDatas.json";
-
-            //遍历存档
-            for (int i = 0; i < saveSystemData.saveItemList.Count; i++)
-            {
-                //如果文件不存在了那就删除这个存档
-                if (!Directory.Exists($"{SaveDirPath}/{saveSystemData.saveItemList[i].SaveID}") ||
-                    !File.Exists($"{SaveDirPath}/{saveSystemData.saveItemList[i].SaveID}/{saveDataName}"))
-                {
-                    saveSystemData.saveItemList.RemoveAt(i);
-                    i--;
-                    update = true;
-                }
-            }
-
-            //检查有没有本地存档文件更新
-            for (int i = 0; i < 3; i++)
-            {
-                //如果已经有这个存档了那就跳过
-                if (GetSaveItem(i) != null) continue;
-
-                //如果找到了存档文件
-                if (Directory.Exists($"{SaveDirPath}/{i}") && File.Exists($"{SaveDirPath}/{i}/{saveDataName}"))
-                {
-                    //那就添加进列表中
-                    SaveItem save = new SaveItem(i, DateTime.Now);
-                    saveSystemData.saveItemList.Add(save);
-                    update = true;
-                }
-            }
-
-            //如果更新了那就保存
-            if (update)
-            {
-                UpdateSaveSystemData();
-            }
-        }
-
-        /// <summary>
-        /// 更新存档系统数据
-        /// </summary>
-        private static void UpdateSaveSystemData()
-        {
-            SaveFile(saveSystemData, SaveDirPath + "/SaveSystemData");
-        }
-
-        /// <summary>
         /// 检查路径并创建目录
         /// </summary>
         private static void CheckAndCreateDir()
@@ -757,25 +720,7 @@ namespace KFrame.Systems
                     break;
             }
         }
-
-        // /// <summary>
-        // /// 加载文件
-        // /// </summary>
-        // /// <typeparam name="T">加载后要转为的类型</typeparam>
-        // /// <param name="path">加载路径</param>
-        // private static T LoadFile<T>(string path) where T : class
-        // {
-        //     switch (FrameRoot.Setting.SaveSystemType)
-        //     {
-        //         case SaveSystemType.Binary:
-        //             return KNTool.LoadFile<T>(path);
-        //         case SaveSystemType.Json:
-        //             return KNTool.LoadJson<T>(path);
-        //     }
-        //
-        //     return null;
-        // }
-
+        
         /// <summary>
         /// 加载文件
         /// </summary>

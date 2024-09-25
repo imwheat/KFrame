@@ -36,6 +36,8 @@ namespace KFrame.Utilities
         public static string FrameEditorAssetsPath => FrameAssetsPath + "Editor/";
         static KFrameAssetsPath()
         {
+            #if UNITY_EDITOR
+            
             //如果找不到文件夹路径了
             if (!AssetDatabase.IsValidFolder(DefaultFramePath))
             {
@@ -58,8 +60,8 @@ namespace KFrame.Utilities
                     DefaultFramePath = prevPath.GetNiceDirectoryPath();
                 }
                 
-
             }
+            #endif
             
         }
         /// <summary>

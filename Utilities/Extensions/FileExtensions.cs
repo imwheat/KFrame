@@ -64,14 +64,19 @@ namespace KFrame.Utilities
         /// <param name="path">路径</param>
         public static void SaveJson(string jsonString, string path)
         {
-            File.WriteAllText(path + ".json", jsonString);
+            //如果路径结尾没有.json那就加上
+            if (!path.EndsWith(".json"))
+            {
+                path += ".json";
+            }
+            File.WriteAllText(path, jsonString);
         }
 
         /// <summary>
         /// 格式化Json字符串
         /// </summary>
-        /// <param name="json"></param>
-        /// <returns></returns>
+        /// <param name="json">json数据</param>
+        /// <returns>格式化后的字符串</returns>
         public static string FormatJson(string json)
         {
             int level = 0;
@@ -137,14 +142,16 @@ namespace KFrame.Utilities
         /// <summary>
         /// 读取Json为指定的类型对象
         /// </summary>
+        /// <returns>从目标位置加载json数据，如果不存在那就返回null</returns>
         public static T LoadJson<T>(string path) where T : class
         {
             //防止路径忘记加后缀
-            if (path.Length < 5 || path.Substring(path.Length - 5, 5) != ".json")
+            if (!path.EndsWith(".json"))
             {
                 path += ".json";
             }
-
+            
+            //如果不存在那就返回null
             if (!File.Exists(path))
             {
                 return null;
