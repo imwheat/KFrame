@@ -1,5 +1,5 @@
 //****************** 代码文件申明 ************************
-//* 文件：ScriptTools                      
+//* 文件：ScriptTool                      
 //* 作者：wheat
 //* 创建时间：2023年04月26日 星期五 09:47
 //* 描述：有一些管理、创建脚本的工具方法
@@ -14,7 +14,7 @@ using StringExtensions = KFrame.Utilities.StringExtensions;
 
 namespace KFrame.Editor
 {
-    public static class ScriptTools
+    public static class ScriptTool
     {
 
         public const string CodeGenerator_StartTextRegion = "#region 代码生成开始标识";

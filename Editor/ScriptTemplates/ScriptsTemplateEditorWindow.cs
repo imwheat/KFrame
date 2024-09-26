@@ -521,7 +521,7 @@ namespace KFrame.Editor
         private static bool CreateScriptTemplateMenuItem(string assetName, string groupName)
         {
             //生成新的MenuItem的代码
-            return ScriptTools.AddCode<ScriptsTemplatesMenuItem>(GenerateScriptTemplateMenuItemCode(assetName, groupName), assetName);
+            return ScriptTool.AddCode<ScriptsTemplatesMenuItem>(GenerateScriptTemplateMenuItemCode(assetName, groupName), assetName);
         }
         /// <summary>
         /// 生成脚本模版的MenuItem的代码
@@ -774,7 +774,7 @@ namespace KFrame.Editor
             AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(templates[i]));
 
             //再删除MenuItem
-            ScriptTools.RemoveCode<ScriptsTemplatesMenuItem>(templateName);
+            ScriptTool.RemoveCode<ScriptsTemplatesMenuItem>(templateName);
 
             //再从GUI里面移除
             templateGUI.RemoveAt(i);

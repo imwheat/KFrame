@@ -38,6 +38,12 @@ namespace KFrame
     [KGlobalConfigPath(GlobalPathType.Frame, typeof(FrameSettings), true)]
     public class FrameSettings : GlobalConfigBase<FrameSettings>
     {
+
+        /// <summary>
+        /// 是否使用2D物理
+        /// </summary>
+        public bool Use2DPhysics = true;
+        
         #region 资源管理
 
         [SerializeField, LabelText("资源管理方式")]

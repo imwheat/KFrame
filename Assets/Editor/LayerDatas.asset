@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be204bb342c45854cb3db2b8dd406fbb, type: 3}
+  m_Name: LayerDatas
+  m_EditorClassIdentifier: 
+  datas:
+  - layerIndex: 0
+    layerName: Default
+    collisionLayer: 'Default, TransparentFX, Ignore Raycast, Water, UI, '
+    description: 
+  - layerIndex: 1
+    layerName: TransparentFX
+    collisionLayer: 'Default, TransparentFX, Ignore Raycast, Water, UI, '
+    description: 
+  - layerIndex: 2
+    layerName: Ignore Raycast
+    collisionLayer: 'Default, TransparentFX, Ignore Raycast, Water, UI, '
+    description: 
+  - layerIndex: 4
+    layerName: Water
+    collisionLayer: 'Default, TransparentFX, Ignore Raycast, Water, UI, '
+    description: 
+  - layerIndex: 5
+    layerName: UI
+    collisionLayer: 'Default, TransparentFX, Ignore Raycast, Water, UI, '
+    description: 
