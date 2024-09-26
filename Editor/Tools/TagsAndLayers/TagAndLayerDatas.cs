@@ -1,23 +1,18 @@
 //****************** 代码文件申明 ***********************
-//* 文件：LayerDatas
+//* 文件：TagAndLayerDatas
 //* 作者：wheat
 //* 创建时间：2024/09/26 09:28:20 星期四
 //* 描述：存储Layer的一些数据
 //*******************************************************
 
-using UnityEngine;
-using UnityEditor;
-using KFrame;
 using KFrame.Utilities;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using KFrame.Attributes;
 
 namespace KFrame.Editor
 {
-    [KGlobalConfigPath(GlobalPathType.Editor, typeof(LayerDatas), true)]
-    internal class LayerDatas : GlobalConfigBase<LayerDatas>
+    [KGlobalConfigPath(GlobalPathType.Editor, typeof(TagAndLayerDatas), true)]
+    internal class TagAndLayerDatas : GlobalConfigBase<TagAndLayerDatas>
     {
         #region 数据
 

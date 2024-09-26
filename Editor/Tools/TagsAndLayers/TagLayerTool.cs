@@ -6,11 +6,7 @@
 //*******************************************************
 
 using UnityEngine;
-using UnityEditor;
-using KFrame;
 using KFrame.Utilities;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
@@ -18,6 +14,57 @@ namespace KFrame.Editor
 {
     public static class TagLayerTool
     {
+
+        #region Layer
+        
+        /// <summary>
+        /// 获取Data的Summary
+        /// </summary>
+        /// <param name="data">层级数据</param>
+        /// <param name="space">每行的空格</param>
+        private static string GetLayerSummary(LayerDataBase data, string space)
+        {
+            //如果为空直接返回空
+            if (data == null) return "";
+            string tab = space + "/// ";
+            //开头
+            StringBuilder sb = new StringBuilder();
+            sb.Append(tab).Append("<summary>").AppendLine();
+            
+            //中间内容
+            sb.Append(tab).Append("名称: ").Append(data.layerName).AppendLine();
+            sb.Append(tab).Append("碰撞图层: ").Append(data.collisionLayer).AppendLine();
+            if (!string.IsNullOrEmpty(data.description))
+            {
+                sb.Append(tab).Append("描述: ").Append(data.description).AppendLine();
+            }
+            
+            //中间内容
+            sb.Append(tab).Append("</summary>").AppendLine();
+
+            return sb.ToString();
+        }
+        /// <summary>
+        /// 获取Data的参数
+        /// </summary>
+        /// <param name="data">层级数据</param>
+        /// <param name="space">每行的空格</param>
+        private static string GetLayerParams(LayerDataBase data, string space)
+        {
+            //如果为空直接返回空
+            if (data == null) return "";
+            StringBuilder sb = new StringBuilder();
+            string tab = GetLayerSummary(data, space) + space + "public static readonly ";
+            string paramName = data.layerName.ConnectWords();
+            sb.Append(tab).Append("string ").Append(paramName).Append("Layer = \"").Append(data.layerName)
+                .AppendLine("\";");
+            sb.Append(tab).Append("int ").Append(paramName).Append("LayerIndex = LayerMask.NameToLayer(").Append(paramName)
+                .AppendLine("Layer);");
+            sb.Append(tab).Append("LayerMask ").Append(paramName).Append("LayerMask = LayerMask.GetMask(").Append(paramName)
+                .AppendLine("Layer);");
+
+            return sb.ToString();
+        }
         /// <summary>
         /// 层级更新
         /// </summary>
@@ -41,6 +88,7 @@ namespace KFrame.Editor
 
             //获取一下游戏是不是使用2D物理的
             bool use2DPhysics = FrameSettings.Instance.Use2DPhysics;
+            StringBuilder scriptSB = new StringBuilder();
             foreach (LayerDataBase dataBase in newDatas.Values)
             {
                 //如果是2d物理的
@@ -61,12 +109,63 @@ namespace KFrame.Editor
                 }
                 
                 //更新库中数据
-                LayerDatas.Instance.UpdateData(dataBase);
+                TagAndLayerDatas.Instance.UpdateData(dataBase);
+                scriptSB.AppendLine(GetLayerParams(dataBase, "        "));
             }
             
+            //更新脚本
+            ScriptTool.UpdateCode(nameof(Layers),scriptSB.ToString(), "        ");
+            
             //保存库
-            LayerDatas.Instance.SaveAsset();
+            TagAndLayerDatas.Instance.SaveAsset();
         }
+
+        #endregion
+
+        #region Tag
+
+        /// <summary>
+        /// 根据Unity目前的tag状态更新脚本
+        /// </summary>
+        private static void TagUpdate()
+        {
+            StringBuilder scriptSB = new StringBuilder();
+            
+            //获取所有的tag
+            string[] tags = UnityEditorInternal.InternalEditorUtility.tags;
+            //逐个进行遍历
+            foreach (string tag in tags)
+            {
+                scriptSB.Append("        public static readonly string ").Append(tag).Append(" = \"").Append(tag)
+                    .AppendLine("\";");
+            }
+            
+            //更新脚本
+            ScriptTool.UpdateCode(nameof(Tags),scriptSB.ToString(), "        ");
+
+        }
+
+        #endregion
+
+        #region SortingLayer
+
+        /// <summary>
+        /// 根据Unity目前的SortingLayer状态更新脚本
+        /// </summary>
+        private static void SortingLayerUpdate()
+        {
+            StringBuilder scriptSB = new StringBuilder();
+            
+            //获取所有的tag
+            SortingLayer[] sortingLayers = SortingLayer.layers;
+            
+            //更新脚本
+            ScriptTool.UpdateCode(nameof(Tags),scriptSB.ToString(), "        ");
+
+        }
+
+        #endregion
+        
     }
 }
 

@@ -48,7 +48,7 @@ namespace KFrame.Editor
             }
 
             //然后开始生成
-            return AddCode(addContent, addContentTag, classFilePath, regionTag, useRegion);
+            return AddScriptCode(addContent, addContentTag, classFilePath, regionTag, useRegion);
         }
         /// <summary>
         /// 通过位置标记来更新代码(添加)
@@ -63,7 +63,7 @@ namespace KFrame.Editor
         /// <param name="regionTag">限制region的Tag</param>
         /// <param name="csPath">cs文件的路径</param>
         /// <param name="useRegion">代码生成标识是否使用region</param>
-        public static bool AddCode(string addContent, string addContentTag, string csPath, string regionTag = "", bool useRegion = false)
+        private static bool AddScriptCode(string addContent, string addContentTag, string csPath, string regionTag = "", bool useRegion = false)
         {
             //检查路径
             if (File.Exists(csPath) == false)
@@ -76,8 +76,8 @@ namespace KFrame.Editor
             string csText = File.ReadAllText(csPath);
 
             //检测一下有没有画好region，有的话获取region的下标，没有的话返回
-            int startRegionIndex = csText.IndexOf(CodeGenerator_StartTextRegion + regionTag) + (CodeGenerator_StartTextRegion + regionTag).Length;
-            int endRegionIndex = csText.IndexOf(CodeGenerator_EndTextRegion + regionTag);
+            int startRegionIndex = csText.IndexOf(CodeGenerator_StartTextRegion + regionTag, StringComparison.Ordinal) + (CodeGenerator_StartTextRegion + regionTag).Length;
+            int endRegionIndex = csText.IndexOf(CodeGenerator_EndTextRegion + regionTag, StringComparison.Ordinal);
             if (startRegionIndex == -1 || endRegionIndex == -1)
             {
                 Debug.LogError("请先画好region的范围以后再生成");
@@ -128,7 +128,7 @@ namespace KFrame.Editor
             }
 
             //然后开始生成
-            RemoveCode(removeContentTag, classFilePath, regionTag, useRegion);
+            RemoveScriptCode(removeContentTag, classFilePath, regionTag, useRegion);
         }
         /// <summary>
         /// 通过位置标记来更新代码(删除)
@@ -142,7 +142,7 @@ namespace KFrame.Editor
         /// <param name="regionTag">限制region的Tag</param>
         /// <param name="csPath">cs文件的路径</param>
         /// <param name="useRegion">代码生成标识是否使用region</param>
-        public static void RemoveCode(string removeContentTag, string csPath, string regionTag = "", bool useRegion = false)
+        private static void RemoveScriptCode(string removeContentTag, string csPath, string regionTag = "", bool useRegion = false)
         {
             //检查路径
             if (File.Exists(csPath) == false)
@@ -184,6 +184,32 @@ namespace KFrame.Editor
             AssetDatabase.Refresh();
             AssetDatabase.SaveAssets();
         }
+
+        /// <summary>
+        /// 通过位置标记来更新代码(删除旧的)
+        /// 位置标记为:
+        /// <example>
+        /// "#region 代码生成开始标识" 
+        /// "#endregion 代码生成结束标识"
+        /// </example>
+        /// </summary>
+        /// <param name="fileName">文件名称</param>
+        /// <param name="updateContent">代码更新内容</param>
+        /// <param name="space">空格</param>
+        /// <param name="customTag">自定义tag</param>
+        /// <param name="useRegion">代码生成标识是否使用region</param>
+        public static void UpdateCode(string fileName, string updateContent, string space = "", string customTag = "", bool useRegion = true)
+        {
+            bool findPath = TryGetCSFilePath(fileName, out string classFilePath);
+            if (findPath == false)
+            {
+                Debug.LogWarning("终止生成,请在形参csPath填入绝对路径");
+                return;
+            }
+
+            UpdateScriptCode(updateContent, classFilePath, space, customTag, useRegion);
+        }
+
         /// <summary>
         /// 通过位置标记来更新代码(删除旧的)
         /// 位置标记为:
@@ -193,10 +219,11 @@ namespace KFrame.Editor
         /// </example>
         /// </summary>
         /// <param name="updateContent">代码更新内容</param>
-        /// <typeparam name="T">类类型</typeparam>
+        /// <param name="space">空格</param>
         /// <param name="customTag">自定义tag</param>
         /// <param name="useRegion">代码生成标识是否使用region</param>
-        public static void UpdateCode<T>(string updateContent, string customTag = "", bool useRegion = true)
+        /// <typeparam name="T">类类型</typeparam>
+        public static void UpdateCode<T>(string updateContent, string space = "", string customTag = "", bool useRegion = true)
         {
             bool findPath = TryGetCSFilePath<T>(out string classFilePath);
             if (findPath == false)
@@ -205,7 +232,7 @@ namespace KFrame.Editor
                 return;
             }
 
-            UpdateCode(updateContent, classFilePath, customTag, useRegion);
+            UpdateScriptCode(updateContent, classFilePath, space, customTag, useRegion);
         }
 
         /// <summary>
@@ -219,9 +246,10 @@ namespace KFrame.Editor
         /// </summary>
         /// <param name="updateContent">生成的更新内容</param>
         /// <param name="csPath">文件路径</param>
+        /// <param name="space">空格</param>
         /// <param name="customTag">自定义tag标识</param>
         /// <param name="useRegion">代码生成标识是否使用region</param>
-        public static void UpdateCode(string updateContent, string csPath,
+        private static void UpdateScriptCode(string updateContent, string csPath, string space = "",
             string customTag = "", bool useRegion = true)
         {
             //检查路径
@@ -246,7 +274,7 @@ namespace KFrame.Editor
             //先将start和end之间的代码删除干净
             string newContents = csText.Remove(startIndex, endIndex - startIndex);
             //在start后插入defineStr
-            newContents = newContents.Insert(startIndex, "\n" + updateContent + "\n\n        ");
+            newContents = newContents.Insert(startIndex, "\n\n" + updateContent + "\n"+space);
 
             //写入结果
             File.WriteAllText(csPath, newContents);
@@ -257,11 +285,11 @@ namespace KFrame.Editor
         /// <summary>
         /// 查找某个指定的cs文件
         /// </summary>
-        /// <typeparam name="T">类型</typeparam>
+        /// <param name="fileName">文件名称</param>
         /// <param name="csPath">输出结果</param>
         /// <param name="searchInFolders">限制的文件夹</param>
         /// <returns>如果找不到返回false</returns>
-        public static bool TryGetCSFilePath<T>(out string csPath, string[] searchInFolders = null)
+        public static bool TryGetCSFilePath(string fileName,out string csPath, string[] searchInFolders = null)
         {
             //如果没有限制的搜索文件夹，那就默认整个Assets
             if (searchInFolders == null)
@@ -271,7 +299,7 @@ namespace KFrame.Editor
 
             csPath = "";
             // 获取程序集所在目录
-            string[] findAssets = AssetDatabase.FindAssets(typeof(T).Name, searchInFolders);
+            string[] findAssets = AssetDatabase.FindAssets(fileName, searchInFolders);
 
             //如果找到了多个文件
             if (findAssets.Length > 1)
@@ -282,7 +310,7 @@ namespace KFrame.Editor
                 {
                     //如果文件后缀是cs那就加入结果
                     string path = AssetDatabase.GUIDToAssetPath(result);
-                    if (path.Substring(path.Length - 3, 3) == ".cs")
+                    if (path.EndsWith(".cs"))
                     {
                         findResult.Add(path);
                     }
@@ -294,7 +322,7 @@ namespace KFrame.Editor
                     return true;
                 }
                 //有多个相同的
-                string logContent = "类名" + typeof(T).Name + "找到了多个可能路径:" + "\n";
+                string logContent = "类名" + fileName + "找到了多个可能路径:" + "\n";
                 foreach (var findAsset in findAssets)
                 {
                     logContent += AssetDatabase.GUIDToAssetPath(findAsset) + "\n";
@@ -315,6 +343,23 @@ namespace KFrame.Editor
             {
                 return false;
             }
+        }
+        /// <summary>
+        /// 查找某个指定的cs文件
+        /// </summary>
+        /// <typeparam name="T">类型</typeparam>
+        /// <param name="csPath">输出结果</param>
+        /// <param name="searchInFolders">限制的文件夹</param>
+        /// <returns>如果找不到返回false</returns>
+        public static bool TryGetCSFilePath<T>(out string csPath, string[] searchInFolders = null)
+        {
+            //如果没有限制的搜索文件夹，那就默认整个Assets
+            if (searchInFolders == null)
+            {
+                searchInFolders = new string[] { "Assets" };
+            }
+
+            return TryGetCSFilePath(typeof(T).Name, out csPath, searchInFolders);
         }
 
         /// <summary>

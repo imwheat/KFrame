@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: be204bb342c45854cb3db2b8dd406fbb, type: 3}
-  m_Name: LayerDatas
+  m_Name: TagAndLayerDatas
   m_EditorClassIdentifier: 
   datas:
   - layerIndex: 0

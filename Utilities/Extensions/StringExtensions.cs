@@ -95,30 +95,18 @@ namespace KFrame.Utilities
         #endregion
 
         /// <summary>
-        /// 把全大写加_的转为驼峰命名
+        /// 把每个单词中间空格去除
         /// </summary>
-        /// <returns>比如MY_INT_VALUE => MyIntValue</returns>
-        public static string ToTitleCase(this string input)
+        /// <returns>比如My Int Value => MyIntValue</returns>
+        public static string ConnectWords(this string input)
         {
             StringBuilder stringBuilder = new StringBuilder();
             for (int i = 0; i < input.Length; i++)
             {
                 char c = input[i];
-                if (c == '_' && i + 1 < input.Length)
-                {
-                    char c2 = input[i + 1];
-                    if (char.IsLower(c2))
-                    {
-                        c2 = char.ToUpper(c2, CultureInfo.InvariantCulture);
-                    }
-
-                    stringBuilder.Append(c2);
-                    i++;
-                }
-                else
-                {
-                    stringBuilder.Append(c);
-                }
+                //如果是空格就跳过
+                if(c == ' ') continue;
+                stringBuilder.Append(c);
             }
 
             return stringBuilder.ToString();
@@ -139,7 +127,7 @@ namespace KFrame.Utilities
         /// <returns>"thisIsCamelCase" -> "This Is Camel Case"</returns>
         public static string SplitPascalCase(this string input)
         {
-            if (input == null || input.Length == 0)
+            if (string.IsNullOrEmpty(input))
             {
                 return input;
             }
