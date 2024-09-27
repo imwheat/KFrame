@@ -2,12 +2,13 @@
 //* 文件：TagAndLayerDatas
 //* 作者：wheat
 //* 创建时间：2024/09/26 09:28:20 星期四
-//* 描述：存储Layer的一些数据
+//* 描述：存储Layer、Tag、SortingLayer的一些数据
 //*******************************************************
 
 using KFrame.Utilities;
 using System.Collections.Generic;
 using KFrame.Attributes;
+using UnityEngine;
 
 namespace KFrame.Editor
 {
@@ -17,69 +18,161 @@ namespace KFrame.Editor
         #region 数据
 
         /// <summary>
-        /// 数据库
+        /// Layer数据库
         /// </summary>
-        public List<LayerDataBase> datas = new ();
+        public List<LayerDataBase> layerDatas = new ();
         /// <summary>
-        /// 层级数据字典
+        /// Tag数据库
         /// </summary>
-        private Dictionary<int, LayerDataBase> dataDic;
+        public List<TagDataBase> tagDatas = new ();
         /// <summary>
-        /// 层级数据字典
+        /// SortingLayer数据库
         /// </summary>
-        private Dictionary<int, LayerDataBase> DataDic
+        public List<SortingLayerDataBase> sortingLayerDatas = new ();
+        /// <summary>
+        /// Layer数据字典
+        /// </summary>
+        private Dictionary<int, LayerDataBase> layerDataDic;
+        /// <summary>
+        /// Tag数据字典
+        /// </summary>
+        private Dictionary<string, TagDataBase> tagDataDic;
+        /// <summary>
+        /// SortingLayer数据字典
+        /// </summary>
+        private Dictionary<int, SortingLayerDataBase> sortingLayerDataDic;
+        /// <summary>
+        /// Layer数据字典
+        /// </summary>
+        private Dictionary<int, LayerDataBase> LayerDataDic
         {
             get
             {
                 //如果字典为空那就注册字典
-                if (dataDic == null)
+                if (layerDataDic == null)
                 {
-                    dataDic = new Dictionary<int, LayerDataBase>();
-
-                    foreach (LayerDataBase data in datas)
-                    {
-                        dataDic[data.layerIndex] = data;
-                    }
+                    InitLayerDic();
                 }
 
-                return dataDic;
+                return layerDataDic;
+            }
+        }
+        /// <summary>
+        /// Layer数据字典
+        /// </summary>
+        private Dictionary<string, TagDataBase> TagDataDic
+        {
+            get
+            {
+                //如果字典为空那就注册字典
+                if (tagDataDic == null)
+                {
+                    InitTagDic();
+                }
+
+                return tagDataDic;
+            }
+        }
+        /// <summary>
+        /// Layer数据字典
+        /// </summary>
+        private Dictionary<int, SortingLayerDataBase> SortingLayerDataDic
+        {
+            get
+            {
+                //如果字典为空那就注册字典
+                if (sortingLayerDataDic == null)
+                {
+                    InitSortingLayerDic();
+                }
+
+                return sortingLayerDataDic;
             }
         }
 
+        /// <summary>
+        /// 上次layer更新的代码
+        /// </summary>
+        [SerializeField]
+        internal string prevLayerUpdateCode;
+        /// <summary>
+        /// 上次Tag更新的代码
+        /// </summary>
+        [SerializeField]
+        internal string prevTagUpdateCode;
+        /// <summary>
+        /// 上次SortingLayer更新的代码
+        /// </summary>
+        [SerializeField]
+        internal string prevSortingLayerUpdateCode;
+        
         #endregion
 
         #region 数据操作方法
 
                 
         /// <summary>
-        /// 通过层级下标获取数据
+        /// 通过Layer下标获取数据
         /// </summary>
-        /// <param name="index">层级下标</param>
+        /// <param name="index">Layer下标</param>
         /// <returns>如果有数据就返回数据，没有的话返回null</returns>
-        internal LayerDataBase GetData(int index)
+        internal LayerDataBase GetLayerData(int index)
         {
-            return DataDic.GetValueOrDefault(index);
+            return LayerDataDic.GetValueOrDefault(index);
         }
         /// <summary>
-        /// 新增数据
+        /// 通过Tag名称获取数据
         /// </summary>
-        /// <param name="data">数据</param>
-        internal void UpdateData(LayerDataBase data)
+        /// <param name="tagName">Tag名称</param>
+        /// <returns>如果有数据就返回数据，没有的话返回null</returns>
+        internal TagDataBase GetTagData(string tagName)
         {
-            //先尝试获取一下之前的数据
-            var prevData = GetData(data.layerIndex);
-            //如果没有数据那就新建加入数据库和字典
-            if (prevData == null)
+            return TagDataDic.GetValueOrDefault(tagName);
+        }
+        /// <summary>
+        /// 通过SortingLayer下标获取数据
+        /// </summary>
+        /// <param name="index">SortingLayer下标</param>
+        /// <returns>如果有数据就返回数据，没有的话返回null</returns>
+        internal SortingLayerDataBase GetSortingLayerData(int index)
+        {
+            return SortingLayerDataDic.GetValueOrDefault(index);
+        }
+        /// <summary>
+        /// 初始化layer字典
+        /// </summary>
+        internal void InitLayerDic()
+        {
+            layerDataDic = new Dictionary<int, LayerDataBase>();
+
+            foreach (LayerDataBase data in layerDatas)
             {
-                DataDic[data.layerIndex] = data;
-                datas.Add(data);
+                layerDataDic[data.layerIndex] = data;
             }
-            //如果已经有了那就更新一下
-            else
+        }
+        /// <summary>
+        /// 初始化layer字典
+        /// </summary>
+        internal void InitTagDic()
+        {
+            tagDataDic = new Dictionary<string, TagDataBase>();
+    
+            foreach (var data in tagDatas)
             {
-                prevData.UpdateData(data);
+                tagDataDic[data.tagName] = data;
             }
-            
+        }
+        /// <summary>
+        /// 初始化layer字典
+        /// </summary>
+        internal void InitSortingLayerDic()
+        {
+            sortingLayerDataDic = new Dictionary<int, SortingLayerDataBase>();
+
+            foreach (var data in sortingLayerDatas)
+            {
+                sortingLayerDataDic[data.layerIndex] = data;
+            }
         }
 
         #endregion

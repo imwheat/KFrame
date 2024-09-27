@@ -15,6 +15,7 @@ namespace KFrame.Utilities
     public static class Layers
     {
         #region 代码生成开始标识
+
         /// <summary>
         /// 名称: Default
         /// 碰撞图层: Default, TransparentFX, Ignore Raycast, Water, UI, 
@@ -94,7 +95,6 @@ namespace KFrame.Utilities
         /// 碰撞图层: Default, TransparentFX, Ignore Raycast, Water, UI, 
         /// </summary>
         public static readonly LayerMask UILayerMask = LayerMask.GetMask(UILayer);
-
 
 
         #endregion 代码生成结束标识

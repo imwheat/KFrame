@@ -24,7 +24,14 @@ namespace KFrame.Editor
         {
             this.tagName = tagName;
         }
-
+        /// <summary>
+        /// 从另一个data那更新数据
+        /// </summary>
+        /// <param name="other">复制数据的data</param>
+        public void UpdateData(TagDataBase other)
+        {
+            description = other.description;
+        }
     }
 }
 

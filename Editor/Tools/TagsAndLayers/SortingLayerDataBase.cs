@@ -19,10 +19,6 @@ namespace KFrame.Editor
         /// </summary>
         public string layerName;
         /// <summary>
-        /// 会发生碰撞的层级
-        /// </summary>
-        public string collisionLayer;
-        /// <summary>
         /// 描述(用户自己添加不会更新)
         /// </summary>
         public string description;
@@ -41,10 +37,9 @@ namespace KFrame.Editor
         /// 从另一个data那更新数据
         /// </summary>
         /// <param name="other">复制数据的data</param>
-        public void UpdateData(LayerDataBase other)
+        public void UpdateData(SortingLayerDataBase other)
         {
-            layerName = other.layerName;
-            collisionLayer = other.collisionLayer;
+            description = other.description;
         }
     }
 }

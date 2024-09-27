@@ -20,6 +20,7 @@ namespace KFrame.Utilities
     public static class Tags
     {
         #region 代码生成开始标识
+
         public static readonly string Untagged = "Untagged";
         public static readonly string Respawn = "Respawn";
         public static readonly string Finish = "Finish";
@@ -27,7 +28,6 @@ namespace KFrame.Utilities
         public static readonly string MainCamera = "MainCamera";
         public static readonly string Player = "Player";
         public static readonly string GameController = "GameController";
-
 
         #endregion 代码生成结束标识
     }

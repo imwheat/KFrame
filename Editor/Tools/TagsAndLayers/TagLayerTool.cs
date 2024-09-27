@@ -9,12 +9,44 @@ using UnityEngine;
 using KFrame.Utilities;
 using System.Collections.Generic;
 using System.Text;
+using UnityEditor;
 
 namespace KFrame.Editor
 {
-    public static class TagLayerTool
+    internal static class TagLayerTool
     {
+        #region 设置参数
 
+        /// <summary>
+        /// 代码空格
+        /// </summary>
+        private const string Space = "        ";
+        /// <summary>
+        /// Layer脚本文件名称
+        /// </summary>
+        private const string LayerScriptFileName = "KLayers";
+        /// <summary>
+        /// Tag脚本文件名称
+        /// </summary>
+        private const string TagScriptFileName = "KTags";
+        /// <summary>
+        /// SortingLayer脚本文件名称
+        /// </summary>
+        private const string SortingLayerScriptFileName = "KSortingLayers";
+
+        #endregion
+        
+        /// <summary>
+        /// 更新参数
+        /// </summary>
+        [InitializeOnLoadMethod]
+        private static void UpdateParams()
+        {
+            LayersUpdate();
+            TagUpdate();
+            SortingLayerUpdate();
+        }
+        
         #region Layer
         
         /// <summary>
@@ -84,11 +116,21 @@ namespace KFrame.Editor
                 //转化成功那就新建数据然后添加
                 LayerDataBase data = new LayerDataBase(i, layerName);
                 newDatas.Add(i, data);
+                
+                //获取旧的数据
+                var prevData = TagAndLayerDatas.Instance.GetLayerData(i);
+                //如果为空就跳过，不为空就复制一下旧的数据
+                if (prevData == null) continue;
+                data.UpdateData(prevData);
             }
+            
+            
+            //清除旧的数据
+            TagAndLayerDatas.Instance.layerDatas.Clear();
 
             //获取一下游戏是不是使用2D物理的
             bool use2DPhysics = FrameSettings.Instance.Use2DPhysics;
-            StringBuilder scriptSB = new StringBuilder();
+            StringBuilder scriptSb = new StringBuilder();
             foreach (LayerDataBase dataBase in newDatas.Values)
             {
                 //如果是2d物理的
@@ -108,15 +150,21 @@ namespace KFrame.Editor
                     dataBase.collisionLayer = sb.ToString();
                 }
                 
-                //更新库中数据
-                TagAndLayerDatas.Instance.UpdateData(dataBase);
-                scriptSB.AppendLine(GetLayerParams(dataBase, "        "));
+                //更新代码和库
+                scriptSb.AppendLine(GetLayerParams(dataBase, Space));
+                TagAndLayerDatas.Instance.layerDatas.Add(dataBase);
             }
             
-            //更新脚本
-            ScriptTool.UpdateCode(nameof(Layers),scriptSB.ToString(), "        ");
+            //更新脚本如果代码变了
+            string newCode = scriptSb.ToString();
+            if (string.CompareOrdinal(newCode, TagAndLayerDatas.Instance.prevLayerUpdateCode) != 0)
+            {
+                TagAndLayerDatas.Instance.prevLayerUpdateCode = newCode;
+                ScriptTool.UpdateCode(LayerScriptFileName,scriptSb.ToString(), Space);
+            }
             
             //保存库
+            TagAndLayerDatas.Instance.InitLayerDic();
             TagAndLayerDatas.Instance.SaveAsset();
         }
 
@@ -125,43 +173,175 @@ namespace KFrame.Editor
         #region Tag
 
         /// <summary>
+        /// 获取Tag的Summary
+        /// </summary>
+        /// <param name="data">Tag数据</param>
+        /// <param name="space">空格</param>
+        /// <returns>Tag的Summary</returns>
+        private static string GetTagSummary(TagDataBase data, string space)
+        {
+            //如果为空或者没有描述那就返回空
+            if (data == null || string.IsNullOrWhiteSpace(data.description)) return "";
+
+            StringBuilder sb = new StringBuilder();
+            string tab = space + "/// ";
+            sb.Append(tab).AppendLine("<summary>");
+            sb.Append(tab).AppendLine(data.description);
+            sb.Append(tab).AppendLine("</summary>");
+
+            return sb.ToString();
+        }
+        
+        /// <summary>
+        /// 获取Tag的参数
+        /// </summary>
+        /// <param name="data">Tag数据</param>
+        /// <param name="space">空格</param>
+        /// <returns>Tag的参数</returns>
+        private static string GetTagParams(TagDataBase data, string space)
+        {
+            //如果为空那就返回空
+            if (data == null) return "";
+
+            StringBuilder sb = new StringBuilder();
+            string tab = GetTagSummary(data, space) + space + "public static readonly string ";
+            sb.Append(tab).Append(data.tagName).Append(" = \"").Append(data.tagName)
+                .AppendLine("\";");
+            
+            return sb.ToString();
+        }
+        /// <summary>
         /// 根据Unity目前的tag状态更新脚本
         /// </summary>
         private static void TagUpdate()
         {
-            StringBuilder scriptSB = new StringBuilder();
+            List<TagDataBase> newTags = new List<TagDataBase>();
+            StringBuilder scriptSb = new StringBuilder();
             
             //获取所有的tag
             string[] tags = UnityEditorInternal.InternalEditorUtility.tags;
             //逐个进行遍历
             foreach (string tag in tags)
             {
-                scriptSB.Append("        public static readonly string ").Append(tag).Append(" = \"").Append(tag)
-                    .AppendLine("\";");
+                //创建新的数据
+                TagDataBase data = new TagDataBase(tag);
+                var prevData = TagAndLayerDatas.Instance.GetTagData(tag);
+                if (prevData != null)
+                {
+                    data.UpdateData(prevData);
+                }
+                
+                //获取脚本文本
+                scriptSb.Append(GetTagParams(data, Space));
+                newTags.Add(data);
             }
             
-            //更新脚本
-            ScriptTool.UpdateCode(nameof(Tags),scriptSB.ToString(), "        ");
-
+            //更新脚本如果代码变了
+            string newCode = scriptSb.ToString();
+            if (string.CompareOrdinal(newCode, TagAndLayerDatas.Instance.prevTagUpdateCode) != 0)
+            {
+                TagAndLayerDatas.Instance.prevTagUpdateCode = newCode;
+                ScriptTool.UpdateCode(TagScriptFileName,scriptSb.ToString(), Space);
+            }
+            
+            //保存库
+            TagAndLayerDatas.Instance.tagDatas = newTags;
+            TagAndLayerDatas.Instance.InitTagDic();
+            TagAndLayerDatas.Instance.SaveAsset();
         }
 
         #endregion
 
         #region SortingLayer
+        
+        /// <summary>
+        /// 获取Data的Summary
+        /// </summary>
+        /// <param name="data">层级数据</param>
+        /// <param name="space">每行的空格</param>
+        private static string GetSortingLayerSummary(SortingLayerDataBase data, string space)
+        {
+            //如果为空直接返回空
+            if (data == null) return "";
+            string tab = space + "/// ";
+            //开头
+            StringBuilder sb = new StringBuilder();
+            sb.Append(tab).Append("<summary>").AppendLine();
+            
+            //中间内容
+            sb.Append(tab).Append("名称: ").Append(data.layerName).AppendLine();
+            if (!string.IsNullOrEmpty(data.description))
+            {
+                sb.Append(tab).Append("描述: ").Append(data.description).AppendLine();
+            }
+            
+            //中间内容
+            sb.Append(tab).Append("</summary>").AppendLine();
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// 获取Data的参数
+        /// </summary>
+        /// <param name="data">层级数据</param>
+        /// <param name="space">每行的空格</param>
+        private static string GetSortingLayerParams(SortingLayerDataBase data, string space)
+        {
+            //如果为空直接返回空
+            if (data == null) return "";
+            StringBuilder sb = new StringBuilder();
+            string tab = GetSortingLayerSummary(data, space) + space + "public static readonly ";
+            string paramName = data.layerName.ConnectWords();
+            sb.Append(tab).Append("int ").Append(paramName).Append("LayerIndex = ")
+                .Append(data.layerIndex)
+                .AppendLine(";");
+            sb.Append(tab).Append("string ").Append(paramName).Append("LayerName = \"")
+                .Append(data.layerName)
+                .AppendLine("\";");
+
+            return sb.ToString();
+        }
 
         /// <summary>
         /// 根据Unity目前的SortingLayer状态更新脚本
         /// </summary>
         private static void SortingLayerUpdate()
         {
-            StringBuilder scriptSB = new StringBuilder();
+            List<SortingLayerDataBase> newSortingLayers = new();
+            //清除旧的数据
+            TagAndLayerDatas.Instance.sortingLayerDatas.Clear();
+            
+            StringBuilder scriptSb = new StringBuilder();
             
             //获取所有的tag
             SortingLayer[] sortingLayers = SortingLayer.layers;
-            
-            //更新脚本
-            ScriptTool.UpdateCode(nameof(Tags),scriptSB.ToString(), "        ");
 
+            foreach (SortingLayer layer in sortingLayers)
+            {
+                SortingLayerDataBase data = new SortingLayerDataBase(layer.id, layer.name);
+                newSortingLayers.Add(data);
+                var prevData = TagAndLayerDatas.Instance.GetSortingLayerData(layer.id);
+                if (prevData != null)
+                {
+                    data.UpdateData(prevData);
+                }
+                //更叫代码
+                scriptSb.Append(GetSortingLayerParams(data, Space));
+            }
+            
+            //更新脚本如果代码变了
+            string newCode = scriptSb.ToString();
+            if (string.CompareOrdinal(newCode, TagAndLayerDatas.Instance.prevSortingLayerUpdateCode) != 0)
+            {
+                TagAndLayerDatas.Instance.prevSortingLayerUpdateCode = newCode;
+                ScriptTool.UpdateCode(SortingLayerScriptFileName,scriptSb.ToString(), Space);
+            }
+            
+            //保存库
+            TagAndLayerDatas.Instance.sortingLayerDatas = newSortingLayers;
+            TagAndLayerDatas.Instance.InitSortingLayerDic();
+            TagAndLayerDatas.Instance.SaveAsset();
         }
 
         #endregion

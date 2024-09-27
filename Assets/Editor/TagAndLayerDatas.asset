@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be204bb342c45854cb3db2b8dd406fbb, type: 3}
   m_Name: TagAndLayerDatas
   m_EditorClassIdentifier: 
-  datas:
+  layerDatas:
   - layerIndex: 0
     layerName: Default
     collisionLayer: 'Default, TransparentFX, Ignore Raycast, Water, UI, '
@@ -33,3 +33,78 @@ MonoBehaviour:
     layerName: UI
     collisionLayer: 'Default, TransparentFX, Ignore Raycast, Water, UI, '
     description: 
+  tagDatas:
+  - tagName: Untagged
+    description: 
+  - tagName: Respawn
+    description: 
+  - tagName: Finish
+    description: 
+  - tagName: EditorOnly
+    description: 
+  - tagName: MainCamera
+    description: 
+  - tagName: Player
+    description: 
+  - tagName: GameController
+    description: 
+  sortingLayerDatas:
+  - layerIndex: 0
+    layerName: Default
+    description: 
+  prevLayerUpdateCode: "        /// <summary>\r\n        /// \u540D\u79F0: Default\r\n       
+    /// \u78B0\u649E\u56FE\u5C42: Default, TransparentFX, Ignore Raycast, Water,
+    UI, \r\n        /// </summary>\r\n        public static readonly string DefaultLayer
+    = \"Default\";\r\n        /// <summary>\r\n        /// \u540D\u79F0: Default\r\n       
+    /// \u78B0\u649E\u56FE\u5C42: Default, TransparentFX, Ignore Raycast, Water,
+    UI, \r\n        /// </summary>\r\n        public static readonly int DefaultLayerIndex
+    = LayerMask.NameToLayer(DefaultLayer);\r\n        /// <summary>\r\n        ///
+    \u540D\u79F0: Default\r\n        /// \u78B0\u649E\u56FE\u5C42: Default, TransparentFX,
+    Ignore Raycast, Water, UI, \r\n        /// </summary>\r\n        public static
+    readonly LayerMask DefaultLayerMask = LayerMask.GetMask(DefaultLayer);\r\n\r\n       
+    /// <summary>\r\n        /// \u540D\u79F0: TransparentFX\r\n        /// \u78B0\u649E\u56FE\u5C42:
+    Default, TransparentFX, Ignore Raycast, Water, UI, \r\n        /// </summary>\r\n       
+    public static readonly string TransparentFXLayer = \"TransparentFX\";\r\n       
+    /// <summary>\r\n        /// \u540D\u79F0: TransparentFX\r\n        /// \u78B0\u649E\u56FE\u5C42:
+    Default, TransparentFX, Ignore Raycast, Water, UI, \r\n        /// </summary>\r\n       
+    public static readonly int TransparentFXLayerIndex = LayerMask.NameToLayer(TransparentFXLayer);\r\n       
+    /// <summary>\r\n        /// \u540D\u79F0: TransparentFX\r\n        /// \u78B0\u649E\u56FE\u5C42:
+    Default, TransparentFX, Ignore Raycast, Water, UI, \r\n        /// </summary>\r\n       
+    public static readonly LayerMask TransparentFXLayerMask = LayerMask.GetMask(TransparentFXLayer);\r\n\r\n       
+    /// <summary>\r\n        /// \u540D\u79F0: Ignore Raycast\r\n        /// \u78B0\u649E\u56FE\u5C42:
+    Default, TransparentFX, Ignore Raycast, Water, UI, \r\n        /// </summary>\r\n       
+    public static readonly string IgnoreRaycastLayer = \"Ignore Raycast\";\r\n       
+    /// <summary>\r\n        /// \u540D\u79F0: Ignore Raycast\r\n        /// \u78B0\u649E\u56FE\u5C42:
+    Default, TransparentFX, Ignore Raycast, Water, UI, \r\n        /// </summary>\r\n       
+    public static readonly int IgnoreRaycastLayerIndex = LayerMask.NameToLayer(IgnoreRaycastLayer);\r\n       
+    /// <summary>\r\n        /// \u540D\u79F0: Ignore Raycast\r\n        /// \u78B0\u649E\u56FE\u5C42:
+    Default, TransparentFX, Ignore Raycast, Water, UI, \r\n        /// </summary>\r\n       
+    public static readonly LayerMask IgnoreRaycastLayerMask = LayerMask.GetMask(IgnoreRaycastLayer);\r\n\r\n       
+    /// <summary>\r\n        /// \u540D\u79F0: Water\r\n        /// \u78B0\u649E\u56FE\u5C42:
+    Default, TransparentFX, Ignore Raycast, Water, UI, \r\n        /// </summary>\r\n       
+    public static readonly string WaterLayer = \"Water\";\r\n        /// <summary>\r\n       
+    /// \u540D\u79F0: Water\r\n        /// \u78B0\u649E\u56FE\u5C42: Default, TransparentFX,
+    Ignore Raycast, Water, UI, \r\n        /// </summary>\r\n        public static
+    readonly int WaterLayerIndex = LayerMask.NameToLayer(WaterLayer);\r\n       
+    /// <summary>\r\n        /// \u540D\u79F0: Water\r\n        /// \u78B0\u649E\u56FE\u5C42:
+    Default, TransparentFX, Ignore Raycast, Water, UI, \r\n        /// </summary>\r\n       
+    public static readonly LayerMask WaterLayerMask = LayerMask.GetMask(WaterLayer);\r\n\r\n       
+    /// <summary>\r\n        /// \u540D\u79F0: UI\r\n        /// \u78B0\u649E\u56FE\u5C42:
+    Default, TransparentFX, Ignore Raycast, Water, UI, \r\n        /// </summary>\r\n       
+    public static readonly string UILayer = \"UI\";\r\n        /// <summary>\r\n       
+    /// \u540D\u79F0: UI\r\n        /// \u78B0\u649E\u56FE\u5C42: Default, TransparentFX,
+    Ignore Raycast, Water, UI, \r\n        /// </summary>\r\n        public static
+    readonly int UILayerIndex = LayerMask.NameToLayer(UILayer);\r\n        /// <summary>\r\n       
+    /// \u540D\u79F0: UI\r\n        /// \u78B0\u649E\u56FE\u5C42: Default, TransparentFX,
+    Ignore Raycast, Water, UI, \r\n        /// </summary>\r\n        public static
+    readonly LayerMask UILayerMask = LayerMask.GetMask(UILayer);\r\n\r\n"
+  prevTagUpdateCode: "        public static readonly string Untagged = \"Untagged\";\r\n       
+    public static readonly string Respawn = \"Respawn\";\r\n        public static
+    readonly string Finish = \"Finish\";\r\n        public static readonly string
+    EditorOnly = \"EditorOnly\";\r\n        public static readonly string MainCamera
+    = \"MainCamera\";\r\n        public static readonly string Player = \"Player\";\r\n       
+    public static readonly string GameController = \"GameController\";\r\n"
+  prevSortingLayerUpdateCode: "        /// <summary>\r\n        /// \u540D\u79F0:
+    Default\r\n        /// </summary>\r\n        public static readonly int DefaultLayerIndex
+    = 0;\r\n        /// <summary>\r\n        /// \u540D\u79F0: Default\r\n       
+    /// </summary>\r\n        public static readonly string DefaultLayerName = \"Default\";\r\n"

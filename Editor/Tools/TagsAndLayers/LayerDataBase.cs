@@ -46,8 +46,7 @@ namespace KFrame.Editor
         /// <param name="other">复制数据的data</param>
         public void UpdateData(LayerDataBase other)
         {
-            layerName = other.layerName;
-            collisionLayer = other.collisionLayer;
+            description = other.description;
         }
     }
 }
