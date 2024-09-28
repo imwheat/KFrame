@@ -198,7 +198,8 @@ namespace KFrame.Editor
         /// <param name="space">空格</param>
         /// <param name="customTag">自定义tag</param>
         /// <param name="useRegion">代码生成标识是否使用region</param>
-        public static void UpdateCode(string fileName, string updateContent, string space = "", string customTag = "", bool useRegion = true)
+        /// <param name="refresh">刷新unity</param>
+        public static void UpdateCode(string fileName, string updateContent, string space = "", string customTag = "", bool useRegion = true, bool refresh = true)
         {
             bool findPath = TryGetCSFilePath(fileName, out string classFilePath);
             if (findPath == false)
@@ -207,7 +208,7 @@ namespace KFrame.Editor
                 return;
             }
 
-            UpdateScriptCode(updateContent, classFilePath, space, customTag, useRegion);
+            UpdateScriptCode(updateContent, classFilePath, space, customTag, useRegion, refresh);
         }
 
         /// <summary>
@@ -222,8 +223,9 @@ namespace KFrame.Editor
         /// <param name="space">空格</param>
         /// <param name="customTag">自定义tag</param>
         /// <param name="useRegion">代码生成标识是否使用region</param>
+        /// <param name="refresh">刷新unity</param>
         /// <typeparam name="T">类类型</typeparam>
-        public static void UpdateCode<T>(string updateContent, string space = "", string customTag = "", bool useRegion = true)
+        public static void UpdateCode<T>(string updateContent, string space = "", string customTag = "", bool useRegion = true, bool refresh = true)
         {
             bool findPath = TryGetCSFilePath<T>(out string classFilePath);
             if (findPath == false)
@@ -232,7 +234,7 @@ namespace KFrame.Editor
                 return;
             }
 
-            UpdateScriptCode(updateContent, classFilePath, space, customTag, useRegion);
+            UpdateScriptCode(updateContent, classFilePath, space, customTag, useRegion, refresh);
         }
 
         /// <summary>
@@ -249,8 +251,9 @@ namespace KFrame.Editor
         /// <param name="space">空格</param>
         /// <param name="customTag">自定义tag标识</param>
         /// <param name="useRegion">代码生成标识是否使用region</param>
+        /// <param name="refresh">刷新unity</param>
         private static void UpdateScriptCode(string updateContent, string csPath, string space = "",
-            string customTag = "", bool useRegion = true)
+            string customTag = "", bool useRegion = true, bool refresh = true)
         {
             //检查路径
             if (File.Exists(csPath) == false)
@@ -278,8 +281,11 @@ namespace KFrame.Editor
 
             //写入结果
             File.WriteAllText(csPath, newContents);
-            AssetDatabase.Refresh();
-            AssetDatabase.SaveAssets();
+            if (refresh)
+            {
+                AssetDatabase.Refresh();
+                AssetDatabase.SaveAssets();
+            }
         }
 
         /// <summary>

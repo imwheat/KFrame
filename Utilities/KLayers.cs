@@ -18,81 +18,97 @@ namespace KFrame.Utilities
 
         /// <summary>
         /// 名称: Default
-        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, Water, UI, 
+        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, ASD, Water, UI, 
         /// </summary>
         public static readonly string DefaultLayer = "Default";
         /// <summary>
         /// 名称: Default
-        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, Water, UI, 
+        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, ASD, Water, UI, 
         /// </summary>
         public static readonly int DefaultLayerIndex = LayerMask.NameToLayer(DefaultLayer);
         /// <summary>
         /// 名称: Default
-        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, Water, UI, 
+        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, ASD, Water, UI, 
         /// </summary>
         public static readonly LayerMask DefaultLayerMask = LayerMask.GetMask(DefaultLayer);
 
         /// <summary>
         /// 名称: TransparentFX
-        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, Water, UI, 
+        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, ASD, Water, UI, 
         /// </summary>
         public static readonly string TransparentFXLayer = "TransparentFX";
         /// <summary>
         /// 名称: TransparentFX
-        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, Water, UI, 
+        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, ASD, Water, UI, 
         /// </summary>
         public static readonly int TransparentFXLayerIndex = LayerMask.NameToLayer(TransparentFXLayer);
         /// <summary>
         /// 名称: TransparentFX
-        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, Water, UI, 
+        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, ASD, Water, UI, 
         /// </summary>
         public static readonly LayerMask TransparentFXLayerMask = LayerMask.GetMask(TransparentFXLayer);
 
         /// <summary>
         /// 名称: Ignore Raycast
-        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, Water, UI, 
+        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, ASD, Water, UI, 
         /// </summary>
         public static readonly string IgnoreRaycastLayer = "Ignore Raycast";
         /// <summary>
         /// 名称: Ignore Raycast
-        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, Water, UI, 
+        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, ASD, Water, UI, 
         /// </summary>
         public static readonly int IgnoreRaycastLayerIndex = LayerMask.NameToLayer(IgnoreRaycastLayer);
         /// <summary>
         /// 名称: Ignore Raycast
-        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, Water, UI, 
+        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, ASD, Water, UI, 
         /// </summary>
         public static readonly LayerMask IgnoreRaycastLayerMask = LayerMask.GetMask(IgnoreRaycastLayer);
 
         /// <summary>
+        /// 名称: ASD
+        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, ASD, Water, UI, 
+        /// </summary>
+        public static readonly string ASDLayer = "ASD";
+        /// <summary>
+        /// 名称: ASD
+        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, ASD, Water, UI, 
+        /// </summary>
+        public static readonly int ASDLayerIndex = LayerMask.NameToLayer(ASDLayer);
+        /// <summary>
+        /// 名称: ASD
+        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, ASD, Water, UI, 
+        /// </summary>
+        public static readonly LayerMask ASDLayerMask = LayerMask.GetMask(ASDLayer);
+
+        /// <summary>
         /// 名称: Water
-        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, Water, UI, 
+        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, ASD, Water, UI, 
         /// </summary>
         public static readonly string WaterLayer = "Water";
         /// <summary>
         /// 名称: Water
-        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, Water, UI, 
+        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, ASD, Water, UI, 
         /// </summary>
         public static readonly int WaterLayerIndex = LayerMask.NameToLayer(WaterLayer);
         /// <summary>
         /// 名称: Water
-        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, Water, UI, 
+        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, ASD, Water, UI, 
         /// </summary>
         public static readonly LayerMask WaterLayerMask = LayerMask.GetMask(WaterLayer);
 
         /// <summary>
         /// 名称: UI
-        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, Water, UI, 
+        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, ASD, Water, UI, 
         /// </summary>
         public static readonly string UILayer = "UI";
         /// <summary>
         /// 名称: UI
-        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, Water, UI, 
+        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, ASD, Water, UI, 
         /// </summary>
         public static readonly int UILayerIndex = LayerMask.NameToLayer(UILayer);
         /// <summary>
         /// 名称: UI
-        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, Water, UI, 
+        /// 碰撞图层: Default, TransparentFX, Ignore Raycast, ASD, Water, UI, 
         /// </summary>
         public static readonly LayerMask UILayerMask = LayerMask.GetMask(UILayer);
 

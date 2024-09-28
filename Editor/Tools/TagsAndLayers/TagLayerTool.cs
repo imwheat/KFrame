@@ -39,12 +39,16 @@ namespace KFrame.Editor
         /// <summary>
         /// 更新参数
         /// </summary>
-        [InitializeOnLoadMethod]
+        [MenuItem("项目工具/更新Tags&Layers")]
         private static void UpdateParams()
         {
+            //更新各个数据
             LayersUpdate();
             TagUpdate();
             SortingLayerUpdate();
+            
+            //保存数据
+            TagAndLayerDatas.Instance.SaveAsset();
         }
         
         #region Layer
@@ -160,12 +164,11 @@ namespace KFrame.Editor
             if (string.CompareOrdinal(newCode, TagAndLayerDatas.Instance.prevLayerUpdateCode) != 0)
             {
                 TagAndLayerDatas.Instance.prevLayerUpdateCode = newCode;
-                ScriptTool.UpdateCode(LayerScriptFileName,scriptSb.ToString(), Space);
+                ScriptTool.UpdateCode(LayerScriptFileName,scriptSb.ToString(), Space, refresh:false);
             }
             
             //保存库
             TagAndLayerDatas.Instance.InitLayerDic();
-            TagAndLayerDatas.Instance.SaveAsset();
         }
 
         #endregion
@@ -241,13 +244,12 @@ namespace KFrame.Editor
             if (string.CompareOrdinal(newCode, TagAndLayerDatas.Instance.prevTagUpdateCode) != 0)
             {
                 TagAndLayerDatas.Instance.prevTagUpdateCode = newCode;
-                ScriptTool.UpdateCode(TagScriptFileName,scriptSb.ToString(), Space);
+                ScriptTool.UpdateCode(TagScriptFileName,scriptSb.ToString(), Space, refresh:false);
             }
             
             //保存库
             TagAndLayerDatas.Instance.tagDatas = newTags;
             TagAndLayerDatas.Instance.InitTagDic();
-            TagAndLayerDatas.Instance.SaveAsset();
         }
 
         #endregion
@@ -335,13 +337,12 @@ namespace KFrame.Editor
             if (string.CompareOrdinal(newCode, TagAndLayerDatas.Instance.prevSortingLayerUpdateCode) != 0)
             {
                 TagAndLayerDatas.Instance.prevSortingLayerUpdateCode = newCode;
-                ScriptTool.UpdateCode(SortingLayerScriptFileName,scriptSb.ToString(), Space);
+                ScriptTool.UpdateCode(SortingLayerScriptFileName,scriptSb.ToString(), Space, refresh:false);
             }
             
             //保存库
             TagAndLayerDatas.Instance.sortingLayerDatas = newSortingLayers;
             TagAndLayerDatas.Instance.InitSortingLayerDic();
-            TagAndLayerDatas.Instance.SaveAsset();
         }
 
         #endregion
