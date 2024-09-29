@@ -63,6 +63,16 @@ namespace KFrame.Attributes
         public KGlobalConfigPathAttribute(string path, Type type, bool createIfNotFound = false) : this(path, type.GetNiceName(), createIfNotFound)
         {
         }
+        
+        /// <summary>
+        /// 全局配置的Attribute
+        /// </summary>
+        /// <param name="pathType">Asset路径类型</param>
+        /// <param name="fileName">文件名称</param>
+        /// <param name="createIfNotFound">如果找不到的话就自动创建</param>
+        public KGlobalConfigPathAttribute(GlobalPathType pathType, string fileName, bool createIfNotFound = false) : this(KFrameAssetsPath.GetPath(pathType), fileName, createIfNotFound)
+        {
+        }
         /// <summary>
         /// 全局配置的Attribute
         /// </summary>
@@ -72,6 +82,8 @@ namespace KFrame.Attributes
         public KGlobalConfigPathAttribute(GlobalPathType pathType, Type type, bool createIfNotFound = false) : this(KFrameAssetsPath.GetPath(pathType), type, createIfNotFound)
         {
         }
+        
+        
     }
 }
 

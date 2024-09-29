@@ -84,10 +84,28 @@ namespace KFrame.Systems
         /// <summary>
         /// 保存数据
         /// </summary>
+        /// <param name="key">保存的key</param>
+        /// <param name="jsonData">保存的数据</param>
+        public void SaveData(string key, string jsonData)
+        {
+            saveDatas[key] = jsonData;
+        }
+        /// <summary>
+        /// 保存数据
+        /// </summary>
         /// <param name="saveable">可以保存的对象</param>
         public void SaveData(ISaveable saveable)
         {
             saveDatas[saveable.SaveKey] = saveable.GetJsonData();
+        }
+        /// <summary>
+        /// 加载数据
+        /// </summary>
+        /// <param name="key">数据key</param>
+        /// <returns>json数据，如果没有的话返回""</returns>
+        public string LoadData(string key)
+        {
+            return saveDatas.GetValueOrDefault(key);
         }
         /// <summary>
         /// 加载数据

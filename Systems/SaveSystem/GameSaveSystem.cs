@@ -22,9 +22,13 @@ namespace KFrame.Systems
         /// 当前存档
         /// </summary>
         public static SaveItem CurSave;
+        /// <summary>
+        /// 保存存档游玩数据的key
+        /// </summary>
+        private const string SavePlayDataKey = "SavePlayData";
 
         /// <summary>
-        /// 当前游玩存档
+        /// 当前存档游玩数据
         /// </summary>
         public static SavePlayData CurSavePlayData => CurSave.SavePlayData;
 
@@ -247,7 +251,7 @@ namespace KFrame.Systems
                 return;
 #endif
             }
-
+            
         }
 
         #endregion

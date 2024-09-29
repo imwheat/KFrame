@@ -5,14 +5,13 @@
 //* 描述：用来查询、管理框架配置的一些路径
 //*******************************************************
 
-using UnityEngine;
+#if UNITY_EDITOR
+
 using UnityEditor;
-using KFrame;
-using KFrame.Utilities;
+
+#endif 
+
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
 
 namespace KFrame.Utilities
 {
@@ -25,15 +24,15 @@ namespace KFrame.Utilities
         /// <summary>
         /// 框架路径
         /// </summary>
-        public static readonly string DefaultFramePath = "Assets/KFrame/";
+        private static readonly string DefaultFramePath = "Assets/KFrame/";
         /// <summary>
         /// 框架Assets路径
         /// </summary>
-        public static string FrameAssetsPath => DefaultFramePath + "Assets/";
+        private static string FrameAssetsPath => DefaultFramePath + "Assets/";
         /// <summary>
         /// 框架编辑器Assets路径
         /// </summary>
-        public static string FrameEditorAssetsPath => FrameAssetsPath + "Editor/";
+        private static string FrameEditorAssetsPath => FrameAssetsPath + "Editor/";
         static KFrameAssetsPath()
         {
             #if UNITY_EDITOR

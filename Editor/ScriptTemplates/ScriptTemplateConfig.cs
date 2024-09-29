@@ -23,7 +23,7 @@ namespace KFrame.Editor
         /// <summary>
         /// 脚本模版路径
         /// </summary>
-        public static string FrameScriptTemplatesPath => KFrameAssetsPath.FrameEditorAssetsPath + "ScriptTemplates/Templates/";
+        public static string FrameScriptTemplatesPath => KFrameAssetsPath.GetPath(GlobalPathType.Editor) + "ScriptTemplates/Templates/";
         /// <summary>
         /// 脚本模版列表
         /// </summary>

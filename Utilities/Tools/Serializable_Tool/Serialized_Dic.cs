@@ -41,6 +41,11 @@ namespace KFrame.Utilities
 			return dictionary.TryGetValue(key, out value);
 		}
 
+		public V GetValueOrDefault(K key)
+		{
+			return dictionary.GetValueOrDefault(key);
+		}
+
 		public V this[K key]
 		{
 			get => dictionary[key];

@@ -393,7 +393,7 @@ namespace KFrame.Systems
             var locationHandle = LoadResourceLocations(assetName);
             if (locationHandle.Count > 0)
             {
-                var result = Addressables.LoadAssetAsync<T>(locationHandle).WaitForCompletion();
+                var result = Addressables.LoadAssetAsync<T>(locationHandle[0]).WaitForCompletion();
 
                 return result;
             }
@@ -416,7 +416,7 @@ namespace KFrame.Systems
             
             if (locationHandle.Count > 0)
             {
-                var handle = await Addressables.LoadAssetAsync<T>(locationHandle).Task;
+                var handle = await Addressables.LoadAssetAsync<T>(locationHandle[0]).Task;
                 
                 callback?.Invoke(handle);
             }
