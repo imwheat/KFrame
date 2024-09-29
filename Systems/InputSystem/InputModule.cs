@@ -1,27 +1,24 @@
 //****************** 代码文件申明 ************************
 //* 文件：InputModule                      
-//* 作者：32867
-//* 创建时间：2023年08月20日 星期日 17:14
+//* 作者：wheat
+//* 创建时间：2024/09/29 12:23:06 星期日
 //* 功能：输入模块的基类
 //*****************************************************
 
-using GameBuild;
-using Sirenix.OdinInspector;
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 namespace KFrame.Systems
 {
-    public sealed class InputModule : MonoBehaviour
+    public class InputModule : MonoBehaviour
     {
         public GameInputAction CurInput;
 
         public PlayerInput Input { get; private set; }
 
         public int PlayerIndex { get; set; }
-
-        public bool IsReady;
 
         /// <summary>
         /// 用来区别玩家的颜色
@@ -58,49 +55,48 @@ namespace KFrame.Systems
         /// <summary>
         /// 鼠标设备
         /// </summary>
-        private Mouse Mouse;
+        private Mouse mouse;
         /// <summary>
         /// 键盘设备
         /// </summary>
-        private Keyboard Keyboard;
+        private Keyboard keyboard;
         /// <summary>
         /// 手柄
         /// </summary>
-        private Gamepad Gamepad;
+        private Gamepad gamepad;
 
 
-        [field: SerializeField] public int InputIndex { private set; get; } //玩家所分配到的输入设备序号
-        [SerializeField] private string currentDeviceName; //当前输入设备的名字(只作为辅助显示用)
-        [SerializeField] public InputDeviceData currentDeviceData; //当前输入设备信息
+        /// <summary>
+        /// 玩家所分配到的输入设备序号
+        /// </summary>
+        [field: SerializeField] public int InputIndex;
+        /// <summary>
+        /// 当前输入设备信息
+        /// </summary>
+        [SerializeField] public InputDeviceData currentDeviceData;
 
 
-        [Space(10f)] [SerializeField, FoldoutGroup("设备切换所触发的事件")]
-        UnityEvent onSwitchToMouse = default;
-
-        [SerializeField, FoldoutGroup("设备切换所触发的事件")]
-        UnityEvent onSwitchToKeyboard = default;
-
-        [SerializeField, FoldoutGroup("设备切换所触发的事件")]
-        UnityEvent onSwitchToGamepad = default;
+        /// <summary>
+        /// 切换到鼠标的事件
+        /// </summary>
+        public Action OnSwitchMouse;
+        /// <summary>
+        /// 切换到键盘的事件
+        /// </summary>
+        public Action OnSwitchKeyboard;
+        /// <summary>
+        /// 切换到手柄的事件
+        /// </summary>
+        public Action OnSwitchGamepad;
 
 
         private void Awake()
         {
             // 初始化当前的输入设备
-            Mouse = Mouse.current;
-            Keyboard = Keyboard.current;
-            Gamepad = Gamepad.current;
+            mouse = Mouse.current;
+            keyboard = Keyboard.current;
+            gamepad = Gamepad.current;
         }
-        /// <summary>
-        /// 选择输入设备数据
-        /// </summary>
-        [Button("更新输入设备数据")]
-        private void SelectDeviceDate()
-        {
-            currentDeviceData = InputSystemManager.Instance.GetDataByIndex(InputIndex);
-            currentDeviceData.GameInputAction.Enable();
-        }
-
         void OnEnable()
         {
             InputSystem.onActionChange += DetectCurrentInputDevice;
@@ -118,14 +114,9 @@ namespace KFrame.Systems
         /// <param name="change"></param>
         private void DetectCurrentInputDevice(object obj, InputActionChange change)
         {
-#if UNITY_EDITOR
-            if (InputSystemManager.detectUIInputOnly &&
-                !InputSystemManager.UIInputModule.isActiveAndEnabled) return;
-#endif
             if (change == InputActionChange.ActionPerformed)
             {
                 InputDevice = ((InputAction)obj).activeControl.device;
-                currentDeviceName = InputDevice.name;
             }
         }
         /// <summary>
@@ -136,18 +127,16 @@ namespace KFrame.Systems
             switch (currentDevice)
             {
                 case UnityEngine.InputSystem.Mouse:
-                    onSwitchToMouse.Invoke();
-                    currentDeviceData.CurInputControlScheme = GameInputControlScheme.KeyBoardAndMouse;
+                    OnSwitchMouse?.Invoke();
+                    currentDeviceData.curInputScheme = InputDeviceScheme.KeyboardAndMouse;
                     break;
                 case UnityEngine.InputSystem.Keyboard:
-                    onSwitchToKeyboard.Invoke();
-                    currentDeviceData.CurInputControlScheme = GameInputControlScheme.KeyBoardAndMouse;
+                    OnSwitchKeyboard?.Invoke();
+                    currentDeviceData.curInputScheme = InputDeviceScheme.KeyboardAndMouse;
                     break;
                 case UnityEngine.InputSystem.Gamepad:
-                    onSwitchToGamepad.Invoke();
-                    currentDeviceData.CurInputControlScheme = GameInputControlScheme.GamePad;
-                    break;
-                default:
+                    OnSwitchGamepad?.Invoke();
+                    currentDeviceData.curInputScheme = InputDeviceScheme.Gamepad;
                     break;
             }
         }

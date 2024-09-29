@@ -8,6 +8,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace KFrame.Systems
 {
@@ -19,7 +20,7 @@ namespace KFrame.Systems
         public GameInputAction GameInputAction; //输入配置
         [field: SerializeField] public int DeviceId { private set; get; }
 
-        public GameInputControlScheme CurInputControlScheme;
+        public InputDeviceScheme curInputScheme;
         
         /// <summary>
         /// 设备名称

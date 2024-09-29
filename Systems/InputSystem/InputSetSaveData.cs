@@ -4,11 +4,8 @@
 //* 创建时间：2024/03/09 14:55:44 星期六
 //* 描述：按键设置配置
 //*****************************************************
-using UnityEngine;
 using System;
-using System.Collections.Generic;
 using KFrame.Utilities;
-using UnityEngine.Serialization;
 
 namespace KFrame.Systems
 {
@@ -38,7 +35,7 @@ namespace KFrame.Systems
         /// <param name="playerIndex">玩家id</param>
         /// <param name="key">按键保存Key</param>
         /// <returns>如果找到的话那就返回对应按键的保存data，找不到的话那就返回空</returns>
-        public string GetInputKeyboradSet(int playerIndex, string key)
+        public string GetInputKeyboardSet(int playerIndex, string key)
         {
             string data = GetPlayerKeySet(playerIndex, key);
 
