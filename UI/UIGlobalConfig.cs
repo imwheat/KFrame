@@ -20,6 +20,8 @@ namespace KFrame.UI
     [KGlobalConfigPath(GlobalPathType.Assets, typeof(UIGlobalConfig), true)]
     public class UIGlobalConfig : GlobalConfigBase<UIGlobalConfig>
     {
+        #region 视觉设置
+
         /// <summary>
         /// 普通状态下的颜色
         /// </summary>
@@ -36,6 +38,26 @@ namespace KFrame.UI
         /// 禁用的颜色
         /// </summary>
         public Color DisabledColor = new Color(0.2f, 0.2f, 0.2f, 1f);
+
+        #endregion
+
+        #region 语言相关
+
+        /// <summary>
+        /// 数字对话间隔
+        /// </summary>
+        public float NumberDialogueInterval = 0.1f;
+        /// <summary>
+        /// 字母对话间隔
+        /// </summary>
+        public float CharacterDialogueInterval = 0.1f;
+        /// <summary>
+        /// 其他字的对话间隔
+        /// </summary>
+        public float OtherCharacterDialogueInterval = 0.2f;
+
+        #endregion
+
         /// <summary>
         /// UI数据
         /// </summary>
