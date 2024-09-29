@@ -18,7 +18,7 @@ namespace KFrame.Systems
         /// <summary>
         /// 输入配置
         /// </summary>
-        public GameInputAction InputConfig;
+        public GameInputAction InputAction;
         /// <summary>
         /// 所分配到的输入设备序号
         /// </summary>
@@ -145,6 +145,38 @@ namespace KFrame.Systems
                     currentDeviceData.curInputScheme = InputDeviceScheme.Gamepad;
                     break;
             }
+        }
+
+        #endregion
+
+        #region 输入配置
+
+        /// <summary>
+        /// 选择性的注册输入事件
+        /// </summary>
+        /// <param name="inputAction">操作事件</param>
+        /// <param name="action">输入事件</param>
+        /// <param name="started">started的时候调用</param>
+        /// <param name="performed">performed的时候调用</param>
+        /// <param name="canceled">canceled的时候调用</param>
+        protected void RegisterInputEvent(InputAction inputAction, Action<InputAction.CallbackContext> action,
+            bool started = false, bool performed = false, bool canceled = false)
+        {
+            if (started) inputAction.started += action;
+            if (performed) inputAction.performed += action;
+            if (canceled) inputAction.canceled += action;
+        }
+
+        /// <summary>
+        /// 注销所有输入事件
+        /// </summary>
+        /// <param name="inputAction">操作事件</param>
+        /// <param name="action">输入事件</param>
+        protected void UnRegisterInputEvent(InputAction inputAction, Action<InputAction.CallbackContext> action)
+        {
+            inputAction.started -= action;
+            inputAction.performed -= action;
+            inputAction.canceled -= action;
         }
 
         #endregion
