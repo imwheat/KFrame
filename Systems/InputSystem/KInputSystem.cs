@@ -41,7 +41,7 @@ namespace KFrame.Systems
         /// </summary>
         public static void Init()
         {
-                        
+            
         }
         /// <summary>
         /// 注册输入模块

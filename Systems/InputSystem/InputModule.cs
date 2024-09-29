@@ -7,45 +7,41 @@
 
 using System;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 namespace KFrame.Systems
 {
     public class InputModule : MonoBehaviour
     {
-        public GameInputAction CurInput;
-
-        public PlayerInput Input { get; private set; }
-
-        public int PlayerIndex { get; set; }
+        #region 输入配置
 
         /// <summary>
-        /// 用来区别玩家的颜色
+        /// 输入配置
         /// </summary>
-        public Color playerColor; 
+        public GameInputAction InputConfig;
+        /// <summary>
+        /// 所分配到的输入设备序号
+        /// </summary>
+        public int InputIndex;
 
-        public InputModule(PlayerInput playerInput)
-        {
-            PlayerIndex = playerInput.playerIndex;
-            Input = playerInput;
-        }
+        #endregion
+        
+        #region 设备参数
 
-
+        /// <summary>
+        /// 当前输入设备信息
+        /// </summary>
+        [SerializeField] public InputDeviceData currentDeviceData;
         /// <summary>
         /// 当前的输入设备
         /// </summary>
         private InputDevice currentDevice;
-
         /// <summary>
         /// 当前的输入设备
         /// </summary>
         public InputDevice InputDevice
         {
-            get
-            {
-                return currentDevice;
-            }
+            get => currentDevice;
             set
             {
                 currentDevice = value;
@@ -65,16 +61,9 @@ namespace KFrame.Systems
         /// </summary>
         private Gamepad gamepad;
 
+        #endregion
 
-        /// <summary>
-        /// 玩家所分配到的输入设备序号
-        /// </summary>
-        [field: SerializeField] public int InputIndex;
-        /// <summary>
-        /// 当前输入设备信息
-        /// </summary>
-        [SerializeField] public InputDeviceData currentDeviceData;
-
+        #region 事件
 
         /// <summary>
         /// 切换到鼠标的事件
@@ -89,23 +78,40 @@ namespace KFrame.Systems
         /// </summary>
         public Action OnSwitchGamepad;
 
+        #endregion
 
-        private void Awake()
+        #region 生命周期
+
+        protected virtual void Awake()
         {
             // 初始化当前的输入设备
             mouse = Mouse.current;
             keyboard = Keyboard.current;
             gamepad = Gamepad.current;
+            
+            //注册Module
+            this.RegisterInputModule();
         }
-        void OnEnable()
+        protected void OnEnable()
         {
             InputSystem.onActionChange += DetectCurrentInputDevice;
         }
 
-        void OnDisable()
+        protected void OnDisable()
         {
             InputSystem.onActionChange -= DetectCurrentInputDevice;
         }
+
+        protected void OnDestroy()
+        {
+            //注销Module
+            this.UnRegisterInputModule();
+        }
+
+
+        #endregion
+
+        #region 设备更新
 
         /// <summary>
         /// 检测当前的输入设备
@@ -140,5 +146,8 @@ namespace KFrame.Systems
                     break;
             }
         }
+
+        #endregion
+        
     }
 }
