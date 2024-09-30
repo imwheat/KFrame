@@ -1,37 +1,30 @@
-//****************** 代码文件申明 ************************
-//* 文件：InputModule                      
+//****************** 代码文件申明 ***********************
+//* 文件：UIInputModule
 //* 作者：wheat
-//* 创建时间：2024/09/29 12:23:06 星期日
-//* 功能：输入模块的基类
-//*****************************************************
+//* 创建时间：2024/09/30 08:37:43 星期一
+//* 描述：
+//*******************************************************
 
 using System;
-using UnityEngine;
+using KFrame.UI;
 using UnityEngine.InputSystem;
 
 namespace KFrame.Systems
 {
-    public class InputModule : MonoBehaviour
+    public class UIInputModule: IDisposable
     {
+
         #region 输入配置
 
         /// <summary>
         /// 输入配置
         /// </summary>
-        public GameInputAction InputAction;
-        /// <summary>
-        /// 所分配到的输入设备序号
-        /// </summary>
-        public int InputIndex;
+        private readonly UIInputAction inputAction = new();
 
         #endregion
         
         #region 设备参数
 
-        /// <summary>
-        /// 当前输入设备信息
-        /// </summary>
-        [SerializeField] public InputDeviceData currentDeviceData;
         /// <summary>
         /// 当前的输入设备
         /// </summary>
@@ -68,104 +61,33 @@ namespace KFrame.Systems
         /// <summary>
         /// 切换到鼠标的事件
         /// </summary>
-        public Action OnSwitchMouse;
+        public Action OnSwitchMouse = null;
         /// <summary>
         /// 切换到键盘的事件
         /// </summary>
-        public Action OnSwitchKeyboard;
+        public Action OnSwitchKeyboard = null;
         /// <summary>
         /// 切换到手柄的事件
         /// </summary>
-        public Action OnSwitchGamepad;
+        public Action OnSwitchGamepad = null;
 
         #endregion
 
-        #region 生命周期
-
-        protected virtual void Awake()
-        {
-            //初始化
-            Init();
-
-        }
         /// <summary>
         /// 初始化
         /// </summary>
-        protected virtual void Init()
+        public void Init()
         {
-            InputAction = new GameInputAction();
-            
             //初始化当前的输入设备
             mouse = Mouse.current;
             keyboard = Keyboard.current;
             gamepad = Gamepad.current;
             
-            //注册Module
-            this.RegisterInputModule();
-            
             //注册按键输入
             RegisterInput();
-            InputAction.Enable();
+            inputAction.Enable();
         }
-        protected void OnEnable()
-        {
-            InputSystem.onActionChange += DetectCurrentInputDevice;
-        }
-
-        protected void OnDisable()
-        {
-            InputSystem.onActionChange -= DetectCurrentInputDevice;
-        }
-
-        protected void OnDestroy()
-        {
-            //注销Module
-            this.UnRegisterInputModule();
-            //释放资源
-            InputAction.Dispose();
-        }
-
-
-        #endregion
-
-        #region 设备更新
-
-        /// <summary>
-        /// 检测当前的输入设备
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <param name="change"></param>
-        private void DetectCurrentInputDevice(object obj, InputActionChange change)
-        {
-            if (change == InputActionChange.ActionPerformed)
-            {
-                InputDevice = ((InputAction)obj).activeControl.device;
-            }
-        }
-        /// <summary>
-        /// 更新输入设备
-        /// </summary>
-        private void UpdateInputDevice()
-        {
-            switch (currentDevice)
-            {
-                case UnityEngine.InputSystem.Mouse:
-                    OnSwitchMouse?.Invoke();
-                    currentDeviceData.curInputScheme = InputDeviceScheme.KeyboardAndMouse;
-                    break;
-                case UnityEngine.InputSystem.Keyboard:
-                    OnSwitchKeyboard?.Invoke();
-                    currentDeviceData.curInputScheme = InputDeviceScheme.KeyboardAndMouse;
-                    break;
-                case UnityEngine.InputSystem.Gamepad:
-                    OnSwitchGamepad?.Invoke();
-                    currentDeviceData.curInputScheme = InputDeviceScheme.Gamepad;
-                    break;
-            }
-        }
-
-        #endregion
-
+        
         #region 输入配置
       
         /// <summary>
@@ -199,21 +121,71 @@ namespace KFrame.Systems
         /// <summary>
         /// 注册输入
         /// </summary>
-        protected virtual void RegisterInput()
+        private void RegisterInput()
         {
-            
+            RegisterInputEvent(inputAction.UI.Navigate, OnNavigation, true, true,true);
         }
-                
+
+
         /// <summary>
         /// 注销输入
         /// </summary>
-        protected virtual void UnRegisterInput()
+        private void UnRegisterInput()
         {
             
         }
 
         
         #endregion
+
+        #region 按键输入事件
         
+        /// <summary>
+        /// 导航
+        /// </summary>
+        /// <param name="context">输入事件</param>
+        private void OnNavigation(InputAction.CallbackContext context)
+        {
+            //如果当前选择UI为空，按下导航按键的时候会选择当前界面的默认UI
+            if (UISelectSystem.CurSelectUI == null)
+            {
+                UISelectSystem.SelectDefaultUI();
+            }
+        }
+
+        
+        #endregion
+
+        #region 设备更新
+
+        /// <summary>
+        /// 更新输入设备
+        /// </summary>
+        private void UpdateInputDevice()
+        {
+            switch (currentDevice)
+            {
+                case UnityEngine.InputSystem.Mouse:
+                    OnSwitchMouse?.Invoke();
+                    break;
+                case UnityEngine.InputSystem.Keyboard:
+                    OnSwitchKeyboard?.Invoke();
+                    break;
+                case UnityEngine.InputSystem.Gamepad:
+                    OnSwitchGamepad?.Invoke();
+                    break;
+            }
+        }
+
+        #endregion
+        
+        /// <summary>
+        /// 释放资源
+        /// </summary>
+        public void Dispose()
+        {
+            inputAction.Dispose();
+        }
     }
 }
+

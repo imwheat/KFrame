@@ -1,5 +1,5 @@
 //****************** 代码文件申明 ************************
-//* 文件：InputSetSaveData                                       
+//* 文件：InputSaveData                                       
 //* 作者：wheat
 //* 创建时间：2024/03/09 14:55:44 星期六
 //* 描述：按键设置配置
@@ -10,7 +10,7 @@ using KFrame.Utilities;
 namespace KFrame.Systems
 {
     [System.Serializable]
-    public class InputSetSaveData
+    public class InputSaveData
     {
         public readonly Serialized_Dic<int, Serialized_Dic<string, string>> JsonDic = new();
 

@@ -93,7 +93,7 @@ namespace KFrame.UI
         /// <summary>
         /// 选择当前面板的默认选项
         /// </summary>
-        private static void SelectDefaultUI()
+        public static void SelectDefaultUI()
         {
             if(curUIPanel == null) return;
             
@@ -144,6 +144,12 @@ namespace KFrame.UI
 
             curSelectUI = null;
         }
+
+        #endregion
+
+        #region 操作处理
+
+        
 
         #endregion
         

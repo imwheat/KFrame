@@ -5,20 +5,23 @@
 //* 功能：管理输入
 //*****************************************************
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace KFrame.Systems
 {
     public static class KInputSystem
     {
+
+        #region 参数
+
         /// <summary>
         /// 输入模块
         /// </summary>
-        public static readonly Dictionary<int, InputModule> InputModuleDic = new();
+        private static readonly Dictionary<int, InputModule> InputModuleDic;
+        /// <summary>
+        /// UI输入模块
+        /// </summary>
+        private static readonly UIInputModule UIInput;
         /// <summary>
         /// 主输入设备
         /// 通常为玩家1
@@ -35,6 +38,18 @@ namespace KFrame.Systems
         /// </summary>
         public static InputDeviceScheme InputScheme => inputScheme;
 
+        #endregion
+
+        #region 初始化
+
+        static KInputSystem()
+        {
+            InputModuleDic = new();
+            UIInput = new UIInputModule();
+            UIInput.Init();
+            //初始化
+            Init();
+        }
         
         /// <summary>
         /// 初始化
@@ -43,6 +58,11 @@ namespace KFrame.Systems
         {
             
         }
+
+        #endregion
+
+        #region 模块管理
+
         /// <summary>
         /// 注册输入模块
         /// </summary>
@@ -74,6 +94,8 @@ namespace KFrame.Systems
             InputModuleDic.Remove(module.InputIndex);
         }
 
+        #endregion
+        
         #region 设备切换相关
         
         /// <summary>
