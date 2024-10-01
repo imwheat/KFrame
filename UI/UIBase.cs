@@ -5,9 +5,7 @@
 //* 描述：UI的基类
 //*****************************************************
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using KFrame.Utilities;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -218,7 +216,7 @@ namespace KFrame.UI
         /// 编辑器使用
         /// 搜寻这个UI下可以本地化配置的项
         /// </summary>
-        protected void CollectLocaliztionUI()
+        protected void CollectLocalizationUI()
         {
              //从子集获取可以本地化的UI
             Graphic[] uis = GetComponentsInChildren<Graphic>();

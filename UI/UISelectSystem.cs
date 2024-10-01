@@ -154,7 +154,11 @@ namespace KFrame.UI
         /// </summary>
         public static void PressEsc()
         {
-            
+            //如果没有菜单那就打开暂停界面
+            if (curUIPanel == null)
+            {
+                UISystem.Show<PausePanel>();
+            }
         }
 
         #endregion

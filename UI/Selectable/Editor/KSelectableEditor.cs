@@ -30,7 +30,7 @@ namespace KFrame.UI
         /// <summary>
         /// 导航FoldOut
         /// </summary>
-        private bool navigationFoldOut;
+        private static bool navigationFoldOut;
         protected SerializedProperty navigation;
         private SerializedProperty selectOnUp;
         private SerializedProperty selectOnDown;
@@ -109,7 +109,6 @@ namespace KFrame.UI
             interactable = serializedObject.FindProperty("m_Interactable");
             
         }
-
         public override void OnInspectorGUI()
         {
             

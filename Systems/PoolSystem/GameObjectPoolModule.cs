@@ -261,10 +261,9 @@ namespace KFrame.Systems
         /// <param name="parent">父物体</param>
         /// <param name="isActiveStart">是否立即激活</param>
         /// <param name="callBack">回调函数</param>
-        /// <param name="isAsync">是否异步</param>
         /// <returns></returns>
         public GameObject GetOrNewGameObject(string assetName, Transform parent = null, bool isActiveStart = true,
-            UnityAction<GameObject> callBack = null, bool isAsync = true)
+            UnityAction<GameObject> callBack = null)
         {
             GameObject obj = null;
             GameObjectPoolData poolData;
@@ -292,31 +291,12 @@ namespace KFrame.Systems
             
             //如果没有那就生成一个
                 
-            //对生成后的GameObject进行处理
-            void GameObjectHandle()
-            {
-                obj.SetActive(isActiveStart);
-                obj.name = assetName;
-                obj.transform.SetParent(!parent ? DefaultDefaultParentInGameScene.transform : parent);
-                callBack?.Invoke(obj);
-            }
-                
-            if (isAsync)
-            {
-                //使用异步加载资源 创建对象给外部使用
-                ResSystem.LoadAssetAsync<GameObject>(assetName, (objPrefab) =>
-                {
-                    obj = Object.Instantiate(objPrefab);
-                    GameObjectHandle();
-                });
-            }
-            else
-            {
-                //加载资源 创建对象给外部使用
-                var objPrefab = ResSystem.LoadAsset<GameObject>(assetName);
-                obj = Object.Instantiate(objPrefab);
-                GameObjectHandle();
-            }
+            //加载资源 创建对象给外部使用
+            var objPrefab = ResSystem.LoadAsset<GameObject>(assetName);
+            obj = Object.Instantiate(objPrefab, !parent ? DefaultDefaultParentInGameScene.transform : parent);
+            obj.SetActive(isActiveStart);
+            obj.name = assetName;
+            callBack?.Invoke(obj);
             
             return obj;
         }
@@ -331,13 +311,12 @@ namespace KFrame.Systems
         /// <param name="parent">父物体</param>
         /// <param name="isActiveStart">是否立即激活</param>
         /// <param name="callBack">回调函数</param>
-        /// <param name="isAsync">是否异步</param>
         /// <returns>如果池子里没有了那就返回null</returns>
         public T GetOrNewGameObject<T>(string assetName, Transform parent = null, bool isActiveStart = true,
-            UnityAction<T> callBack = null, bool isAsync = true) where T : Component
+            UnityAction<T> callBack = null) where T : Component
         {
             //先生成GameObject
-            GameObject obj = GetOrNewGameObject(assetName, parent, isActiveStart, null, isAsync);
+            GameObject obj = GetOrNewGameObject(assetName, parent, isActiveStart, null);
             
             //如果没有那就返回null
             if (obj == null)

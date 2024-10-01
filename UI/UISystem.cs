@@ -176,7 +176,6 @@ namespace KFrame.UI
         /// 显示UI
         /// </summary>
         /// <param name="data">UI数据</param>
-        /// <param name="uiKey">UI的key</param>
         /// <returns>UI</returns>
         private static UIBase ShowWindow(UIData data)
         {
@@ -190,23 +189,23 @@ namespace KFrame.UI
                 data.Prefab = ResSystem.LoadAsset<GameObject>(data.AssetPath);
             }
             
-            //尝试从对象池里面获取Gameobject，并放到对应的层级
-            GameObject windowObj = PoolSystem.GetOrNewGameObject(data.Prefab, UILayers[layerNum].Root);
+            //尝试从对象池里面获取GameObject，并放到对应的层级
+            GameObject uiObj = PoolSystem.GetOrNewGameObject(data.Prefab, UILayers[layerNum].Root);
             //然后获取UI组件，再进行初始化
-            UIBase window = windowObj.GetComponent<UIBase>();
-            windowObj.transform.SetAsLastSibling();
-            window.Init(data);
+            UIBase ui = uiObj.GetComponent<UIBase>();
+            uiObj.transform.SetAsLastSibling();
+            ui.Init(data);
             
             //然后把window放入Active的列表里面
-            if (!activeWindowsDic.TryGetValue(uiKey, out List<UIBase> windowList))
+            if (!activeWindowsDic.TryGetValue(uiKey, out List<UIBase> uiList))
             {
-                windowList = new List<UIBase>();
-                activeWindowsDic[uiKey] = windowList;
+                uiList = new List<UIBase>();
+                activeWindowsDic[uiKey] = uiList;
             }
-            windowList.Add(window);
+            uiList.Add(ui);
             
             //更新层级然后显示
-            return window;
+            return ui;
         }
 
         /// <summary>

@@ -103,14 +103,13 @@ namespace KFrame.Systems
         /// <param name="isActiveStart">是否在一开始激活</param>
         /// <param name="callBack">回调函数</param>
         /// <param name="parent">父物体</param>
-        /// <param name="isAsync">是否异步</param>
         /// <returns>取出的GO</returns>
         public static GameObject GetOrNewGameObject(string assetName, Transform parent = null,
             bool isActiveStart = true,
-            UnityAction<GameObject> callBack = null, bool isAsync = true)
+            UnityAction<GameObject> callBack = null)
         {
             GameObject go =
-                gameObjectPoolModule.GetOrNewGameObject(assetName, parent, isActiveStart, callBack, isAsync);
+                gameObjectPoolModule.GetOrNewGameObject(assetName, parent, isActiveStart, callBack);
 #if UNITY_EDITOR
             if (go != null && FrameRoot.EditorEventModule != null)
                 FrameRoot.EditorEventModule.EventTrigger("OnGetGameObject", assetName, 1);
@@ -126,14 +125,13 @@ namespace KFrame.Systems
         /// <param name="isActiveStart">是否在一开始激活</param>
         /// <param name="callBack">回调函数</param>
         /// <param name="parent">父物体</param>
-        /// <param name="isAsync">是否异步</param>
         /// <returns>取出的GO</returns>
         public static T GetOrNewGameObject<T>(string assetName, Transform parent = null,
             bool isActiveStart = true,
-            UnityAction<T> callBack = null, bool isAsync = true) where T : Component
+            UnityAction<T> callBack = null) where T : Component
         {
             T go =
-                gameObjectPoolModule.GetOrNewGameObject(assetName, parent, isActiveStart, callBack, isAsync);
+                gameObjectPoolModule.GetOrNewGameObject(assetName, parent, isActiveStart, callBack);
 #if UNITY_EDITOR
             if (go != null && FrameRoot.EditorEventModule != null)
                 FrameRoot.EditorEventModule.EventTrigger("OnGetGameObject", assetName, 1);

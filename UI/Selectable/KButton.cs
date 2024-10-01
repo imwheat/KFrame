@@ -29,11 +29,16 @@ namespace KFrame.UI
         /// </summary>
         [SerializeField]
         private ButtonClickedEvent m_OnClick = new ButtonClickedEvent();
+        public ButtonClickedEvent OnClick
+        {
+            get { return m_OnClick; }
+            set { m_OnClick = value; }
+        }
         
         /// <summary>
         /// 按下按钮
         /// </summary>
-        protected void Press()
+        private void Press()
         {
             if (!IsActive() || !IsInteractable())
                 return;
