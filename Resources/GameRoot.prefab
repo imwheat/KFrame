@@ -1341,6 +1341,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8319743222502603755}
   - component: {fileID: 8319743222502603754}
+  - component: {fileID: 4277389502988562678}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -1378,6 +1379,36 @@ MonoBehaviour:
   m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 1
   m_DragThreshold: 10
+--- !u!114 &4277389502988562678
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8319743222502603752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SendPointerHoverToParent: 1
+  m_MoveRepeatDelay: 0.5
+  m_MoveRepeatRate: 0.1
+  m_XRTrackingOrigin: {fileID: 0}
+  m_ActionsAsset: {fileID: -944628639613478452, guid: 328ebb6a0c68ba84b8d72142dcdfcb06, type: 3}
+  m_PointAction: {fileID: -6529094940762100987, guid: 328ebb6a0c68ba84b8d72142dcdfcb06, type: 3}
+  m_MoveAction: {fileID: 4110922610323354454, guid: 328ebb6a0c68ba84b8d72142dcdfcb06, type: 3}
+  m_SubmitAction: {fileID: -6484356614545755846, guid: 328ebb6a0c68ba84b8d72142dcdfcb06, type: 3}
+  m_CancelAction: {fileID: 5845141224493142985, guid: 328ebb6a0c68ba84b8d72142dcdfcb06, type: 3}
+  m_LeftClickAction: {fileID: 4588716383737456519, guid: 328ebb6a0c68ba84b8d72142dcdfcb06, type: 3}
+  m_MiddleClickAction: {fileID: 1223088341313678468, guid: 328ebb6a0c68ba84b8d72142dcdfcb06, type: 3}
+  m_RightClickAction: {fileID: 7998301962509102675, guid: 328ebb6a0c68ba84b8d72142dcdfcb06, type: 3}
+  m_ScrollWheelAction: {fileID: 5325440619314252221, guid: 328ebb6a0c68ba84b8d72142dcdfcb06, type: 3}
+  m_TrackedDevicePositionAction: {fileID: 4649321313954761500, guid: 328ebb6a0c68ba84b8d72142dcdfcb06, type: 3}
+  m_TrackedDeviceOrientationAction: {fileID: -2168589941771968908, guid: 328ebb6a0c68ba84b8d72142dcdfcb06, type: 3}
+  m_DeselectOnBackgroundClick: 1
+  m_PointerBehavior: 0
+  m_CursorLockBehavior: 0
 --- !u!1 &8319743222544329720
 GameObject:
   m_ObjectHideFlags: 0

@@ -123,7 +123,7 @@ namespace KFrame.UI
                 foreach (Selectable selectable in selectables)
                 {
                     //如果不能交互那就跳过
-                    if (!defaultSelection.IsActive() || !defaultSelection.interactable) continue;
+                    if (!selectable.IsActive() || !selectable.interactable) continue;
                     //找到可以选择的那就选择，然后停止遍历
                     selectable.Select();
                     break;

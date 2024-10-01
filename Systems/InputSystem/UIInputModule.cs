@@ -7,6 +7,7 @@
 
 using System;
 using KFrame.UI;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace KFrame.Systems
@@ -124,6 +125,7 @@ namespace KFrame.Systems
         private void RegisterInput()
         {
             RegisterInputEvent(inputAction.UI.Navigate, OnNavigation, true, true,true);
+            RegisterInputEvent(inputAction.UI.Esc, OnPressEsc, true);
         }
 
 
@@ -132,7 +134,8 @@ namespace KFrame.Systems
         /// </summary>
         private void UnRegisterInput()
         {
-            
+            UnRegisterInputEvent(inputAction.UI.Navigate, OnNavigation);
+            UnRegisterInputEvent(inputAction.UI.Esc, OnPressEsc);
         }
 
         
@@ -152,7 +155,17 @@ namespace KFrame.Systems
                 UISelectSystem.SelectDefaultUI();
             }
         }
-
+        /// <summary>
+        /// Esc
+        /// </summary>
+        /// <param name="context">输入事件</param>
+        private void OnPressEsc(InputAction.CallbackContext context)
+        {
+            if (context.ReadValueAsButton())
+            {
+                UISelectSystem.PressEsc();
+            }
+        }
         
         #endregion
 

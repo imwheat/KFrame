@@ -74,6 +74,7 @@ namespace KFrame
             GameSaveSystem.Init();
             LocalizationSystem.Init();
             UISystem.Init();
+            KInputSystem.Init();
             AudioSystem.Init();
         }
 

@@ -47,8 +47,6 @@ namespace KFrame.Systems
             InputModuleDic = new();
             UIInput = new UIInputModule();
             UIInput.Init();
-            //初始化
-            Init();
         }
         
         /// <summary>

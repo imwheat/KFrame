@@ -20,8 +20,7 @@ namespace KFrame.UI
         /// <summary>
         /// 随状态切换变化的图像
         /// </summary>
-        [SerializeField]
-        private List<Graphic> m_TargetGraphics;
+        [SerializeField] private List<Graphic> m_TargetGraphics = new();
         /// <summary>
         /// 随状态切换变化的图像
         /// </summary>

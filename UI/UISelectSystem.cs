@@ -53,7 +53,7 @@ namespace KFrame.UI
         /// <summary>
         /// 是否在UI面板
         /// </summary>
-        public static bool InTheUIPanel => InTheUIPanel;
+        public static bool InTheUIPanel => inTheUIPanel;
         #pragma warning restore
         /// <summary>
         /// 当前选择的UI
@@ -148,8 +148,14 @@ namespace KFrame.UI
         #endregion
 
         #region 操作处理
-
         
+        /// <summary>
+        /// 按Esc
+        /// </summary>
+        public static void PressEsc()
+        {
+            
+        }
 
         #endregion
         
