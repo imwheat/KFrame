@@ -32,7 +32,7 @@ namespace KFrame.UI
             }
             set
             {
-                if (UISetPropertyUtility.SetStruct<LanguageType>(ref languageType, value))
+                if (UISetPropertyUtility.SetStruct(ref languageType, value))
                 {
                     OnLanguageValueChanged();
                 }

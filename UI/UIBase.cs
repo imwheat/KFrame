@@ -163,6 +163,7 @@ namespace KFrame.UI
             //如果当前语言类型和要修改的一样那就返回
             if(curLanguage == languageType) return;
             curLanguage = languageType;
+            UpdateChildLanguage();
         }
         /// <summary>
         /// 更新子集的语言

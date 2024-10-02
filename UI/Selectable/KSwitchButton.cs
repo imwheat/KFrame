@@ -61,9 +61,9 @@ namespace KFrame.UI
             get => loop;
             set
             {
-                if (UISetPropertyUtility.SetStruct<bool>(ref loop, value))
+                if (UISetPropertyUtility.SetStruct(ref loop, value))
                 {
-                    
+                    ButtonInteractCheck();
                 }
             }
         }
@@ -80,9 +80,9 @@ namespace KFrame.UI
             get => range;
             set
             {
-                if (UISetPropertyUtility.SetStruct<Vector2Int>(ref range, value))
+                if (UISetPropertyUtility.SetStruct(ref range, value))
                 {
-                    
+                    ButtonInteractCheck();
                 }
             }
         }
@@ -95,7 +95,7 @@ namespace KFrame.UI
             get => value;
             set
             {
-                if (UISetPropertyUtility.SetStruct<int>(ref value, Math.Clamp(value, range.x, range.y)))
+                if (UISetPropertyUtility.SetStruct(ref this.value, Math.Clamp(value, range.x, range.y)))
                 {
                     OnValueUpdate();
                 }
@@ -188,7 +188,19 @@ namespace KFrame.UI
             
             //更新值
             value = newValue;
+            ButtonInteractCheck();
             if(notify) onClick.Invoke(value);
+        }
+        /// <summary>
+        /// 调整检测按钮的可交互性
+        /// </summary>
+        private void ButtonInteractCheck()
+        {
+            //如果是循环的那就不用管
+            if(loop) return;
+            //如果不是循环的，再点击的时候值要越界了，那就关闭按钮交互
+            if (plusButton != null) plusButton.interactable = value + 1 < range.y;
+            if (minusButton != null) minusButton.interactable = value > range.x;
         }
         /// <summary>
         /// 按下按钮
@@ -197,13 +209,8 @@ namespace KFrame.UI
         {
             //调用事件
             onClick.Invoke(value);
-            
-            //如果是循环的那就不用管
-            if(loop) return;
-            //如果不是循环的，再点击的时候值要越界了，那就关闭按钮交互
-            if (plusButton != null) plusButton.interactable = value + 1 < range.y;
-            if (minusButton != null) minusButton.interactable = value > range.x;
-            
+
+            ButtonInteractCheck();
         }
         /// <summary>
         /// 被点击
@@ -217,8 +224,7 @@ namespace KFrame.UI
             if (!IsActive() || !IsInteractable())
                 return;
             UISystemProfilerApi.AddMarker("SwitchButton.onClick", this);
-            
-            Value += 1;
+            PlusValue();
         }
         /// <summary>
         /// 减少值
@@ -244,7 +250,7 @@ namespace KFrame.UI
         /// </summary>
         public override Selectable FindSelectableOnLeft()
         {
-            if (navigation.mode == Navigation.Mode.Automatic && axis == Axis.Horizontal)
+            if (axis == Axis.Horizontal)
             {
                 if(reverse) PlusValue();
                 else MinusValue();
@@ -259,7 +265,7 @@ namespace KFrame.UI
         /// </summary>
         public override Selectable FindSelectableOnRight()
         {
-            if (navigation.mode == Navigation.Mode.Automatic && axis == Axis.Horizontal)
+            if (axis == Axis.Horizontal)
             {
                 if(reverse) MinusValue();
                 else PlusValue();
@@ -274,7 +280,7 @@ namespace KFrame.UI
         /// </summary>
         public override Selectable FindSelectableOnUp()
         {
-            if (navigation.mode == Navigation.Mode.Automatic && axis == Axis.Vertical)
+            if (axis == Axis.Vertical)
             {
                 if(reverse) PlusValue();
                 else MinusValue();
@@ -289,7 +295,7 @@ namespace KFrame.UI
         /// </summary>
         public override Selectable FindSelectableOnDown()
         {
-            if (navigation.mode == Navigation.Mode.Automatic && axis == Axis.Vertical)
+            if (axis == Axis.Vertical)
             {
                 if(reverse) MinusValue();
                 else PlusValue();
