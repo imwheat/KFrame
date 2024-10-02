@@ -15,7 +15,7 @@ using KFrame.Editor;
 using UnityEditor;
 using UnityEngine.UI;
 
-namespace KFrame.UI
+namespace KFrame.UI.Editor
 {
     [CustomEditor(typeof(LocalizationEditHelper))]
     public class LocalizationEditHelperEditor : UnityEditor.Editor
@@ -27,7 +27,7 @@ namespace KFrame.UI
             if (localEditor == null)
             {
                 localEditor = target as LocalizationEditHelper;
-                localEditor.RefreshLinkedData();
+                localEditor?.RefreshLinkedData();
             }
         }
         /// <summary>
@@ -35,7 +35,7 @@ namespace KFrame.UI
         /// </summary>
         private static string TryGetLanguageLabel(LanguageType language)
         {
-            return EditorGUITool.TryGetEnumLabel<LanguageType>(language);
+            return EditorGUITool.TryGetEnumLabel(language);
         }
         /// <summary>
         /// 绘制文本的GUI
@@ -57,6 +57,11 @@ namespace KFrame.UI
         }
         public override void OnInspectorGUI()
         {
+            if (localEditor == null)
+            {
+                localEditor = target as LocalizationEditHelper;
+            }
+            
             if (localEditor == null)
             {
                 base.OnInspectorGUI();

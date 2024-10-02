@@ -381,7 +381,7 @@ namespace KFrame.Editor
                 string templateName = textAsset.name;
                 CreateScriptTemplate(templateName, ConvertCSToTemplate(textAsset.text, ignoreElements), groupName);
                 //获取模版路径
-                string templatePath = FileExtensions.ConvertAssetPathToSystemPath(ScriptTemplateConfig.FrameScriptTemplatesPath);
+                string templatePath = ScriptTemplateConfig.FrameScriptTemplatesPath;
                 //如果有分组
                 if (string.IsNullOrEmpty(groupName) == false)
                 {

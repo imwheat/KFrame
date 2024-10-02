@@ -53,4 +53,24 @@ MonoBehaviour:
       Text: Language
     - Language: 3
       Text: "\u8A00\u8A9E"
+  - Key: ui_GameSettings
+    Datas:
+    - Language: 0
+      Text: "\u6E38\u620F\u8BBE\u7F6E"
+    - Language: 1
+      Text: "\u904A\u6232\u8A2D\u7F6E"
+    - Language: 2
+      Text: Game Settings
+    - Language: 3
+      Text: "\u30B2\u30E0\u8A2D\u5B9A"
+  - Key: ui_ReturnButton
+    Datas:
+    - Language: 0
+      Text: "\u8FD4\u56DE"
+    - Language: 1
+      Text: "\u8FD4\u56DE"
+    - Language: 2
+      Text: Back
+    - Language: 3
+      Text: "\u623B\u308B"
   ImageDatas: []

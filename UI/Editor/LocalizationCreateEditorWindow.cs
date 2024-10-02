@@ -14,7 +14,7 @@ using System.Collections.Generic;
 using KFrame.Editor;
 using UnityEditor;
 
-namespace KFrame.UI
+namespace KFrame.UI.Editor
 {
     public class LocalizationCreateEditorWindow : KEditorWindow
     {

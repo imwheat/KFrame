@@ -5,15 +5,9 @@
 //* 描述：游戏项目内使用的一些编辑器窗口在这里打开
 //*******************************************************
 
-using UnityEngine;
 using UnityEditor;
-using KFrame;
-using KFrame.Utilities;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using KFrame.Systems;
-using KFrame.UI;
+using KFrame.UI.Editor;
 
 namespace KFrame.Editor
 {

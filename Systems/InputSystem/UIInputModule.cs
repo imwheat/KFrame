@@ -149,8 +149,8 @@ namespace KFrame.Systems
         /// <param name="context">输入事件</param>
         private void OnNavigation(InputAction.CallbackContext context)
         {
-            //如果当前选择UI为空，按下导航按键的时候会选择当前界面的默认UI
-            if (UISelectSystem.CurSelectUI == null)
+            //如果当前选择UI为空或者不可交互，按下导航按键的时候会选择当前界面的默认UI
+            if (UISelectSystem.CurSelectUI == null || !UISelectSystem.CurSelectUI.IsInteractable() || !UISelectSystem.CurSelectUI.IsActive())
             {
                 UISelectSystem.SelectDefaultUI();
             }

@@ -1024,7 +1024,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd4aeafcb36eb3b4599a8dee27452639, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  localiztionSets: []
+  localiztionSets:
+  - Key: 
+    Component: {fileID: 8468949133386243159}
+  - Key: 
+    Component: {fileID: 7789956159329138020}
+  - Key: 
+    Component: {fileID: 2065462514761455294}
+  - Key: 
+    Component: {fileID: 6570377193190052469}
+  - Key: 
+    Component: {fileID: 6790149027095856756}
+  - Key: 
+    Component: {fileID: 339644227230752520}
   defaultSelection: {fileID: 8342613518327701628}
   anim: {fileID: 6881628761190842014}
   closeAnimTrigger: close

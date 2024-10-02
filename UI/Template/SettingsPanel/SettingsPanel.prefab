@@ -59,6 +59,7 @@ GameObject:
   - component: {fileID: 4936834505012583040}
   - component: {fileID: 339644227230752520}
   - component: {fileID: 3750223826541725898}
+  - component: {fileID: 2916265371913928120}
   m_Layer: 5
   m_Name: Return
   m_TagString: Untagged
@@ -228,6 +229,42 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2916265371913928120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1062315954327309822}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Parent: {fileID: 3564764829719635703}
+  target: {fileID: 339644227230752520}
+  StringData:
+    Key: 
+    Datas:
+    - Language: 0
+      Text: "\u8FD4\u56DE"
+    - Language: 1
+      Text: "\u8FD4\u56DE"
+    - Language: 2
+      Text: Back
+    - Language: 3
+      Text: "\u623B\u308B"
+  ImageData:
+    Key: 
+    Datas:
+    - Language: 0
+      Sprite: {fileID: 0}
+    - Language: 1
+      Sprite: {fileID: 0}
+    - Language: 2
+      Sprite: {fileID: 0}
+    - Language: 3
+      Sprite: {fileID: 0}
 --- !u!1 &1751545289541801321
 GameObject:
   m_ObjectHideFlags: 0
@@ -759,6 +796,7 @@ GameObject:
   - component: {fileID: 4044783082804534308}
   - component: {fileID: 2065462514761455294}
   - component: {fileID: 8342613518327701628}
+  - component: {fileID: 1466414900407810135}
   m_Layer: 5
   m_Name: Game
   m_TagString: Untagged
@@ -928,6 +966,42 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1466414900407810135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6034907959821150400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Parent: {fileID: 3564764829719635703}
+  target: {fileID: 2065462514761455294}
+  StringData:
+    Key: 
+    Datas:
+    - Language: 0
+      Text: "\u6E38\u620F\u8BBE\u7F6E"
+    - Language: 1
+      Text: "\u904A\u6232\u8A2D\u7F6E"
+    - Language: 2
+      Text: Game Settings
+    - Language: 3
+      Text: "\u30B2\u30E0\u8A2D\u5B9A"
+  ImageData:
+    Key: 
+    Datas:
+    - Language: 0
+      Sprite: {fileID: 0}
+    - Language: 1
+      Sprite: {fileID: 0}
+    - Language: 2
+      Sprite: {fileID: 0}
+    - Language: 3
+      Sprite: {fileID: 0}
 --- !u!1 &7648418859540984890
 GameObject:
   m_ObjectHideFlags: 0
@@ -1206,7 +1280,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4acc017313bdfbb41b55f6cc7903acfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  localiztionSets: []
+  localiztionSets:
+  - Key: 
+    Component: {fileID: 8468949133386243159}
+  - Key: 
+    Component: {fileID: 7789956159329138020}
+  - Key: ui_GameSettings
+    Component: {fileID: 2065462514761455294}
+  - Key: 
+    Component: {fileID: 3031100785702663113}
+  - Key: 
+    Component: {fileID: 6570377193190052469}
+  - Key: 
+    Component: {fileID: 6790149027095856756}
+  - Key: ui_ReturnButton
+    Component: {fileID: 339644227230752520}
   defaultSelection: {fileID: 3750223826541725898}
   anim: {fileID: 6881628761190842014}
   closeAnimTrigger: close

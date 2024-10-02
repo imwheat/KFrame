@@ -75,6 +75,13 @@ namespace KFrame.UI
             base.Awake();
         }
 
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            
+            UISelectSystem.DeselectUI(this);
+        }
+
         #endregion
         
         #region 方法重写

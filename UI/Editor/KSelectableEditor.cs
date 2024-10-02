@@ -2,19 +2,15 @@
 //* 文件：KSelectableEditor
 //* 作者：wheat
 //* 创建时间：2024/09/15 13:01:48 星期日
-//* 描述：
+//* 描述：对Selectable的GUI进行重绘
 //*******************************************************
-using System;
-using System.Collections.Generic;
-using KFrame;
 using KFrame.Editor;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEditor;
-using UnityEngine.UI;
 
-namespace KFrame.UI
+namespace KFrame.UI.Editor
 {
+    [CanEditMultipleObjects]
     [CustomEditor(typeof(KSelectable), true)]
     public class KSelectableEditor : UnityEditor.Editor
     {
@@ -30,7 +26,11 @@ namespace KFrame.UI
         /// <summary>
         /// 导航FoldOut
         /// </summary>
-        private static bool navigationFoldOut;
+        private static bool navigationFoldOut = true;
+        /// <summary>
+        /// 显示添加本地化配置按钮
+        /// </summary>
+        private bool showAddLocalizationConfig;
         protected SerializedProperty navigation;
         private SerializedProperty selectOnUp;
         private SerializedProperty selectOnDown;
@@ -108,6 +108,18 @@ namespace KFrame.UI
             //能否交互
             interactable = serializedObject.FindProperty("m_Interactable");
             
+            //判断是否要显示添加本地化配置按钮
+            showAddLocalizationConfig = false;
+            //遍历所有target只要有一个没有那就显示
+            foreach (var obj in targets)
+            {
+                KSelectable selectable = obj as KSelectable;
+                if (selectable != null && selectable.GetComponent<LocalizationEditHelper>() == null)
+                {
+                    showAddLocalizationConfig = true;
+                    break;
+                }
+            }
         }
         public override void OnInspectorGUI()
         {
@@ -181,6 +193,24 @@ namespace KFrame.UI
             DrawPropertiesExcluding(serializedObject, propertyToExclude);
             
             serializedObject.ApplyModifiedProperties();
+
+            EditorGUILayout.BeginVertical();
+
+            if (showAddLocalizationConfig && GUILayout.Button("添加本地化配置", GUILayout.Height(30)))
+            {
+                foreach (var obj in targets)
+                {
+                    KSelectable selectable = obj as KSelectable;
+                    if (selectable != null && selectable.GetComponent<LocalizationEditHelper>() == null)
+                    {
+                        selectable.gameObject.AddComponent(typeof(LocalizationEditHelper));
+                        EditorUtility.SetDirty(selectable.gameObject);
+                    }
+                }
+            }
+            
+            EditorGUILayout.EndVertical();
+
         }
     }
 }

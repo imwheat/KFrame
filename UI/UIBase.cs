@@ -217,13 +217,10 @@ namespace KFrame.UI
         /// 编辑器使用
         /// 搜寻这个UI下可以本地化配置的项
         /// </summary>
-        protected void CollectLocalizationUI()
+        public void CollectLocalizationUI()
         {
              //从子集获取可以本地化的UI
             Graphic[] uis = GetComponentsInChildren<Graphic>();
-
-            //获取本地化设置
-            LocalizationConfig config = LocalizationConfig.Instance;
 
             //遍历每个UI
             foreach (var ui in uis)
