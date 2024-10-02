@@ -187,6 +187,10 @@ namespace KFrame.UI
             if (data.Prefab == null)
             {
                 data.Prefab = ResSystem.LoadAsset<GameObject>(data.AssetPath);
+                if (data.Prefab == null)
+                {
+                    throw new Exception($"错误：不存在路径为{data.AssetPath}的UI预制体");
+                }
             }
             
             //尝试从对象池里面获取GameObject，并放到对应的层级

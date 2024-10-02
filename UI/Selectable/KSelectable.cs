@@ -299,7 +299,7 @@ namespace KFrame.UI
         /// <param name="instant">是否立刻切换</param>
         protected override void DoStateTransition(SelectionState state, bool instant)
         {
-            //如果Gameobject没有激活那就不进行操作
+            //如果GameObject没有激活那就不进行操作
             if (!gameObject.activeInHierarchy)
                 return;
 

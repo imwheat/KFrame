@@ -47,7 +47,15 @@ namespace KFrame.UI
             base.Awake();
             
             //按键事件注册
+            gameSettingsBtn.OnClick.AddListener(OnClickGameSettingsBtn);
             returnBtn.OnClick.AddListener(OnPressESC);
+        }
+        /// <summary>
+        /// 点击游戏设置按钮
+        /// </summary>
+        private void OnClickGameSettingsBtn()
+        {
+            SwitchToThisPanel<GameSettingsPanel>(true);
         }
     }
 }

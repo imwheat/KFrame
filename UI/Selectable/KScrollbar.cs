@@ -43,7 +43,7 @@ namespace KFrame.UI
             BottomToTop,
 
             /// <summary>
-            /// 从下上到下
+            /// 从上到下
             /// </summary>
             TopToBottom,
         }
@@ -283,7 +283,7 @@ namespace KFrame.UI
         {
             base.OnRectTransformDimensionsChange();
 
-            //如果Gameobject没有激活那就不用调用
+            //如果GameObject没有激活那就不用调用
             if (!IsActive())
                 return;
             //更新视效
