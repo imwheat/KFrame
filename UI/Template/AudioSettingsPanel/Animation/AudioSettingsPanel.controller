@@ -14,7 +14,7 @@ AnimatorStateMachine:
     m_Position: {x: 270, y: 110, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 8726032258546580181}
-    m_Position: {x: 280, y: -10, z: 0}
+    m_Position: {x: 280, y: 0, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions:
   - {fileID: 6660693874103179962}
@@ -32,7 +32,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SettingsPanel
+  m_Name: AudioSettingsPanel
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: close
@@ -74,7 +74,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 4a5d519d6c734554b9704a506711347c, type: 2}
+  m_Motion: {fileID: 7400000, guid: 34649961b1b45724a98776c1cf7097ff, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -125,7 +125,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 04f5875b6fe257e41a7840a64c1266bb, type: 2}
+  m_Motion: {fileID: 7400000, guid: 9be1bb5752388bf4292a2108012fc71d, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 

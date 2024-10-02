@@ -13,26 +13,6 @@ MonoBehaviour:
   m_Name: LocalizationConfig
   m_EditorClassIdentifier: 
   TextDatas:
-  - Key: testButton
-    Datas:
-    - Language: 0
-      Text: "\u6309\u94AE"
-    - Language: 1
-      Text: "\u6309\u9215"
-    - Language: 2
-      Text: Button
-    - Language: 3
-      Text: "\u30D0\u30C8\u30F3"
-  - Key: dialogueA
-    Datas:
-    - Language: 0
-      Text: "\u4F60\u597D"
-    - Language: 1
-      Text: "\u4F60\u597D"
-    - Language: 2
-      Text: Hello
-    - Language: 3
-      Text: "\u304A\u306F\u3044\u3088"
   - Key: ui_LanguageType
     Datas:
     - Language: 0
@@ -60,9 +40,9 @@ MonoBehaviour:
     - Language: 1
       Text: "\u904A\u6232\u8A2D\u7F6E"
     - Language: 2
-      Text: Game Settings
+      Text: Game
     - Language: 3
-      Text: "\u30B2\u30E0\u8A2D\u5B9A"
+      Text: "\u30B2\u30FC\u30E0\u8A2D\u5B9A"
   - Key: ui_ReturnButton
     Datas:
     - Language: 0
@@ -73,4 +53,64 @@ MonoBehaviour:
       Text: Back
     - Language: 3
       Text: "\u623B\u308B"
+  - Key: ui_AudioSettings
+    Datas:
+    - Language: 0
+      Text: "\u97F3\u6548\u8BBE\u7F6E"
+    - Language: 1
+      Text: "\u97F3\u6548\u8A2D\u7F6E"
+    - Language: 2
+      Text: Audio
+    - Language: 3
+      Text: "\u97F3\u58F0\u8A2D\u5B9A"
+  - Key: ui_GraphicSettings
+    Datas:
+    - Language: 0
+      Text: "\u753B\u9762\u8BBE\u7F6E"
+    - Language: 1
+      Text: "\u756B\u9762\u8A2D\u7F6E"
+    - Language: 2
+      Text: Graphic
+    - Language: 3
+      Text: "\u6620\u753B\u8A2D\u5B9A"
+  - Key: ui_InputSettings
+    Datas:
+    - Language: 0
+      Text: "\u6309\u952E\u8BBE\u7F6E"
+    - Language: 1
+      Text: "\u6309\u9375\u8A2D\u7F6E"
+    - Language: 2
+      Text: Input
+    - Language: 3
+      Text: "\u30AD\u30FC\u8A2D\u5B9A"
+  - Key: ui_ContinueGame
+    Datas:
+    - Language: 0
+      Text: "\u7EE7\u7EED\u6E38\u620F"
+    - Language: 1
+      Text: "\u7E7C\u7E8C\u904A\u6232"
+    - Language: 2
+      Text: Continue
+    - Language: 3
+      Text: "\u7D9A\u3051\u308B"
+  - Key: ui_QuitToMenu
+    Datas:
+    - Language: 0
+      Text: "\u8FD4\u56DE\u4E3B\u83DC\u5355"
+    - Language: 1
+      Text: "\u8FD4\u56DE\u4E3B\u83DC\u55AE"
+    - Language: 2
+      Text: Quit To Menu
+    - Language: 3
+      Text: "\u30E1\u30CB\u30E6\u2015\u306B\u623B\u308B"
+  - Key: ui_QuitGame
+    Datas:
+    - Language: 0
+      Text: "\u9000\u51FA\u6E38\u620F"
+    - Language: 1
+      Text: "\u9000\u51FA\u904A\u6232"
+    - Language: 2
+      Text: Quit Game
+    - Language: 3
+      Text: "\u7D42\u4E86"
   ImageDatas: []
