@@ -400,7 +400,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Parent: {fileID: 7019890127095947110}
+  Parent: {fileID: 0}
   target: {fileID: 339644227230752520}
   StringData:
     Key: ui_ReturnButton
@@ -741,7 +741,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Parent: {fileID: 7019890127095947110}
+  Parent: {fileID: 0}
   target: {fileID: 1878220955178239031}
   StringData:
     Key: 
@@ -990,7 +990,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Parent: {fileID: 7019890127095947110}
+  Parent: {fileID: 0}
   target: {fileID: 2065462514761455294}
   StringData:
     Key: 
@@ -1358,19 +1358,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Parent: {fileID: 7019890127095947110}
+  Parent: {fileID: 0}
   target: {fileID: 4280923935095751412}
   StringData:
-    Key: ui_GameSettings
+    Key: ui_AudioSettings
     Datas:
     - Language: 0
-      Text: "\u6E38\u620F\u8BBE\u7F6E"
+      Text: "\u97F3\u6548\u8BBE\u7F6E"
     - Language: 1
-      Text: "\u904A\u6232\u8A2D\u7F6E"
+      Text: "\u97F3\u6548\u8A2D\u7F6E"
     - Language: 2
-      Text: Game Settings
+      Text: Audio
     - Language: 3
-      Text: "\u30B2\u30E0\u8A2D\u5B9A"
+      Text: "\u97F3\u97FF\u8A2D\u5B9A"
   ImageData:
     Key: 
     Datas:
@@ -1393,9 +1393,9 @@ GameObject:
   - component: {fileID: 7402987076922387667}
   - component: {fileID: 5102679567217333059}
   - component: {fileID: 6881628761190842014}
-  - component: {fileID: 7019890127095947110}
+  - component: {fileID: 3612870215771765923}
   m_Layer: 5
-  m_Name: GameSettingsPanel
+  m_Name: InputSettingsPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1440,7 +1440,7 @@ Animator:
   m_GameObject: {fileID: 9071925823465985299}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: dd775ad610618554b96600c26c6d57bc, type: 2}
+  m_Controller: {fileID: 9100000, guid: 6bb7433acf69b9844ba9ae8a1ec0250d, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 2
   m_ApplyRootMotion: 0
@@ -1450,7 +1450,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
---- !u!114 &7019890127095947110
+--- !u!114 &3612870215771765923
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1459,28 +1459,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 9071925823465985299}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f5cda2c40acc00b4296687b7943cbd8e, type: 3}
+  m_Script: {fileID: 11500000, guid: d377d80527e8178488906a42989e70c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  localiztionSets:
-  - Key: ui_Language
-    Component: {fileID: 2065462514761455294}
-  - Key: ui_LanguageType
-    Component: {fileID: 1878220955178239031}
-  - Key: 
-    Component: {fileID: 8468949133386243159}
-  - Key: 
-    Component: {fileID: 7789956159329138020}
-  - Key: ui_GameSettings
-    Component: {fileID: 4280923935095751412}
-  - Key: 
-    Component: {fileID: 5995399232107179830}
-  - Key: 
-    Component: {fileID: 124551132229242775}
-  - Key: ui_ReturnButton
-    Component: {fileID: 339644227230752520}
-  defaultSelection: {fileID: 3554957549392211602}
+  localiztionSets: []
+  defaultSelection: {fileID: 0}
   anim: {fileID: 6881628761190842014}
   closeAnimTrigger: close
-  languageButton: {fileID: 3554957549392211602}
   returnBtn: {fileID: 3750223826541725898}

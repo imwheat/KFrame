@@ -358,6 +358,7 @@ GameObject:
   - component: {fileID: 254771337680557783}
   - component: {fileID: 6790149027095856756}
   - component: {fileID: 7348396184749435686}
+  - component: {fileID: 4406900794617200114}
   m_Layer: 5
   m_Name: Input
   m_TagString: Untagged
@@ -527,6 +528,42 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &4406900794617200114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4334036524299653834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Parent: {fileID: 3564764829719635703}
+  target: {fileID: 6790149027095856756}
+  StringData:
+    Key: 
+    Datas:
+    - Language: 0
+      Text: "\u6309\u952E\u8BBE\u7F6E"
+    - Language: 1
+      Text: "\u6309\u9375\u8A2D\u7F6E"
+    - Language: 2
+      Text: Input
+    - Language: 3
+      Text: "\u30AD\u30FC\u8A2D\u5B9A"
+  ImageData:
+    Key: 
+    Datas:
+    - Language: 0
+      Sprite: {fileID: 0}
+    - Language: 1
+      Sprite: {fileID: 0}
+    - Language: 2
+      Sprite: {fileID: 0}
+    - Language: 3
+      Sprite: {fileID: 0}
 --- !u!1 &5122115797077206686
 GameObject:
   m_ObjectHideFlags: 0
@@ -539,6 +576,7 @@ GameObject:
   - component: {fileID: 3567972586988321873}
   - component: {fileID: 3031100785702663113}
   - component: {fileID: 4970346791301260136}
+  - component: {fileID: 1218477001403321981}
   m_Layer: 5
   m_Name: Audio
   m_TagString: Untagged
@@ -708,6 +746,42 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1218477001403321981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5122115797077206686}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Parent: {fileID: 3564764829719635703}
+  target: {fileID: 3031100785702663113}
+  StringData:
+    Key: 
+    Datas:
+    - Language: 0
+      Text: "\u97F3\u6548\u8BBE\u7F6E"
+    - Language: 1
+      Text: "\u97F3\u6548\u8A2D\u7F6E"
+    - Language: 2
+      Text: Audio
+    - Language: 3
+      Text: "\u97F3\u58F0\u8A2D\u5B9A"
+  ImageData:
+    Key: 
+    Datas:
+    - Language: 0
+      Sprite: {fileID: 0}
+    - Language: 1
+      Sprite: {fileID: 0}
+    - Language: 2
+      Sprite: {fileID: 0}
+    - Language: 3
+      Sprite: {fileID: 0}
 --- !u!1 &5620435341534309027
 GameObject:
   m_ObjectHideFlags: 0
@@ -1051,6 +1125,7 @@ GameObject:
   - component: {fileID: 4103226810958108418}
   - component: {fileID: 6570377193190052469}
   - component: {fileID: 3040857066839120169}
+  - component: {fileID: 1132546198209997885}
   m_Layer: 5
   m_Name: Graphic
   m_TagString: Untagged
@@ -1220,6 +1295,42 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1132546198209997885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9013625883512682089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Parent: {fileID: 3564764829719635703}
+  target: {fileID: 6570377193190052469}
+  StringData:
+    Key: 
+    Datas:
+    - Language: 0
+      Text: "\u753B\u9762\u8BBE\u7F6E"
+    - Language: 1
+      Text: "\u756B\u9762\u8A2D\u7F6E"
+    - Language: 2
+      Text: Graphic
+    - Language: 3
+      Text: "\u6620\u753B\u8A2D\u5B9A"
+  ImageData:
+    Key: 
+    Datas:
+    - Language: 0
+      Sprite: {fileID: 0}
+    - Language: 1
+      Sprite: {fileID: 0}
+    - Language: 2
+      Sprite: {fileID: 0}
+    - Language: 3
+      Sprite: {fileID: 0}
 --- !u!1 &9071925823465985299
 GameObject:
   m_ObjectHideFlags: 0
@@ -1287,15 +1398,15 @@ MonoBehaviour:
     Component: {fileID: 7789956159329138020}
   - Key: ui_GameSettings
     Component: {fileID: 2065462514761455294}
-  - Key: 
+  - Key: ui_AudioSettings
     Component: {fileID: 3031100785702663113}
-  - Key: 
+  - Key: ui_GraphicSettings
     Component: {fileID: 6570377193190052469}
-  - Key: 
+  - Key: ui_InputSettings
     Component: {fileID: 6790149027095856756}
   - Key: ui_ReturnButton
     Component: {fileID: 339644227230752520}
-  defaultSelection: {fileID: 3750223826541725898}
+  defaultSelection: {fileID: 8342613518327701628}
   anim: {fileID: 6881628761190842014}
   closeAnimTrigger: close
   gameSettingsBtn: {fileID: 8342613518327701628}

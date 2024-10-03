@@ -246,7 +246,7 @@ namespace KFrame.UI
         /// 获取component对应的数据
         /// </summary>
         /// <returns>找不到就新建</returns>
-        public UILocalizationData GetUILocalizationData(Graphic component)
+        public UILocalizationData GetUILocalizationData(Graphic component, string key = "")
         {
             if (component == null) return null;
 
@@ -258,7 +258,7 @@ namespace KFrame.UI
             //没有的话那就新建然后添加返回
             else
             {
-                data = new UILocalizationData("", component);
+                data = new UILocalizationData(key, component);
                 UIDataDic[component] = data;
                 localiztionSets.Add(data);
                 

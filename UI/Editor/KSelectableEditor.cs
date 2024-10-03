@@ -4,9 +4,13 @@
 //* 创建时间：2024/09/15 13:01:48 星期日
 //* 描述：对Selectable的GUI进行重绘
 //*******************************************************
+
+using System;
 using KFrame.Editor;
+using KFrame.Utilities;
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.UI;
 
 namespace KFrame.UI.Editor
 {
@@ -27,6 +31,10 @@ namespace KFrame.UI.Editor
         /// 导航FoldOut
         /// </summary>
         private static bool navigationFoldOut = true;
+        /// <summary>
+        /// 自动绑定相对连接的UI
+        /// </summary>
+        private static bool navigationBindAuto = false;
         /// <summary>
         /// 显示添加本地化配置按钮
         /// </summary>
@@ -136,11 +144,37 @@ namespace KFrame.UI.Editor
             if (navigationFoldOut)
             {
                 KEditorGUI.BeginVerticleWithSpace(20f);
+
+                navigationBindAuto = EditorGUILayout.Toggle("智能连接", navigationBindAuto);
                 
-                KEditorGUI.PropertyField(selectOnUp, "向上");
-                KEditorGUI.PropertyField(selectOnDown, "向下");
-                KEditorGUI.PropertyField(selectOnLeft, "向左");
-                KEditorGUI.PropertyField(selectOnRight, "向右");
+                DrawNavigationGUI(selectOnUp, "向上", () =>
+                {
+                    Selectable selectable = selectOnUp.objectReferenceValue as Selectable;
+                    if(targets.Length != 1 || selectable == null) return;
+                    selectable.navigation = selectable.navigation.ChangeSelectOnDown(target as Selectable);
+                    EditorUtility.SetDirty(selectable);
+                });
+                DrawNavigationGUI(selectOnDown, "向下", () =>
+                {
+                    Selectable selectable = selectOnDown.objectReferenceValue as Selectable;
+                    if(targets.Length != 1 || selectable == null) return;
+                    selectable.navigation = selectable.navigation.ChangeSelectOnUp(target as Selectable);
+                    EditorUtility.SetDirty(selectable);
+                });
+                DrawNavigationGUI(selectOnLeft, "向左", () =>
+                {
+                    Selectable selectable = selectOnLeft.objectReferenceValue as Selectable;
+                    if(targets.Length != 1 || selectable == null) return;
+                    selectable.navigation = selectable.navigation.ChangeSelectOnRight(target as Selectable);
+                    EditorUtility.SetDirty(selectable);
+                });
+                DrawNavigationGUI(selectOnRight, "向右", () =>
+                {
+                    Selectable selectable = selectOnRight.objectReferenceValue as Selectable;
+                    if(targets.Length != 1 || selectable == null) return;
+                    selectable.navigation = selectable.navigation.ChangeSelectOnLeft(target as Selectable);
+                    EditorUtility.SetDirty(selectable);
+                });
                 
                 KEditorGUI.EndVerticleWithSpace(0f);
             }
@@ -211,6 +245,19 @@ namespace KFrame.UI.Editor
             
             EditorGUILayout.EndVertical();
 
+        }
+        /// <summary>
+        /// 绘制导航的GUI
+        /// </summary>
+        private void DrawNavigationGUI(SerializedProperty property, string label, Action callback)
+        {
+            EditorGUI.BeginChangeCheck();
+            KEditorGUI.PropertyField(property, label);
+
+            if (EditorGUI.EndChangeCheck() && navigationBindAuto)
+            {
+                callback?.Invoke();
+            }
         }
     }
 }

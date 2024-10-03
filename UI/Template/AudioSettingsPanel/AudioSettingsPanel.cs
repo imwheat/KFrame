@@ -19,7 +19,27 @@ namespace KFrame.UI
         /// </summary>
         [SerializeField] 
         private KButton returnBtn;
-
+        /// <summary>
+        /// 主音量调节滚轮
+        /// </summary>
+        [SerializeField] 
+        private KSlider masterVolumeSlider;
+        /// <summary>
+        /// 音效音量调节滚轮
+        /// </summary>
+        [SerializeField] 
+        private KSlider sfxVolumeSlider;
+        /// <summary>
+        /// BGM音量调节滚轮
+        /// </summary>
+        [SerializeField] 
+        private KSlider bgmVolumeSlider;
+        /// <summary>
+        /// UI音量调节滚轮
+        /// </summary>
+        [SerializeField] 
+        private KSlider uiVolumeSlider;
+        
         #endregion
 
         protected override void Awake()

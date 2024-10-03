@@ -52,6 +52,7 @@ namespace KFrame.UI
         /// <summary>
         /// 本地化的key
         /// </summary>
+        [SerializeField]
         private string key;
 
         /// <summary>
@@ -141,7 +142,7 @@ namespace KFrame.UI
         {
             if (Parent != null)
             {
-                linkedData = Parent.GetUILocalizationData(target);
+                linkedData = Parent.GetUILocalizationData(target, key);
                 key = linkedData.Key;
             }
             else
@@ -153,7 +154,7 @@ namespace KFrame.UI
         /// <summary>
         /// 初始化Data
         /// </summary>
-        public void InitData()
+        private void InitData()
         {
             //防空初始化
             if (StringData == null)
@@ -172,25 +173,16 @@ namespace KFrame.UI
             HashSet<LanguageType> imageLanguage = new HashSet<LanguageType>();
             for (int i = StringData.Datas.Count - 1; i >= 0; i--)
             {
-                if (stringLanguage.Contains(StringData.Datas[i].Language))
+                if (!stringLanguage.Add(StringData.Datas[i].Language))
                 {
                     StringData.Datas.RemoveAt(i);
                 }
-                else
-                {
-                    stringLanguage.Add(StringData.Datas[i].Language);
-                }
-
             }
             for (int i = ImageData.Datas.Count - 1; i >= 0; i--)
             {
-                if (stringLanguage.Contains(ImageData.Datas[i].Language))
+                if (!stringLanguage.Add(ImageData.Datas[i].Language))
                 {
                     ImageData.Datas.RemoveAt(i);
-                }
-                else
-                {
-                    stringLanguage.Add(ImageData.Datas[i].Language);
                 }
             }
             

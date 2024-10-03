@@ -113,4 +113,104 @@ MonoBehaviour:
       Text: Quit Game
     - Language: 3
       Text: "\u7D42\u4E86"
+  - Key: ui_Settings
+    Datas:
+    - Language: 0
+      Text: "\u7CFB\u7EDF\u8BBE\u7F6E"
+    - Language: 1
+      Text: "\u7CFB\u7D71\u8A2D\u7F6E"
+    - Language: 2
+      Text: Settings
+    - Language: 3
+      Text: "\u8A2D\u5B9A"
+  - Key: ui_SFXVolume
+    Datas:
+    - Language: 0
+      Text: "\u97F3\u6548"
+    - Language: 1
+      Text: "\u97F3\u6548"
+    - Language: 2
+      Text: Sound
+    - Language: 3
+      Text: "\u52B9\u679C\u97F3"
+  - Key: ui_BGMVolume
+    Datas:
+    - Language: 0
+      Text: "\u97F3\u4E50"
+    - Language: 1
+      Text: "\u97F3\u6A02"
+    - Language: 2
+      Text: Music
+    - Language: 3
+      Text: "\u97F3\u697D"
+  - Key: ui_UIVolume
+    Datas:
+    - Language: 0
+      Text: UI
+    - Language: 1
+      Text: UI
+    - Language: 2
+      Text: UI
+    - Language: 3
+      Text: UI
+  - Key: ui_MasterVolume
+    Datas:
+    - Language: 0
+      Text: "\u4E3B\u97F3\u91CF"
+    - Language: 1
+      Text: "\u4E3B\u97F3\u91CF"
+    - Language: 2
+      Text: Master
+    - Language: 3
+      Text: "\u4E3B\u97F3\u91CF"
+  - Key: ui_Resolution
+    Datas:
+    - Language: 0
+      Text: "\u5206\u8FA8\u7387"
+    - Language: 1
+      Text: "\u5206\u8FA8\u7387"
+    - Language: 2
+      Text: Resolution
+    - Language: 3
+      Text: "\u89E3\u50CF\u5EA6"
+  - Key: ui_FullScreen
+    Datas:
+    - Language: 0
+      Text: "\u5168\u5C4F"
+    - Language: 1
+      Text: "\u5168\u5C4F"
+    - Language: 2
+      Text: Full Screen
+    - Language: 3
+      Text: "\u5168\u753B\u9762"
+  - Key: ui_Vsync
+    Datas:
+    - Language: 0
+      Text: "\u5782\u76F4\u540C\u6B65"
+    - Language: 1
+      Text: "\u5782\u76F4\u540C\u6B65"
+    - Language: 2
+      Text: V-Sync
+    - Language: 3
+      Text: "\u5782\u76F4\u540C\u671F"
+  - Key: ui_FrameRateCap
+    Datas:
+    - Language: 0
+      Text: "\u5E27\u7387\u9650\u5236"
+    - Language: 1
+      Text: "\u5E40\u7387\u9650\u5236"
+    - Language: 2
+      Text: Frame Rate Cap
+    - Language: 3
+      Text: "\u30D5\u30EC\u30FC\u30E0\u30EC\u30FC\u30C8\u306E\u4E0A\u9650"
+  - Key: ui_ResetDefault
+    Datas:
+    - Language: 0
+      Text: "\u91CD\u7F6E\u4E3A\u9ED8\u8BA4\u503C"
+    - Language: 1
+      Text: "\u91CD\u7F6E\u70BA\u9ED8\u8A8D\u503C"
+    - Language: 2
+      Text: Reset Defaults
+    - Language: 3
+      Text: "\u521D\u671F\u8A2D\u5B9A\u306B\u623B\u308B"
   ImageDatas: []

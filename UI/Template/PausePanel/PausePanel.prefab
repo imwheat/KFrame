@@ -59,6 +59,7 @@ GameObject:
   - component: {fileID: 4936834505012583040}
   - component: {fileID: 339644227230752520}
   - component: {fileID: 3750223826541725898}
+  - component: {fileID: 961434674465797212}
   m_Layer: 5
   m_Name: Exit
   m_TagString: Untagged
@@ -228,6 +229,42 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &961434674465797212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1062315954327309822}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Parent: {fileID: 6271522059996369226}
+  target: {fileID: 339644227230752520}
+  StringData:
+    Key: 
+    Datas:
+    - Language: 0
+      Text: "\u9000\u51FA\u6E38\u620F"
+    - Language: 1
+      Text: "\u9000\u51FA\u904A\u6232"
+    - Language: 2
+      Text: Quit Game
+    - Language: 3
+      Text: "\u7D42\u4E86"
+  ImageData:
+    Key: 
+    Datas:
+    - Language: 0
+      Sprite: {fileID: 0}
+    - Language: 1
+      Sprite: {fileID: 0}
+    - Language: 2
+      Sprite: {fileID: 0}
+    - Language: 3
+      Sprite: {fileID: 0}
 --- !u!1 &1751545289541801321
 GameObject:
   m_ObjectHideFlags: 0
@@ -320,6 +357,7 @@ GameObject:
   - component: {fileID: 254771337680557783}
   - component: {fileID: 6790149027095856756}
   - component: {fileID: 7348396184749435686}
+  - component: {fileID: 2932930779629463061}
   m_Layer: 5
   m_Name: MainMenu
   m_TagString: Untagged
@@ -375,7 +413,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u8FD4\u56DE\u4E3B\u754C\u9762"
+  m_text: "\u8FD4\u56DE\u4E3B\u83DC\u5355"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: bfd917cc575f17a4bacc5aee2df4d7d3, type: 2}
   m_sharedMaterial: {fileID: -9030870457318359854, guid: bfd917cc575f17a4bacc5aee2df4d7d3, type: 2}
@@ -489,6 +527,42 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2932930779629463061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4334036524299653834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Parent: {fileID: 6271522059996369226}
+  target: {fileID: 6790149027095856756}
+  StringData:
+    Key: 
+    Datas:
+    - Language: 0
+      Text: "\u8FD4\u56DE\u4E3B\u83DC\u5355"
+    - Language: 1
+      Text: "\u8FD4\u56DE\u4E3B\u83DC\u55AE"
+    - Language: 2
+      Text: Quit To Menu
+    - Language: 3
+      Text: "\u30E1\u30CB\u30E6\u2015\u306B\u623B\u308B"
+  ImageData:
+    Key: 
+    Datas:
+    - Language: 0
+      Sprite: {fileID: 0}
+    - Language: 1
+      Sprite: {fileID: 0}
+    - Language: 2
+      Sprite: {fileID: 0}
+    - Language: 3
+      Sprite: {fileID: 0}
 --- !u!1 &5620435341534309027
 GameObject:
   m_ObjectHideFlags: 0
@@ -577,6 +651,7 @@ GameObject:
   - component: {fileID: 4044783082804534308}
   - component: {fileID: 2065462514761455294}
   - component: {fileID: 8342613518327701628}
+  - component: {fileID: 3524633397711023746}
   m_Layer: 5
   m_Name: Return
   m_TagString: Untagged
@@ -632,7 +707,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u8FD4\u56DE\u6E38\u620F"
+  m_text: "\u7EE7\u7EED\u6E38\u620F"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: bfd917cc575f17a4bacc5aee2df4d7d3, type: 2}
   m_sharedMaterial: {fileID: -9030870457318359854, guid: bfd917cc575f17a4bacc5aee2df4d7d3, type: 2}
@@ -746,6 +821,42 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &3524633397711023746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6034907959821150400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Parent: {fileID: 6271522059996369226}
+  target: {fileID: 2065462514761455294}
+  StringData:
+    Key: 
+    Datas:
+    - Language: 0
+      Text: "\u7EE7\u7EED\u6E38\u620F"
+    - Language: 1
+      Text: "\u7E7C\u7E8C\u904A\u6232"
+    - Language: 2
+      Text: Continue
+    - Language: 3
+      Text: "\u7D9A\u3051\u308B"
+  ImageData:
+    Key: 
+    Datas:
+    - Language: 0
+      Sprite: {fileID: 0}
+    - Language: 1
+      Sprite: {fileID: 0}
+    - Language: 2
+      Sprite: {fileID: 0}
+    - Language: 3
+      Sprite: {fileID: 0}
 --- !u!1 &7648418859540984890
 GameObject:
   m_ObjectHideFlags: 0
@@ -795,6 +906,7 @@ GameObject:
   - component: {fileID: 4103226810958108418}
   - component: {fileID: 6570377193190052469}
   - component: {fileID: 3040857066839120169}
+  - component: {fileID: 351187238667174118}
   m_Layer: 5
   m_Name: Settings
   m_TagString: Untagged
@@ -964,6 +1076,42 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &351187238667174118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9013625883512682089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Parent: {fileID: 6271522059996369226}
+  target: {fileID: 6570377193190052469}
+  StringData:
+    Key: ui_Settings
+    Datas:
+    - Language: 0
+      Text: "\u7CFB\u7EDF\u8BBE\u7F6E"
+    - Language: 1
+      Text: "\u7CFB\u7D71\u8A2D\u7F6E"
+    - Language: 2
+      Text: Settings
+    - Language: 3
+      Text: "\u8A2D\u5B9A"
+  ImageData:
+    Key: 
+    Datas:
+    - Language: 0
+      Sprite: {fileID: 0}
+    - Language: 1
+      Sprite: {fileID: 0}
+    - Language: 2
+      Sprite: {fileID: 0}
+    - Language: 3
+      Sprite: {fileID: 0}
 --- !u!1 &9071925823465985299
 GameObject:
   m_ObjectHideFlags: 0
@@ -1029,13 +1177,13 @@ MonoBehaviour:
     Component: {fileID: 8468949133386243159}
   - Key: 
     Component: {fileID: 7789956159329138020}
-  - Key: 
+  - Key: ui_ContinueGame
     Component: {fileID: 2065462514761455294}
-  - Key: 
+  - Key: ui_Settings
     Component: {fileID: 6570377193190052469}
-  - Key: 
+  - Key: ui_QuitToMenu
     Component: {fileID: 6790149027095856756}
-  - Key: 
+  - Key: ui_QuitGame
     Component: {fileID: 339644227230752520}
   defaultSelection: {fileID: 8342613518327701628}
   anim: {fileID: 6881628761190842014}
