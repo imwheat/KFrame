@@ -32,6 +32,20 @@ namespace KFrame.Systems
         [SerializeField, LabelText("SFXMixerGroup")]
         private AudioMixerGroup sfxMixerGroup;
         /// <summary>
+        /// UIMixerGroup
+        /// </summary>
+        [SerializeField, LabelText("uiMixerGroup")]
+        private AudioMixerGroup uiMixerGroup;
+        /// <summary>
+        /// UIGroup
+        /// </summary>
+        [SerializeField, LabelText("UIGroup")]
+        private AudioGroup uiGroup;
+        /// <summary>
+        /// UIGroup
+        /// </summary>
+        public AudioGroup UIGroup => uiGroup;
+        /// <summary>
         /// MasterGroup
         /// </summary>
         [SerializeField, LabelText("MasterGroup")]
@@ -81,7 +95,7 @@ namespace KFrame.Systems
             get => masterGroup.CurVolume;
             set
             {
-                if (UISetPropertyUtility.SetStruct<float>(ref masterGroup.Volume, value))
+                if (UISetPropertyUtility.SetStruct(ref masterGroup.Volume, value))
                 {
                     masterGroup.UpdateVolume(value);
                 }
@@ -95,7 +109,7 @@ namespace KFrame.Systems
             get => bgmGroup.CurVolume;
             set
             {
-                if (UISetPropertyUtility.SetStruct<float>(ref bgmGroup.Volume, value))
+                if (UISetPropertyUtility.SetStruct(ref bgmGroup.Volume, value))
                 {
                     bgmGroup.UpdateVolume(value);
                 }
@@ -107,13 +121,23 @@ namespace KFrame.Systems
             get => sfxGroup.CurVolume;
             set
             {
-                if (UISetPropertyUtility.SetStruct<float>(ref sfxGroup.Volume, value))
+                if (UISetPropertyUtility.SetStruct(ref sfxGroup.Volume, value))
                 {
                     sfxGroup.UpdateVolume(value);
                 }
             }
         }
-
+        public float UIVolume
+        {
+            get => uiGroup.CurVolume;
+            set
+            {
+                if (UISetPropertyUtility.SetStruct(ref uiGroup.Volume, value))
+                {
+                    sfxGroup.UpdateVolume(value);
+                }
+            }
+        }
 
         #endregion
 
@@ -136,6 +160,7 @@ namespace KFrame.Systems
             masterGroup = AudioDic.GetAudioGroup(masterMixerGroup);
             bgmGroup = AudioDic.GetAudioGroup(bgmMixerGroup);
             sfxGroup = AudioDic.GetAudioGroup(sfxMixerGroup);
+            uiGroup = AudioDic.GetAudioGroup(uiMixerGroup);
             
             //防空
             if(bgmPlayer==null)
@@ -212,7 +237,7 @@ namespace KFrame.Systems
                 data = RegisterPlayAudioDic(audioPlay, audioStack.LimitPlayCount);
 
                 //注销事件
-                action = (audioPlay) => UnRegisterPlayAudioDic(audioPlay);
+                action = audioPlay => UnRegisterPlayAudioDic(audioPlay);
             }
 
             //开始播放音效
@@ -253,7 +278,7 @@ namespace KFrame.Systems
             {
 
                 //升高音调
-                modifyData = new AudioModifyData()
+                modifyData = new AudioModifyData
                 {
                     Pitch = playList[0].AudioSource.pitch + 0.05f,
                 };

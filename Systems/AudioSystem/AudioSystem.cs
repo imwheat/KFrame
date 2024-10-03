@@ -60,7 +60,11 @@ namespace KFrame.Systems
             get => audioModule.SFXVolume;
             set { audioModule.SFXVolume = value; }
         }
-        
+        public static float UIVolume
+        {
+            get => audioModule.UIVolume;
+            set { audioModule.UIVolume = value; }
+        }
         public static AudioGroup MasterGroup => audioModule.MasterGroup;
         public static AudioGroup BGMGroup => audioModule.BGMGroup;
 

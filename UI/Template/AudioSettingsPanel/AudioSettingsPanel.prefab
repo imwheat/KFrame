@@ -3766,8 +3766,6 @@ MonoBehaviour:
     Component: {fileID: 339644227230752520}
   - Key: ui_AudioSettings
     Component: {fileID: 4280923935095751412}
-  - Key: 
-    Component: {fileID: 1067901625924246756}
   - Key: ui_UIVolume
     Component: {fileID: 2115873118798022666}
   - Key: ui_MasterVolume
@@ -3776,14 +3774,18 @@ MonoBehaviour:
     Component: {fileID: 7340255531775736513}
   - Key: ui_SFXVolume
     Component: {fileID: 4163835303464130052}
-  defaultSelection: {fileID: 0}
+  defaultSelection: {fileID: 6483034134615136671}
   anim: {fileID: 6881628761190842014}
   closeAnimTrigger: close
   returnBtn: {fileID: 3750223826541725898}
-  masterVolumeSlider: {fileID: 0}
-  sfxVolumeSlider: {fileID: 0}
-  bgmVolumeSlider: {fileID: 0}
-  uiVolumeSlider: {fileID: 0}
+  masterVolumeSlider: {fileID: 6483034134615136671}
+  masterVolumePercentText: {fileID: 1067901625924246756}
+  sfxVolumeSlider: {fileID: 6023750557622485904}
+  sfxVolumePercentText: {fileID: 4594264537302089116}
+  bgmVolumeSlider: {fileID: 5701728361350907036}
+  bgmVolumePercentText: {fileID: 4030548946907550654}
+  uiVolumeSlider: {fileID: 3287131012467518895}
+  uiVolumePercentText: {fileID: 3429562627362676427}
 --- !u!1 &9208773350314702064
 GameObject:
   m_ObjectHideFlags: 0

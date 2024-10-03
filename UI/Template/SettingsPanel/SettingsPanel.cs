@@ -48,8 +48,14 @@ namespace KFrame.UI
             
             //按键事件注册
             gameSettingsBtn.OnClick.AddListener(OnClickGameSettingsBtn);
+            audioSettingsBtn.OnClick.AddListener(OnClickAudioSettingsBtn);
+            graphicSettingsBtn.OnClick.AddListener(OnClickGraphicSettingsBtn);
+            inputSettingsBtn.OnClick.AddListener(OnClickInputSettingsBtn);
             returnBtn.OnClick.AddListener(OnPressESC);
         }
+
+        #region UI事件
+
         /// <summary>
         /// 点击游戏设置按钮
         /// </summary>
@@ -57,6 +63,30 @@ namespace KFrame.UI
         {
             SwitchToThisPanel<GameSettingsPanel>(true);
         }
+        /// <summary>
+        /// 点击游戏设置按钮
+        /// </summary>
+        private void OnClickAudioSettingsBtn()
+        {
+            SwitchToThisPanel<AudioSettingsPanel>(true);
+        }
+        /// <summary>
+        /// 点击游戏设置按钮
+        /// </summary>
+        private void OnClickGraphicSettingsBtn()
+        {
+            SwitchToThisPanel<GraphicSettingsPanel>(true);
+        }
+        /// <summary>
+        /// 点击游戏设置按钮
+        /// </summary>
+        private void OnClickInputSettingsBtn()
+        {
+            SwitchToThisPanel<InputSettingsPanel>(true);
+        }
+
+        #endregion
+
     }
 }
 

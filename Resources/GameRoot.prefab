@@ -202,6 +202,11 @@ MonoBehaviour:
   masterMixerGroup: {fileID: 24300002, guid: 96598e9a8444ddb429c766161c0af201, type: 2}
   bgmMixerGroup: {fileID: 8024287094261967831, guid: 96598e9a8444ddb429c766161c0af201, type: 2}
   sfxMixerGroup: {fileID: -2697891055904758130, guid: 96598e9a8444ddb429c766161c0af201, type: 2}
+  uiMixerGroup: {fileID: -2606921185042502454, guid: 96598e9a8444ddb429c766161c0af201, type: 2}
+  uiGroup:
+    GroupName: 
+    GroupIndex: 0
+    ChildrenIndexes: 
   masterGroup:
     GroupName: 
     GroupIndex: 0
