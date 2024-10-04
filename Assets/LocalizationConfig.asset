@@ -213,4 +213,64 @@ MonoBehaviour:
       Text: Reset Defaults
     - Language: 3
       Text: "\u521D\u671F\u8A2D\u5B9A\u306B\u623B\u308B"
+  - Key: ui_On
+    Datas:
+    - Language: 0
+      Text: "\u5F00\u542F"
+    - Language: 1
+      Text: "\u958B\u555F"
+    - Language: 2
+      Text: On
+    - Language: 3
+      Text: "\u30AA\u30F3"
+  - Key: ui_Off
+    Datas:
+    - Language: 0
+      Text: "\u5173\u95ED"
+    - Language: 1
+      Text: "\u95DC\u9589"
+    - Language: 2
+      Text: Off
+    - Language: 3
+      Text: "\u30AA\u30D5"
+  - Key: ui_Apply
+    Datas:
+    - Language: 0
+      Text: "\u5E94\u7528"
+    - Language: 1
+      Text: "\u61C9\u7528"
+    - Language: 2
+      Text: Apply
+    - Language: 3
+      Text: "\u30A2\u30D7\u30EA"
+  - Key: ui_FullScreenWindowConfig
+    Datas:
+    - Language: 0
+      Text: "\u65E0\u8FB9\u6846"
+    - Language: 1
+      Text: "\u7121\u908A\u6846"
+    - Language: 2
+      Text: Borderless
+    - Language: 3
+      Text: "\u7121\u5883\u754C"
+  - Key: ui_FullScreenConfig
+    Datas:
+    - Language: 0
+      Text: "\u5F00\u542F"
+    - Language: 1
+      Text: "\u958B\u555F"
+    - Language: 2
+      Text: On
+    - Language: 3
+      Text: "\u30AA\u30F3"
+  - Key: ui_WindowConfig
+    Datas:
+    - Language: 0
+      Text: "\u5173\u95ED"
+    - Language: 1
+      Text: "\u95DC\u9589"
+    - Language: 2
+      Text: Off
+    - Language: 3
+      Text: "\u30AA\u30D5"
   ImageDatas: []

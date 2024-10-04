@@ -400,7 +400,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Parent: {fileID: 0}
+  key: ui_ReturnButton
+  Parent: {fileID: 3612870215771765923}
   target: {fileID: 339644227230752520}
   StringData:
     Key: ui_ReturnButton
@@ -741,7 +742,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Parent: {fileID: 0}
+  key: 
+  Parent: {fileID: 3612870215771765923}
   target: {fileID: 1878220955178239031}
   StringData:
     Key: 
@@ -990,7 +992,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Parent: {fileID: 0}
+  key: 
+  Parent: {fileID: 3612870215771765923}
   target: {fileID: 2065462514761455294}
   StringData:
     Key: 
@@ -1358,7 +1361,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Parent: {fileID: 0}
+  key: 
+  Parent: {fileID: 3612870215771765923}
   target: {fileID: 4280923935095751412}
   StringData:
     Key: ui_AudioSettings
@@ -1462,7 +1466,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d377d80527e8178488906a42989e70c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  localiztionSets: []
+  localiztionSets:
+  - Key: 
+    Component: {fileID: 1878220955178239031}
+  - Key: ui_ReturnButton
+    Component: {fileID: 339644227230752520}
+  - Key: 
+    Component: {fileID: 2065462514761455294}
+  - Key: 
+    Component: {fileID: 4280923935095751412}
   defaultSelection: {fileID: 0}
   anim: {fileID: 6881628761190842014}
   closeAnimTrigger: close

@@ -541,5 +541,19 @@ namespace KFrame.UI
 
 
         #endregion
+
+        #region 本地化相关
+
+        /// <summary>
+        /// 获取UI开关的UI本地化文本key
+        /// </summary>
+        /// <param name="value">开关状态</param>
+        /// <returns>UI本地化文本key</returns>
+        public static string GetOnOffUIKey(bool value)
+        {
+            return value ? "ui_On" : "ui_Off";
+        }
+
+        #endregion
     }
 }

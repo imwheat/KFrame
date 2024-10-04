@@ -66,6 +66,15 @@ namespace KFrame.UI
             return Config.GetLocalizedText(key, language);
         }
         /// <summary>
+        /// 获取当前语言类型的本地化文本数据
+        /// </summary>
+        /// <param name="key">key</param>
+        /// <returns>没有的话返回""</returns>
+        public static string GetLocalizedTextInCurLanguage(string key)
+        {
+            return GetLocalizedText(key, LanguageType);
+        }
+        /// <summary>
         /// 尝试获取本地化文本数据
         /// </summary>
         /// <param name="key">key</param>
@@ -76,11 +85,11 @@ namespace KFrame.UI
             return Config.TryGetLocalizedText(key, language, out text);
         }
         /// <summary>
-        /// 获取本地化文本数据
+        /// 获取本地化图片数据
         /// </summary>
         /// <param name="key">key</param>
         /// <param name="language">语言类型</param>
-        /// <returns>没有的话返回""</returns>
+        /// <returns>没有的话返回null</returns>
         public static Sprite GetLocalizedImage(string key, LanguageType language)
         {
             if (Config == null)
@@ -90,6 +99,15 @@ namespace KFrame.UI
             }
 
             return Config.GetLocalizedImage(key, language);
+        }
+        /// <summary>
+        /// 获取当前语言类型的本地化图片数据
+        /// </summary>
+        /// <param name="key">key</param>
+        /// <returns>没有的话返回null</returns>
+        public static Sprite GetLocalizedImageInCurLanguage(string key)
+        {
+            return GetLocalizedImage(key, LanguageType);
         }
         /// <summary>
         /// 尝试获取本地化文本数据

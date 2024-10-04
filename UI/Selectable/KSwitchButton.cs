@@ -184,12 +184,15 @@ namespace KFrame.UI
             newValue = Math.Clamp(newValue, range.x, range.y);
 
             //如果新的值和旧的一样那就返回
-            if(newValue == value) return;
+            if(notify) onClick.Invoke(newValue);
+            if (newValue == value)
+            {
+                return;
+            }
             
             //更新值
             value = newValue;
             ButtonInteractCheck();
-            if(notify) onClick.Invoke(value);
         }
         /// <summary>
         /// 调整检测按钮的可交互性

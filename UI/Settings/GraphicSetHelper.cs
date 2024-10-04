@@ -47,7 +47,7 @@ namespace KFrame.UI
         public static void SetVsync(bool vsync)
         {
             QualitySettings.vSyncCount = vsync ? 1 : 0;
-            CurSettingsData.VSync = vsync;
+            CurSettingsData.vSync = vsync;
         }
         /// <summary>
         /// 设置帧数上限
@@ -56,7 +56,7 @@ namespace KFrame.UI
         public static void SetFrameRate(int frameRate)
         {
             Application.targetFrameRate = frameRate;
-            CurSettingsData.FrameRate = frameRate;
+            CurSettingsData.frameRate = frameRate;
         }
         /// <summary>
         /// 设置显示相关，分辨率、全屏
@@ -73,8 +73,8 @@ namespace KFrame.UI
                 Screen.SetResolution(resolution.x, resolution.y, fullScreenMode);
                 
                 //更新保存数据
-                CurSettingsData.Resolution = resolution;
-                CurSettingsData.FullScreenMode = fullScreenMode;
+                CurSettingsData.resolution = resolution;
+                CurSettingsData.fullScreenMode = fullScreenMode;
                 
                 //调用分辨率更新事件
                 if(Screen.width != resolution.x || Screen.height != resolution.y)
@@ -88,9 +88,9 @@ namespace KFrame.UI
         /// </summary>
         public static void LoadGraphicSettings()
         {
-            SetVsync(CurSettingsData.VSync);
-            SetFrameRate(CurSettingsData.FrameRate);
-            SetDisplay(CurSettingsData.Resolution, CurSettingsData.FullScreenMode);
+            SetVsync(CurSettingsData.vSync);
+            SetFrameRate(CurSettingsData.frameRate);
+            SetDisplay(CurSettingsData.resolution, CurSettingsData.fullScreenMode);
         }
         /// <summary>
         /// 恢复备份设置

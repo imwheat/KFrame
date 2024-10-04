@@ -400,6 +400,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  key: ui_ReturnButton
   Parent: {fileID: 7019890127095947110}
   target: {fileID: 339644227230752520}
   StringData:
@@ -741,6 +742,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  key: ui_LanguageType
   Parent: {fileID: 7019890127095947110}
   target: {fileID: 1878220955178239031}
   StringData:
@@ -990,6 +992,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  key: ui_Language
   Parent: {fileID: 7019890127095947110}
   target: {fileID: 2065462514761455294}
   StringData:
@@ -1358,6 +1361,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  key: ui_GameSettings
   Parent: {fileID: 7019890127095947110}
   target: {fileID: 4280923935095751412}
   StringData:
