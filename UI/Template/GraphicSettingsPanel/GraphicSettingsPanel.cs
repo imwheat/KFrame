@@ -131,8 +131,7 @@ namespace KFrame.UI
         private void InitUI()
         {
             //更新当前全屏状态
-            var fullScreenMode = FullScreenConfig.FindElementIndex((int)Screen.fullScreenMode);
-            if (fullScreenMode == -1) fullScreenMode = 1;
+            var fullScreenMode = FullScreenConfig.FindElementIndex((int)Screen.fullScreenMode, 1);
             GraphicSetHelper.CurSettingsData.fullScreenMode = (FullScreenMode)fullScreenMode;
             //更新UI
             fullScreenBtn.Range = new Vector2Int(0, 3);

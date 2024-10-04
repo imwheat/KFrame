@@ -1280,7 +1280,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u6E38\u620F\u8BBE\u7F6E"
+  m_text: "\u6309\u952E\u8BBE\u7F6E"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: bfd917cc575f17a4bacc5aee2df4d7d3, type: 2}
   m_sharedMaterial: {fileID: -9030870457318359854, guid: bfd917cc575f17a4bacc5aee2df4d7d3, type: 2}
@@ -1361,20 +1361,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  key: 
+  key: ui_InputSettings
   Parent: {fileID: 3612870215771765923}
   target: {fileID: 4280923935095751412}
   StringData:
     Key: ui_AudioSettings
     Datas:
     - Language: 0
-      Text: "\u97F3\u6548\u8BBE\u7F6E"
+      Text: "\u6309\u952E\u8BBE\u7F6E"
     - Language: 1
-      Text: "\u97F3\u6548\u8A2D\u7F6E"
+      Text: "\u6309\u9375\u8A2D\u7F6E"
     - Language: 2
-      Text: Audio
+      Text: Input
     - Language: 3
-      Text: "\u97F3\u97FF\u8A2D\u5B9A"
+      Text: "\u30AD\u30FC\u8A2D\u5B9A"
   ImageData:
     Key: 
     Datas:
@@ -1473,7 +1473,7 @@ MonoBehaviour:
     Component: {fileID: 339644227230752520}
   - Key: 
     Component: {fileID: 2065462514761455294}
-  - Key: 
+  - Key: ui_InputSettings
     Component: {fileID: 4280923935095751412}
   defaultSelection: {fileID: 0}
   anim: {fileID: 6881628761190842014}

@@ -159,6 +159,10 @@ namespace KFrame.UI
             {
                 UISystem.Show<PausePanel>();
             }
+            else
+            {
+                curUIPanel.OnPressESC();
+            }
         }
 
         #endregion
