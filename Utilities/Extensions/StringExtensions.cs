@@ -100,6 +100,8 @@ namespace KFrame.Utilities
         /// <returns>比如My Int Value => MyIntValue</returns>
         public static string ConnectWords(this string input)
         {
+            if (string.IsNullOrEmpty(input)) return "";
+            
             StringBuilder stringBuilder = new StringBuilder();
             foreach (var c in input)
             {
@@ -117,6 +119,8 @@ namespace KFrame.Utilities
         /// <returns>"  asd "=>"Asd"</returns>
         public static string GetNiceFormat(this string input)
         {
+            if (string.IsNullOrEmpty(input)) return "";
+            
             StringBuilder sb = new StringBuilder();
             bool firstCharacter = true;
             foreach (var c in input)

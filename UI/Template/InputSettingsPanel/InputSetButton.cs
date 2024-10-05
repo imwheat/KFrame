@@ -6,6 +6,7 @@
 //*******************************************************
 
 using TMPro;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace KFrame.UI
@@ -39,6 +40,10 @@ namespace KFrame.UI
         /// </summary>
         private int id => Data.rebindId;
         private InputActionRebindingExtensions.RebindingOperation rebindingOperation;
+        /// <summary>
+        /// 修改前的数据
+        /// </summary>
+        private string prevData;
 
         #endregion
 
@@ -50,7 +55,6 @@ namespace KFrame.UI
             
             OnClick.AddListener(RebindKey);
         }
-
         protected override void OnDisable()
         {
             base.OnDisable();
@@ -117,7 +121,34 @@ namespace KFrame.UI
         /// </summary>
         public void ResetKey()
         {
-            
+            actionToRebind.RemoveBindingOverride(id);
+            SaveRebind();
+        }
+        /// <summary>
+        /// 取消重新绑定
+        /// 恢复本次修改前的按键
+        /// </summary>
+        public void CancelRebind()
+        {
+            actionToRebind.LoadBindingOverridesFromJson(prevData);
+            SaveRebind();
+        }
+        /// <summary>
+        /// 保存按键绑定数据
+        /// </summary>
+        public void SaveRebind()
+        {
+            //更新备份数据
+            SaveBackup();
+            //更新按键设置数据
+            InputSetHelper.SetPlayerKeySet(InputSettingsPanel.PlayerIndex, actionToRebind.GetSaveKey(), prevData);
+        }
+        /// <summary>
+        /// 保存备份还原数据
+        /// </summary>
+        public void SaveBackup()
+        {
+            prevData = actionToRebind.SaveBindingOverridesAsJson();
         }
 
         #endregion

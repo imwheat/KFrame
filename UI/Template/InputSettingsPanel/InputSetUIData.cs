@@ -14,9 +14,9 @@ namespace KFrame.UI
     public class InputSetUIData
     {
         /// <summary>
-        /// 保存的key
+        /// 本地化配置key
         /// </summary>
-        public string saveKey;
+        public string localizationKey;
         /// <summary>
         /// 绑定的按钮
         /// </summary>

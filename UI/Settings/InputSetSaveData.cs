@@ -5,6 +5,7 @@
 //* 描述：按键设置配置
 //*****************************************************
 
+using System;
 using KFrame.Utilities;
 
 namespace KFrame.UI
@@ -12,28 +13,38 @@ namespace KFrame.UI
     [System.Serializable]
     public class InputSetSaveData
     {
-        public InputSetSaveData() 
-        { 
-            JsonDic = new Serialized_Dic<int, Serialized_Dic<string, string>>();
-        }
-
-        public Serialized_Dic<int, Serialized_Dic<string, string>> JsonDic;
+        public Serialized_Dic<int, Serialized_Dic<string, string>> JsonDic = new();
 
 
         /// <summary>
         /// 获取玩家按键配置data
         /// </summary>
         /// <param name="playerIndex">玩家id</param>
-        /// <param name="key">按键保存Key</param>
+        /// <param name="saveKey">按键保存Key</param>
         /// <returns>如果找到的话那就返回对应按键的保存data，找不到的话那就返回空</returns>
-        public string GetPlayerKeySet(int playerIndex, string key)
+        public string GetPlayerKeySet(int playerIndex, string saveKey)
         {
-            if(JsonDic.Dictionary.ContainsKey(playerIndex) && JsonDic.Dictionary[playerIndex].Dictionary.ContainsKey(key))
+            if(JsonDic.Dictionary.ContainsKey(playerIndex) && JsonDic.Dictionary[playerIndex].Dictionary.ContainsKey(saveKey))
             {
-                return JsonDic.Dictionary[playerIndex].Dictionary[key];
+                return JsonDic.Dictionary[playerIndex].Dictionary[saveKey];
             }
 
             return "";
+        }
+        /// <summary>
+        /// 设置玩家按键配置data
+        /// </summary>
+        /// <param name="playerIndex">玩家id</param>
+        /// <param name="saveKey">按键保存Key</param>
+        /// <param name="jsonData">要设置的数据</param>
+        public void SetPlayerKeySet(int playerIndex, string saveKey, string jsonData)
+        {
+            if (JsonDic.Dictionary.ContainsKey(playerIndex) == false)
+            {
+                JsonDic.Dictionary.Add(playerIndex, new Serialized_Dic<string, string>());
+            }
+
+            JsonDic.Dictionary[playerIndex].Dictionary[saveKey] = jsonData;
         }
         /// <summary>
         /// 获取玩家键盘按键配置的文本提示
@@ -41,12 +52,12 @@ namespace KFrame.UI
         /// <param name="playerIndex">玩家id</param>
         /// <param name="key">按键保存Key</param>
         /// <returns>如果找到的话那就返回对应按键的保存data，找不到的话那就返回空</returns>
-        public string GetInputKeyboradSet(int playerIndex, string key)
+        public string GetInputKeyboardSet(int playerIndex, string key)
         {
             string data = GetPlayerKeySet(playerIndex, key);
 
             //找到键盘按键配置
-            int i = data.IndexOf("<Keyboard>/");
+            int i = data.IndexOf("<Keyboard>/", StringComparison.Ordinal);
             //如果没有就返回空
             if (i == -1)
             {
@@ -69,20 +80,6 @@ namespace KFrame.UI
 
                 return res;
             }
-        }
-        /// <summary>
-        /// 设置玩家按键配置data
-        /// </summary>
-        /// <param name="playerIndex">玩家id</param>
-        /// <param name="key">按键保存Key</param>
-        public void SetPlayerKeySet(int playerIndex, string key, string value)
-        {
-            if (JsonDic.Dictionary.ContainsKey(playerIndex) == false)
-            {
-                JsonDic.Dictionary.Add(playerIndex, new Serialized_Dic<string, string>());
-            }
-
-            JsonDic.Dictionary[playerIndex].Dictionary[key] = value;
         }
     }
 }

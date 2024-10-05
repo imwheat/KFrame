@@ -6,6 +6,7 @@
 //*****************************************************
 
 using System;
+using KFrame.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -23,6 +24,11 @@ namespace KFrame.Systems
         /// 所分配到的输入设备序号
         /// </summary>
         public int InputIndex;
+        /// <summary>
+        /// 按键配置MapId
+        /// </summary>
+        [SerializeField]
+        private int inputActionMapId;
 
         #endregion
         
@@ -110,6 +116,7 @@ namespace KFrame.Systems
         protected void OnEnable()
         {
             InputSystem.onActionChange += DetectCurrentInputDevice;
+            ReloadInputOverride();
         }
 
         protected void OnDisable()
@@ -167,7 +174,19 @@ namespace KFrame.Systems
         #endregion
 
         #region 输入配置
-      
+    
+        /// <summary>
+        /// 重新加载按键配置
+        /// </summary>
+        private void ReloadInputOverride()
+        {
+            //遍历每一个按键
+            foreach (var action in InputAction.asset.actionMaps[inputActionMapId])
+            {
+                //获取key
+                string saveKey = action.GetSaveKey();
+            }
+        }
         /// <summary>
         /// 选择性的注册输入事件
         /// </summary>

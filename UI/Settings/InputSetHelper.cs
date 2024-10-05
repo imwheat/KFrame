@@ -8,11 +8,51 @@
 
 using System.Text;
 using KFrame.Utilities;
+using UnityEngine.InputSystem;
 
 namespace KFrame.UI
 {
     public static class InputSetHelper
     {
+        #region 参数设置
+
+        /// <summary>
+        /// 按键保存的key的前缀
+        /// </summary>
+        public const string KeySetSaveKeyPrefix = "keySet_";
+        /// <summary>
+        /// 按键设置数据
+        /// </summary>
+        private static InputSetSaveData inputData;
+
+        #endregion
+
+        #region 按键设置
+        
+        /// <summary>
+        /// 获取玩家的按键设置数据
+        /// </summary>
+        /// <param name="playerIndex">玩家id</param>
+        /// <param name="saveKey">保存的key</param>
+        /// <returns>按键配置数据</returns>
+        public static string GetInputSetData(int playerIndex, string saveKey)
+        {
+            return inputData.GetPlayerKeySet(playerIndex, saveKey);
+        }
+        /// <summary>
+        /// 设置玩家按键配置data
+        /// </summary>
+        /// <param name="playerIndex">玩家id</param>
+        /// <param name="saveKey">按键保存Key</param>
+        /// <param name="jsonData">要设置的数据</param>
+        public static void SetPlayerKeySet(int playerIndex, string saveKey, string jsonData)
+        {
+            inputData.SetPlayerKeySet(playerIndex, saveKey, jsonData);
+        }
+
+        #endregion
+        
+        
         #region 工具方法
         
         /// <summary>
@@ -59,6 +99,15 @@ namespace KFrame.UI
             
             //最后输出文本
             return sb.ToString();
+        }
+        /// <summary>
+        /// 获取保存key
+        /// </summary>
+        /// <param name="action">按键事件</param>
+        /// <returns>保存的key</returns>
+        public static string GetSaveKey(this InputAction action)
+        {
+            return KeySetSaveKeyPrefix + action.name;
         }
 
         #endregion

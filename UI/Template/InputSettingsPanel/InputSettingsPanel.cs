@@ -28,8 +28,11 @@ namespace KFrame.UI
         /// <summary>
         /// 按键保存的key的前缀
         /// </summary>
-        [SerializeField]
-        private string keySetSaveKeyPrefix = "keySet_";
+        private static string KeySetSaveKeyPrefix => InputSetHelper.KeySetSaveKeyPrefix;
+        /// <summary>
+        /// 正在设置按键的玩家id
+        /// </summary>
+        public static int PlayerIndex = 0;
         /// <summary>
         /// 返回按钮
         /// </summary>
@@ -41,12 +44,26 @@ namespace KFrame.UI
         [SerializeField] 
         private KButton resetBtn;
         /// <summary>
+        /// 应用按钮
+        /// </summary>
+        [SerializeField] 
+        private KButton applyBtn;
+        /// <summary>
         /// 按键设置UI数据
         /// </summary>
         [SerializeField]
         private List<InputSetUIData> inputSetUIDatas = new();
         #endregion
 
+        #region UI逻辑
+        
+        /// <summary>
+        /// 进行了按键更改
+        /// </summary>
+        private bool modified;
+
+        #endregion
+        
         #region 编辑器配置参数
 
         #if UNITY_EDITOR
@@ -88,16 +105,54 @@ namespace KFrame.UI
             //按键事件注册
             returnBtn.OnClick.AddListener(OnPressESC);
             resetBtn.OnClick.AddListener(OnClickReset);
+            applyBtn.OnClick.AddListener(OnClickApply);
             //更新数据
             foreach (var uiData in inputSetUIDatas)
             {
                 uiData.bindButton.Data = uiData;
+                uiData.bindButton.SaveBackup();
                 uiData.bindButton.OnSelectEvent.AddListener(OnSelectBtn);
+                uiData.bindButton.OnClick.AddListener(OnRebindKey);
             }
         }
 
-        #region UI事件
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            
+            //取消更改了的标记
+            modified = false;
+        }
+
+        #region UI操作
         
+        /// <summary>
+        /// 关闭ESC关闭
+        /// </summary>
+        public override void OnPressESC()
+        {
+            if (modified)
+            {
+                
+            }
+            else
+            {
+                base.OnPressESC();
+            }
+        }
+
+        #endregion
+
+        #region UI事件
+
+        /// <summary>
+        /// 进行了按键重新设置
+        /// </summary>
+        private void OnRebindKey()
+        {
+            //标记进行了更改
+            modified = true;
+        }
         /// <summary>
         /// 当选择了某个按钮
         /// </summary>
@@ -116,6 +171,37 @@ namespace KFrame.UI
             {
                 uiData.bindButton.ResetKey();
             }
+            
+            //取消更改了的标记
+            modified = false;
+        }
+        /// <summary>
+        /// 当点击了应用设置
+        /// </summary>
+        private void OnClickApply()
+        {
+            //遍历重置按键
+            foreach (var uiData in inputSetUIDatas)
+            {
+                uiData.bindButton.SaveRebind();
+            }
+            
+            //取消更改了的标记
+            modified = false;
+        }
+        /// <summary>
+        /// 取消更改
+        /// </summary>
+        private void CancelModify()
+        {
+            //遍历取消按键配置
+            foreach (var uiData in inputSetUIDatas)
+            {
+                uiData.bindButton.CancelRebind();
+            }
+            
+            //取消更改了的标记
+            modified = false;
         }
 
         #endregion
@@ -153,15 +239,8 @@ namespace KFrame.UI
                     resetBtn.navigation = resetBtn.navigation.ChangeSelectOnUp(button);
                 }
 
-                if (i < inputSetUIDatas.Count - 1)
-                {
-                    button.navigation = button.navigation.ChangeSelectOnDown(inputSetUIDatas[i + 1].bindButton);
-                }
-                else
-                {
-                    button.navigation = button.navigation.ChangeSelectOnDown(returnBtn);
-                }
-                
+                button.navigation = button.navigation.ChangeSelectOnDown(i < inputSetUIDatas.Count - 1 ? inputSetUIDatas[i + 1].bindButton : returnBtn);
+
                 EditorUtility.SetDirty(button);
             }
         }
@@ -176,9 +255,9 @@ namespace KFrame.UI
             foreach (var setUIData in inputSetUIDatas)
             {
                 //如果已经有数据了那就跳过
-                if(config.GetLocalizedText(setUIData.saveKey, LanguageType.SimplifiedChinese) != String.Empty) continue;
+                if(config.GetLocalizedText(setUIData.localizationKey, LanguageType.SimplifiedChinese) != String.Empty) continue;
                 //没有那就添加
-                LocalizationStringData stringData = new LocalizationStringData(setUIData.saveKey);
+                LocalizationStringData stringData = new LocalizationStringData(setUIData.localizationKey);
                 foreach (var language in languages)
                 {
                     stringData.Datas.Add(new LocalizationStringDataBase(language, language == LanguageType.English ? setUIData.bindButton.KeyNameText.text : ""));
@@ -242,7 +321,7 @@ namespace KFrame.UI
                     string name2 = name1 + input.action.bindings[j].name.GetNiceFormat();
                     uiBtn.KeyNameText.text = name2;
                     uiBtn.KeyText.text = input.action.bindings[j].ToDisplayString();
-                    string saveKey = keySetSaveKeyPrefix + name2;
+                    string saveKey = KeySetSaveKeyPrefix + name2;
                     uiObj.name = saveKey;
                     LocalizationEditHelper uiLocalization = uiObj.GetComponent<LocalizationEditHelper>();
                     uiLocalization.Key = saveKey;
@@ -252,7 +331,7 @@ namespace KFrame.UI
                         bindButton = uiBtn,
                         bindInput = input,
                         rebindId = j,
-                        saveKey = saveKey
+                        localizationKey = saveKey
                     };
                     uiBtn.Data = data;
                     
