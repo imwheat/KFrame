@@ -15,6 +15,11 @@ namespace KFrame.UI
     public abstract class LocalizationDataBase
     {
         public string Key;
+
+        public LocalizationDataBase(string key)
+        {
+            Key = key;
+        }
     }
     [System.Serializable]
     public class LocalizationStringDataBase
@@ -37,6 +42,11 @@ namespace KFrame.UI
     public class LocalizationStringData : LocalizationDataBase
     {
         public List<LocalizationStringDataBase> Datas = new();
+
+        public LocalizationStringData(string key) : base(key)
+        {
+            
+        }
         
         #if UNITY_EDITOR
 
@@ -80,6 +90,10 @@ namespace KFrame.UI
     {
         public List<LocalizationImageDataBase> Datas = new();
         
+        public LocalizationImageData(string key) : base(key)
+        {
+        }
+        
 #if UNITY_EDITOR
 
         /// <summary>
@@ -99,5 +113,6 @@ namespace KFrame.UI
         }
         
 #endif
+
     }
 }

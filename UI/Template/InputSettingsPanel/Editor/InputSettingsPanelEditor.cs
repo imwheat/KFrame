@@ -29,13 +29,6 @@ namespace KFrame.UI.Editor
                 panel.AutoCreateInputSetUI();
                 EditorUtility.SetDirty(panel);
             }
-            if (GUILayout.Button("自动分配按键导航", GUILayout.Height(30f)))
-            {
-                InputSettingsPanel panel = target as InputSettingsPanel;
-                if(panel == null) return;
-                panel.AutoLinkNavigation();
-                EditorUtility.SetDirty(panel);
-            }
             
             EditorGUILayout.EndVertical();
         }

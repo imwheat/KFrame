@@ -159,11 +159,11 @@ namespace KFrame.UI
             //防空初始化
             if (StringData == null)
             {
-                StringData = new LocalizationStringData();
+                StringData = new LocalizationStringData("");
             }
             if (ImageData == null)
             {
-                ImageData = new LocalizationImageData();
+                ImageData = new LocalizationImageData("");
             }
 
             //获取语言的所有类型

@@ -84,7 +84,7 @@ namespace KFrame.UI
         /// <summary>
         /// 重新绑定按键
         /// </summary>
-        public void RebindKey()
+        private void RebindKey()
         {
             //如果已经在设置了那就先取消
             rebindingOperation?.Cancel();
@@ -111,6 +111,13 @@ namespace KFrame.UI
             rebindingOperation.Start();
             KeyText.text = "...";
 
+        }
+        /// <summary>
+        /// 重置按键
+        /// </summary>
+        public void ResetKey()
+        {
+            
         }
 
         #endregion

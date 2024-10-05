@@ -280,8 +280,7 @@ namespace KFrame.UI.Editor
             EditorGUITool.EndEditTextField();
 
             //新建数据
-            LocalizationStringData data = new LocalizationStringData();
-            data.Key = saveKey;
+            LocalizationStringData data = new LocalizationStringData(saveKey);
             foreach (LanguageType language in languages)
             {
                 data.Datas.Add(new LocalizationStringDataBase(language, languageTexts[language]));
@@ -304,8 +303,7 @@ namespace KFrame.UI.Editor
             }
 
             //新建数据
-            LocalizationImageData data = new LocalizationImageData();
-            data.Key = saveKey;
+            LocalizationImageData data = new LocalizationImageData(saveKey);
             foreach (LanguageType language in languages)
             {
                 data.Datas.Add(new LocalizationImageDataBase(language, languageSprites[language]));

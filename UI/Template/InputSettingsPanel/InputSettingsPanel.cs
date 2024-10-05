@@ -11,10 +11,12 @@ using UnityEditor;
 
 #endif
 
+using System;
 using System.Collections.Generic;
 using KFrame.Utilities;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Object = UnityEngine.Object;
 
 namespace KFrame.UI
 {
@@ -33,6 +35,11 @@ namespace KFrame.UI
         /// </summary>
         [SerializeField] 
         private KButton returnBtn;
+        /// <summary>
+        /// 重置按钮
+        /// </summary>
+        [SerializeField] 
+        private KButton resetBtn;
         /// <summary>
         /// 按键设置UI数据
         /// </summary>
@@ -80,12 +87,38 @@ namespace KFrame.UI
             
             //按键事件注册
             returnBtn.OnClick.AddListener(OnPressESC);
+            resetBtn.OnClick.AddListener(OnClickReset);
             //更新数据
             foreach (var uiData in inputSetUIDatas)
             {
                 uiData.bindButton.Data = uiData;
+                uiData.bindButton.OnSelectEvent.AddListener(OnSelectBtn);
             }
         }
+
+        #region UI事件
+        
+        /// <summary>
+        /// 当选择了某个按钮
+        /// </summary>
+        private void OnSelectBtn(KSelectable selectable)
+        {
+            //把滚轮的左选项改为该选项
+            panelScrollBar.navigation = panelScrollBar.navigation.ChangeSelectOnLeft(selectable);
+        }
+        /// <summary>
+        /// 当点击了重置设置
+        /// </summary>
+        private void OnClickReset()
+        {
+            //遍历重置按键
+            foreach (var uiData in inputSetUIDatas)
+            {
+                uiData.bindButton.ResetKey();
+            }
+        }
+
+        #endregion
 
         #region 编辑器配置使用
 
@@ -99,6 +132,59 @@ namespace KFrame.UI
         private Vector2 GetUILayoutPos(int index)
         {
             return new Vector2(keySetUIOrigin.x, keySetUIOrigin.y - keySetUIInterval * index);
+        }
+        /// <summary>
+        /// 一键配置导航
+        /// </summary>
+        private void AutoLinkNavigation()
+        {
+            //遍历设置导航
+            for (int i = 0; i < inputSetUIDatas.Count; i++)
+            {
+                KButton button = inputSetUIDatas[i].bindButton;
+                button.navigation.ChangeSelectOnRight(panelScrollBar);
+                if (i > 0)
+                {
+                    button.navigation = button.navigation.ChangeSelectOnUp(inputSetUIDatas[i - 1].bindButton);
+                }
+                else
+                {
+                    returnBtn.navigation = returnBtn.navigation.ChangeSelectOnUp(button);
+                    resetBtn.navigation = resetBtn.navigation.ChangeSelectOnUp(button);
+                }
+
+                if (i < inputSetUIDatas.Count - 1)
+                {
+                    button.navigation = button.navigation.ChangeSelectOnDown(inputSetUIDatas[i + 1].bindButton);
+                }
+                else
+                {
+                    button.navigation = button.navigation.ChangeSelectOnDown(returnBtn);
+                }
+                
+                EditorUtility.SetDirty(button);
+            }
+        }
+        /// <summary>
+        /// 自动配置本地化
+        /// </summary>
+        private void AutoSetLocalizationConfig()
+        {
+            //获取本地化配置
+            LocalizationConfig config = LocalizationConfig.Instance;
+            var languages = EnumExtensions.GetValues<LanguageType>();
+            foreach (var setUIData in inputSetUIDatas)
+            {
+                //如果已经有数据了那就跳过
+                if(config.GetLocalizedText(setUIData.saveKey, LanguageType.SimplifiedChinese) != String.Empty) continue;
+                //没有那就添加
+                LocalizationStringData stringData = new LocalizationStringData(setUIData.saveKey);
+                foreach (var language in languages)
+                {
+                    stringData.Datas.Add(new LocalizationStringDataBase(language, language == LanguageType.English ? setUIData.bindButton.KeyNameText.text : ""));
+                }
+                config.SaveStringData(stringData);
+            }
         }
         /// <summary>
         /// 一键创建按键设置UI
@@ -175,28 +261,10 @@ namespace KFrame.UI
                 }
 
             }
-        }
-        /// <summary>
-        /// 一键配置导航
-        /// </summary>
-        public void AutoLinkNavigation()
-        {
-            //遍历设置导航
-            for (int i = 0; i < inputSetUIDatas.Count; i++)
-            {
-                KButton button = inputSetUIDatas[i].bindButton;
-                if (i > 0)
-                {
-                    button.navigation = button.navigation.ChangeSelectOnUp(inputSetUIDatas[i - 1].bindButton);
-                }
 
-                if (i < inputSetUIDatas.Count - 1)
-                {
-                    button.navigation = button.navigation.ChangeSelectOnDown(inputSetUIDatas[i + 1].bindButton);
-                }
-                
-                EditorUtility.SetDirty(button);
-            }
+            //配置其他参数
+            AutoLinkNavigation();
+            AutoSetLocalizationConfig();
         }
         
         #endif

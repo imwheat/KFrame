@@ -273,4 +273,54 @@ MonoBehaviour:
       Text: Off
     - Language: 3
       Text: "\u30AA\u30D5"
+  - Key: keySet_MoveUp
+    Datas:
+    - Language: 0
+      Text: "\u4E0A"
+    - Language: 1
+      Text: "\u4E0A"
+    - Language: 2
+      Text: Up
+    - Language: 3
+      Text: "\u4E0A"
+  - Key: keySet_MoveDown
+    Datas:
+    - Language: 0
+      Text: "\u4E0B"
+    - Language: 1
+      Text: "\u4E0B"
+    - Language: 2
+      Text: Down
+    - Language: 3
+      Text: "\u4E0B"
+  - Key: keySet_MoveLeft
+    Datas:
+    - Language: 0
+      Text: "\u5DE6"
+    - Language: 1
+      Text: "\u5DE6"
+    - Language: 2
+      Text: Left
+    - Language: 3
+      Text: "\u5DE6"
+  - Key: keySet_MoveRight
+    Datas:
+    - Language: 0
+      Text: "\u53F3"
+    - Language: 1
+      Text: "\u53F3"
+    - Language: 2
+      Text: Right
+    - Language: 3
+      Text: "\u53F3"
+  - Key: keySet_Interact
+    Datas:
+    - Language: 0
+      Text: "\u4EA4\u4E92"
+    - Language: 1
+      Text: "\u4EA4\u4E92"
+    - Language: 2
+      Text: Interact
+    - Language: 3
+      Text: "\u64CD\u4F5C"
   ImageDatas: []

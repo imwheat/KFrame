@@ -281,9 +281,8 @@ namespace KFrame.UI
             }
             else
             {
-                data = new LocalizationStringData();
+                data = new LocalizationStringData(stringData.Key);
                 data.CopyData(stringData);
-                data.Key = stringData.Key;
                 TextDataDic[data.Key] = data;
                 TextDatas.Add(data);
             }
@@ -305,9 +304,8 @@ namespace KFrame.UI
             }
             else
             {
-                data = new LocalizationImageData();
+                data = new LocalizationImageData(imageData.Key);
                 data.CopyData(imageData);
-                data.Key = imageData.Key;
                 ImgDataDic[data.Key] = data;
                 ImageDatas.Add(data);
             }

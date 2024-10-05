@@ -39,6 +39,11 @@ namespace KFrame.UI
         [SerializeField]
         protected Selectable defaultSelection;
         /// <summary>
+        /// UI面板的ScrollBar
+        /// </summary>
+        [SerializeField]
+        protected KScrollbar panelScrollBar;
+        /// <summary>
         /// UI面板的默认选项
         /// </summary>
         public Selectable DefaultSelection => defaultSelection;
