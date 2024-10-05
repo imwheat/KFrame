@@ -101,15 +101,40 @@ namespace KFrame.Utilities
         public static string ConnectWords(this string input)
         {
             StringBuilder stringBuilder = new StringBuilder();
-            for (int i = 0; i < input.Length; i++)
+            foreach (var c in input)
             {
-                char c = input[i];
                 //如果是空格就跳过
                 if(c == ' ') continue;
                 stringBuilder.Append(c);
             }
 
             return stringBuilder.ToString();
+        }
+        /// <summary>
+        /// 把一个单词调整好格式，去掉空格，首字母大写
+        /// </summary>
+        /// <param name="input">原文本</param>
+        /// <returns>"  asd "=>"Asd"</returns>
+        public static string GetNiceFormat(this string input)
+        {
+            StringBuilder sb = new StringBuilder();
+            bool firstCharacter = true;
+            foreach (var c in input)
+            {
+                //如果是空格就跳过
+                if(c == ' ') continue;
+                if (firstCharacter && !Char.IsUpper(c))
+                {
+                    sb.Append(Char.ToUpper(c));
+                }
+                else
+                {
+                    sb.Append(c);
+                }
+                firstCharacter = false;
+            }
+
+            return sb.ToString();
         }
 
         /// <summary>

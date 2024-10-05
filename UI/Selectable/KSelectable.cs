@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using KFrame;
 using KFrame.Utilities;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -53,6 +54,24 @@ namespace KFrame.UI
                     OnSetProperty();
                 }
             }
+        }
+        /// <summary>
+        /// 选择事件
+        /// </summary>
+        [Serializable]
+        public class SelectableSelectEvent : UnityEvent<KSelectable> {}
+        /// <summary>
+        /// 选择事件
+        /// </summary>
+        [SerializeField]
+        private SelectableSelectEvent onSelect = new SelectableSelectEvent();
+        /// <summary>
+        /// 选择事件
+        /// </summary>
+        public SelectableSelectEvent OnSelectEvent
+        {
+            get => onSelect;
+            set => onSelect = value;
         }
 
         #region 生命周期
@@ -108,6 +127,7 @@ namespace KFrame.UI
             
             //选择当前UI
             UISelectSystem.SelectUI(this);
+            onSelect.Invoke(this);
         }
         /// <summary>
         /// 当被取消选择的时候调用
