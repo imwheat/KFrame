@@ -323,4 +323,34 @@ MonoBehaviour:
       Text: Interact
     - Language: 3
       Text: "\u64CD\u4F5C"
+  - Key: ui_InputSettingsPanel_Content
+    Datas:
+    - Language: 0
+      Text: "\u4FDD\u5B58\u8BBE\u7F6E\uFF1F"
+    - Language: 1
+      Text: "\u4FDD\u5B58\u8A2D\u7F6E\uFF1F"
+    - Language: 2
+      Text: Save Settings ?
+    - Language: 3
+      Text: "\u4FDD\u5B58\u8A2D\u5B9A\uFF1F"
+  - Key: ui_InputSettingsPanel_Confirm
+    Datas:
+    - Language: 0
+      Text: "\u786E\u8BA4"
+    - Language: 1
+      Text: "\u78BA\u8A8D"
+    - Language: 2
+      Text: Save
+    - Language: 3
+      Text: "\u306F\u3044"
+  - Key: ui_InputSettingsPanel_Cancel
+    Datas:
+    - Language: 0
+      Text: "\u53D6\u6D88"
+    - Language: 1
+      Text: "\u53D6\u6D88"
+    - Language: 2
+      Text: Cancel
+    - Language: 3
+      Text: "\u3044\u3044\u3048"
   ImageDatas: []

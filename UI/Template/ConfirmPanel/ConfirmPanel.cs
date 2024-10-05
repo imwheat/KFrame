@@ -6,6 +6,7 @@
 //*******************************************************
 
 using System;
+using TMPro;
 using UnityEngine;
 
 namespace KFrame.UI
@@ -26,6 +27,11 @@ namespace KFrame.UI
         /// </summary>
         [SerializeField] 
         private KButton confirmBtn;
+        /// <summary>
+        /// 显示内容文本
+        /// </summary>
+        [SerializeField]
+        private TMP_Text contentText;
         
         
         #endregion
@@ -60,6 +66,20 @@ namespace KFrame.UI
             
             onCancel?.Invoke();
             ClearActions();
+        }
+        /// <summary>
+        /// 显示确认面板
+        /// </summary>
+        /// <param name="switchPanelKey">关闭后切换的面板</param>
+        /// <param name="contentKey">显示内容的key</param>
+        /// <param name="confirmKey">确认的key</param>
+        /// <param name="cancelKey">取消的key</param>
+        /// <param name="cancelAction">取消事件</param>
+        /// <param name="confirmAction">确认事件</param>
+        public static void ShowPanel(string switchPanelKey, string contentKey, string confirmKey, string cancelKey,
+            Action cancelAction, Action confirmAction)
+        {
+            
         }
 
         #endregion
