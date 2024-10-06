@@ -180,11 +180,10 @@ namespace KFrame.Systems
         /// </summary>
         private void ReloadInputOverride()
         {
-            //遍历每一个按键
+            //遍历每一个按键，然后读取数据
             foreach (var action in InputAction.asset.actionMaps[inputActionMapId])
             {
-                //获取key
-                string saveKey = action.GetSaveKey();
+                action.LoadKeySet(InputIndex);
             }
         }
         /// <summary>

@@ -97,7 +97,6 @@ GameObject:
   - component: {fileID: 4936834505012583040}
   - component: {fileID: 339644227230752520}
   - component: {fileID: 3750223826541725898}
-  - component: {fileID: 3126025498738445581}
   m_Layer: 5
   m_Name: Cancel
   m_TagString: Untagged
@@ -270,43 +269,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &3126025498738445581
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1062315954327309822}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  key: ui_InputSettingsPanel_Cancel
-  Parent: {fileID: 8948553345444555143}
-  target: {fileID: 339644227230752520}
-  StringData:
-    Key: ui_InputSettings_Cancel
-    Datas:
-    - Language: 0
-      Text: "\u53D6\u6D88"
-    - Language: 1
-      Text: "\u53D6\u6D88"
-    - Language: 2
-      Text: Cancel
-    - Language: 3
-      Text: "\u3044\u3044\u3048"
-  ImageData:
-    Key: 
-    Datas:
-    - Language: 0
-      Sprite: {fileID: 0}
-    - Language: 1
-      Sprite: {fileID: 0}
-    - Language: 2
-      Sprite: {fileID: 0}
-    - Language: 3
-      Sprite: {fileID: 0}
 --- !u!1 &1751545289541801321
 GameObject:
   m_ObjectHideFlags: 0
@@ -398,7 +360,6 @@ GameObject:
   - component: {fileID: 1267659022792735235}
   - component: {fileID: 2293480596777025119}
   - component: {fileID: 2456502765881022243}
-  - component: {fileID: 2401174101271165612}
   m_Layer: 5
   m_Name: Confirm
   m_TagString: Untagged
@@ -571,43 +532,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &2401174101271165612
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3944714054216207312}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  key: ui_InputSettingsPanel_Confirm
-  Parent: {fileID: 8948553345444555143}
-  target: {fileID: 2293480596777025119}
-  StringData:
-    Key: ui_InputSettings_Confirm
-    Datas:
-    - Language: 0
-      Text: "\u786E\u8BA4"
-    - Language: 1
-      Text: "\u78BA\u8A8D"
-    - Language: 2
-      Text: Save
-    - Language: 3
-      Text: "\u306F\u3044"
-  ImageData:
-    Key: 
-    Datas:
-    - Language: 0
-      Sprite: {fileID: 0}
-    - Language: 1
-      Sprite: {fileID: 0}
-    - Language: 2
-      Sprite: {fileID: 0}
-    - Language: 3
-      Sprite: {fileID: 0}
 --- !u!1 &5620435341534309027
 GameObject:
   m_ObjectHideFlags: 0
@@ -768,7 +692,6 @@ GameObject:
   - component: {fileID: 6536621844010156013}
   - component: {fileID: 5100246935693326354}
   - component: {fileID: 4280923935095751412}
-  - component: {fileID: 7334403863203716588}
   m_Layer: 5
   m_Name: ContentText
   m_TagString: Untagged
@@ -893,43 +816,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &7334403863203716588
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8529389563506009102}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  key: ui_InputSettingsPanel_Content
-  Parent: {fileID: 8948553345444555143}
-  target: {fileID: 4280923935095751412}
-  StringData:
-    Key: ui_InputSettings_Content
-    Datas:
-    - Language: 0
-      Text: "\u4FDD\u5B58\u8BBE\u7F6E\uFF1F"
-    - Language: 1
-      Text: "\u4FDD\u5B58\u8A2D\u7F6E\uFF1F"
-    - Language: 2
-      Text: Save Settings ?
-    - Language: 3
-      Text: "\u4FDD\u5B58\u8A2D\u5B9A\uFF1F"
-  ImageData:
-    Key: 
-    Datas:
-    - Language: 0
-      Sprite: {fileID: 0}
-    - Language: 1
-      Sprite: {fileID: 0}
-    - Language: 2
-      Sprite: {fileID: 0}
-    - Language: 3
-      Sprite: {fileID: 0}
 --- !u!1 &9071925823465985299
 GameObject:
   m_ObjectHideFlags: 0
@@ -1024,3 +910,5 @@ MonoBehaviour:
   cancelBtn: {fileID: 3750223826541725898}
   confirmBtn: {fileID: 2456502765881022243}
   contentText: {fileID: 4280923935095751412}
+  confirmText: {fileID: 2293480596777025119}
+  cancelText: {fileID: 339644227230752520}

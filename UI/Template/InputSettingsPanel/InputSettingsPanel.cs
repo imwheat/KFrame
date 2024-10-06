@@ -110,7 +110,6 @@ namespace KFrame.UI
             foreach (var uiData in inputSetUIDatas)
             {
                 uiData.bindButton.Data = uiData;
-                uiData.bindButton.SaveBackup();
                 uiData.bindButton.OnSelectEvent.AddListener(OnSelectBtn);
                 uiData.bindButton.OnClick.AddListener(OnRebindKey);
             }
@@ -120,6 +119,12 @@ namespace KFrame.UI
         {
             base.OnEnable();
             
+            //更新数据和UI
+            foreach (var uiData in inputSetUIDatas)
+            {
+                uiData.bindButton.SaveBackup();
+                uiData.bindButton.UpdateUI();
+            }
             //取消更改了的标记
             modified = false;
         }
@@ -133,7 +138,7 @@ namespace KFrame.UI
         {
             if (modified)
             {
-                
+                ConfirmPanel.SwitchToConfirmPanel(this, CancelModify, OnClickApply);
             }
             else
             {
@@ -180,6 +185,9 @@ namespace KFrame.UI
         /// </summary>
         private void OnClickApply()
         {
+            //如果没有更改，那点击了没有用
+            if(!modified) return;
+            
             //遍历重置按键
             foreach (var uiData in inputSetUIDatas)
             {

@@ -23,7 +23,7 @@ namespace KFrame.UI
         /// <summary>
         /// 按键设置数据
         /// </summary>
-        private static InputSetSaveData inputData;
+        private static InputSetSaveData InputData => UISystem.Settings.InputData;
 
         #endregion
 
@@ -37,7 +37,7 @@ namespace KFrame.UI
         /// <returns>按键配置数据</returns>
         public static string GetInputSetData(int playerIndex, string saveKey)
         {
-            return inputData.GetPlayerKeySet(playerIndex, saveKey);
+            return InputData.GetPlayerKeySet(playerIndex, saveKey);
         }
         /// <summary>
         /// 设置玩家按键配置data
@@ -47,7 +47,16 @@ namespace KFrame.UI
         /// <param name="jsonData">要设置的数据</param>
         public static void SetPlayerKeySet(int playerIndex, string saveKey, string jsonData)
         {
-            inputData.SetPlayerKeySet(playerIndex, saveKey, jsonData);
+            InputData.SetPlayerKeySet(playerIndex, saveKey, jsonData);
+        }
+        /// <summary>
+        /// 读取玩家按键设置数据
+        /// </summary>
+        /// <param name="action">按键事件</param>
+        /// <param name="playerIndex">玩家id</param>
+        public static void LoadKeySet(this InputAction action, int playerIndex)
+        {
+            action.LoadBindingOverridesFromJson(GetInputSetData(playerIndex, GetSaveKey(action)));
         }
 
         #endregion

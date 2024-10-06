@@ -70,7 +70,7 @@ namespace KFrame.UI
         /// <summary>
         /// 更新UI
         /// </summary>
-        private void UpdateUI()
+        public void UpdateUI()
         {
             //防空
             if (actionToRebind.bindings.Count == 0) return;
@@ -123,6 +123,7 @@ namespace KFrame.UI
         {
             actionToRebind.RemoveBindingOverride(id);
             SaveRebind();
+            UpdateUI();
         }
         /// <summary>
         /// 取消重新绑定
