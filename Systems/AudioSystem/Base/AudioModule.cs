@@ -134,7 +134,7 @@ namespace KFrame.Systems
             {
                 if (UISetPropertyUtility.SetStruct(ref uiGroup.Volume, value))
                 {
-                    sfxGroup.UpdateVolume(value);
+                    uiGroup.UpdateVolume(value);
                 }
             }
         }

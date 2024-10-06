@@ -22,12 +22,17 @@ namespace KFrame.UI
         /// 音乐音量
         /// </summary>
         public float BGMVolume;
+        /// <summary>
+        /// UI音量
+        /// </summary>
+        public float UIVolume;
 
         public AudioSettingsData()
         {
             MasterVolume = 1f;
             SFXVolume = 1f;
             BGMVolume = 1f;
+            UIVolume = 1f;
         }
 
         /// <summary>
@@ -47,6 +52,7 @@ namespace KFrame.UI
             MasterVolume = other.MasterVolume;
             SFXVolume = other.SFXVolume;
             BGMVolume = other.BGMVolume;
+            UIVolume = other.UIVolume;
         }
         /// <summary>
         /// 恢复默认设置

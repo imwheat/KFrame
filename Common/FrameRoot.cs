@@ -67,15 +67,17 @@ namespace KFrame
 
         private void InitSystems()
         {
-            PoolSystem.Init();
-            EventBroadCastSystem.Init();
-            MonoSystem.Init();
             SaveSystem.Init();
             GameSaveSystem.Init();
-            LocalizationSystem.Init();
-            UISystem.Init();
-            KInputSystem.Init();
+            PoolSystem.Init();
+            MonoSystem.Init();
             AudioSystem.Init();
+            EventBroadCastSystem.Init();
+            LocalizationSystem.Init();
+            KInputSystem.Init();
+            
+            //UI初始化放最后，需要加载一些数据
+            UISystem.Init();
         }
 
         #region GamePlayer

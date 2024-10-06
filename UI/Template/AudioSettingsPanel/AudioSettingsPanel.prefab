@@ -86,6 +86,9 @@ MonoBehaviour:
   - {fileID: 5775512175478622136}
   - {fileID: 1360990258956062237}
   - {fileID: 4594264537302089116}
+  onSelect:
+    m_PersistentCalls:
+      m_Calls: []
   m_FillRect: {fileID: 3177756456378061300}
   m_HandleRect: {fileID: 5386208606809112255}
   m_Direction: 0
@@ -208,7 +211,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 16
+  m_PixelsPerUnitMultiplier: 4
 --- !u!1 &349084642500682938
 GameObject:
   m_ObjectHideFlags: 0
@@ -609,6 +612,9 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 339644227230752520}
   m_TargetGraphics: []
+  onSelect:
+    m_PersistentCalls:
+      m_Calls: []
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -829,7 +835,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: 741650b21f5451d4eb0bc8855ca190a3, type: 3}
-  m_Type: 0
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -837,7 +843,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 16
+  m_PixelsPerUnitMultiplier: 4
 --- !u!1 &1385576287453157847
 GameObject:
   m_ObjectHideFlags: 0
@@ -1125,7 +1131,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: 741650b21f5451d4eb0bc8855ca190a3, type: 3}
-  m_Type: 0
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -1133,7 +1139,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 16
+  m_PixelsPerUnitMultiplier: 4
 --- !u!1 &1713576391687903206
 GameObject:
   m_ObjectHideFlags: 0
@@ -1209,7 +1215,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 16
+  m_PixelsPerUnitMultiplier: 4
 --- !u!1 &1751545289541801321
 GameObject:
   m_ObjectHideFlags: 0
@@ -1510,6 +1516,9 @@ MonoBehaviour:
   - {fileID: 2677065276011673606}
   - {fileID: 7938107428313559509}
   - {fileID: 3429562627362676427}
+  onSelect:
+    m_PersistentCalls:
+      m_Calls: []
   m_FillRect: {fileID: 5058034593815176030}
   m_HandleRect: {fileID: 6452683103514896776}
   m_Direction: 0
@@ -2150,7 +2159,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 16
+  m_PixelsPerUnitMultiplier: 4
 --- !u!1 &4786908129451691977
 GameObject:
   m_ObjectHideFlags: 0
@@ -2255,7 +2264,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: 741650b21f5451d4eb0bc8855ca190a3, type: 3}
-  m_Type: 0
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -2263,7 +2272,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 16
+  m_PixelsPerUnitMultiplier: 4
 --- !u!1 &5206004857362766280
 GameObject:
   m_ObjectHideFlags: 0
@@ -2468,7 +2477,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 16
+  m_PixelsPerUnitMultiplier: 4
 --- !u!1 &5620435341534309027
 GameObject:
   m_ObjectHideFlags: 0
@@ -2649,7 +2658,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: 741650b21f5451d4eb0bc8855ca190a3, type: 3}
-  m_Type: 0
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -2657,7 +2666,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 16
+  m_PixelsPerUnitMultiplier: 4
 --- !u!1 &6502712792036738797
 GameObject:
   m_ObjectHideFlags: 0
@@ -2790,6 +2799,9 @@ MonoBehaviour:
   - {fileID: 2478424223234271965}
   - {fileID: 2027168641502729404}
   - {fileID: 1067901625924246756}
+  onSelect:
+    m_PersistentCalls:
+      m_Calls: []
   m_FillRect: {fileID: 6813921447745902292}
   m_HandleRect: {fileID: 6790240976479954359}
   m_Direction: 0
@@ -3671,6 +3683,9 @@ MonoBehaviour:
   - {fileID: 7510850537557830168}
   - {fileID: 7166335102470919267}
   - {fileID: 4030548946907550654}
+  onSelect:
+    m_PersistentCalls:
+      m_Calls: []
   m_FillRect: {fileID: 4340466597362625003}
   m_HandleRect: {fileID: 8481090160148312150}
   m_Direction: 0
@@ -3775,6 +3790,7 @@ MonoBehaviour:
   - Key: ui_SFXVolume
     Component: {fileID: 4163835303464130052}
   defaultSelection: {fileID: 6483034134615136671}
+  panelScrollBar: {fileID: 0}
   anim: {fileID: 6881628761190842014}
   closeAnimTrigger: close
   returnBtn: {fileID: 3750223826541725898}

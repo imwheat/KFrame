@@ -347,20 +347,20 @@ namespace KFrame.UI
         /// 尝试获取窗口
         /// </summary>
         /// <param name="uiKey"></param>
-        public static bool TryGetUI(string uiKey, out UIBase window)
+        public static bool TryGetUI(string uiKey, out UIBase ui)
         {
-            window = GetUI(uiKey);
-            return window != null;
+            ui = GetUI(uiKey);
+            return ui != null;
         }
 
         /// <summary>
         /// 尝试获取窗口
         /// </summary>
         /// <param name="uiKey"></param>
-        public static bool TryGetUI<T>(string uiKey, out T window) where T : UIBase
+        public static bool TryGetUI<T>(string uiKey, out T ui) where T : UIBase
         {
-            window = GetUI<T>(uiKey);
-            return window != null;
+            ui = GetUI<T>(uiKey);
+            return ui != null;
         }
 
         /// <summary>
@@ -493,6 +493,10 @@ namespace KFrame.UI
                 Settings = new UISettingsSave();
                 return;
             }
+            
+            AudioSetHelper.LoadAudioSettings();
+            GameSetHelper.LoadGameSettings();
+            GraphicSetHelper.LoadGraphicSettings();
         }
 
         /// <summary>

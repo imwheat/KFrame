@@ -64,6 +64,8 @@ namespace KFrame.UI
         
         #endregion
 
+        #region 生命周期
+
         protected override void Awake()
         {
             base.Awake();
@@ -76,6 +78,26 @@ namespace KFrame.UI
             returnBtn.OnClick.AddListener(OnPressESC);
         }
 
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            
+            UpdateUI();
+        }
+
+        #endregion
+    
+        /// <summary>
+        /// 更新UI
+        /// </summary>
+        private void UpdateUI()
+        {
+            masterVolumeSlider.value = AudioSystem.MasterVolume;
+            sfxVolumeSlider.value = AudioSystem.SFXVolume;
+            bgmVolumeSlider.value = AudioSystem.BGMVolume;
+            uiVolumeSlider.value = AudioSystem.UIVolume;
+        }
+
         #region UI事件
 
         /// <summary>
@@ -84,7 +106,7 @@ namespace KFrame.UI
         /// <param name="v">音量</param>
         private void UpdateMasterVolume(float v)
         {
-            AudioSystem.MasterVolume = v;
+            AudioSetHelper.SetMasterVolume(v);
             masterVolumePercentText.text = (v * 100).ToString("F0") + "%";
         }
         /// <summary>
@@ -93,7 +115,7 @@ namespace KFrame.UI
         /// <param name="v">音量</param>
         private void UpdateSFXVolume(float v)
         {
-            AudioSystem.MasterVolume = v;
+            AudioSetHelper.SetSFXVolume(v);
             sfxVolumePercentText.text = (v * 100).ToString("F0") + "%";
         }
         /// <summary>
@@ -102,7 +124,7 @@ namespace KFrame.UI
         /// <param name="v">音量</param>
         private void UpdateBGMVolume(float v)
         {
-            AudioSystem.BGMVolume = v;
+            AudioSetHelper.SetBGMVolume(v);
             bgmVolumePercentText.text = (v * 100).ToString("F0") + "%";
         }
         /// <summary>
@@ -111,7 +133,7 @@ namespace KFrame.UI
         /// <param name="v">音量</param>
         private void UpdateUIVolume(float v)
         {
-            AudioSystem.UIVolume = v;
+            AudioSetHelper.SetUIVolume(v);
             uiVolumePercentText.text = (v * 100).ToString("F0") + "%";
         }
 

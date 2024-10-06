@@ -56,6 +56,25 @@ namespace KFrame.UI
             AudioSystem.SFXVolume = value;
             CurSettingsData.SFXVolume = value;
         }
+        /// <summary>
+        /// 设置UI音量
+        /// </summary>
+        /// <param name="value">音量</param>
+        public static void SetUIVolume(float value)
+        {
+            AudioSystem.UIVolume = value;
+            CurSettingsData.UIVolume = value;
+        }
+        /// <summary>
+        /// 加载音效设置
+        /// </summary>
+        public static void LoadAudioSettings()
+        {
+            AudioSystem.MasterVolume = CurSettingsData.MasterVolume;
+            AudioSystem.BGMVolume = CurSettingsData.BGMVolume;
+            AudioSystem.SFXVolume = CurSettingsData.SFXVolume;
+            AudioSystem.UIVolume = CurSettingsData.UIVolume;
+        }
     }
 }
 

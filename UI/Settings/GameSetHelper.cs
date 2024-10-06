@@ -46,6 +46,11 @@ namespace KFrame.UI
             CurSettingsData.Language = languageType;
             LocalizationSystem.LanguageType = languageType;
         }
+
+        public static void LoadGameSettings()
+        {
+            LocalizationSystem.LanguageType = CurSettingsData.Language;
+        }
     }
 }
 
