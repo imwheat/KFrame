@@ -32,6 +32,9 @@ namespace KFrame.UI
         {
             base.Awake();
             
+            //更新值
+            languageButton.SetValue((int)LocalizationSystem.LanguageType, false);
+            
             //按键事件注册
             returnBtn.OnClick.AddListener(OnPressESC);
             languageButton.OnClick.AddListener(SwitchLanguage);
@@ -42,7 +45,7 @@ namespace KFrame.UI
         /// <param name="v">语言的值</param>
         private void SwitchLanguage(int v)
         {
-            LocalizationSystem.LanguageType = (LanguageType)v;
+            GameSetHelper.SetLanguage((LanguageType)v);
         }
     }
 }

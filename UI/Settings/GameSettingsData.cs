@@ -9,6 +9,7 @@ using KFrame.Systems;
 
 namespace KFrame.UI
 {
+    [System.Serializable]
     public class GameSettingsData
     {
         /// <summary>

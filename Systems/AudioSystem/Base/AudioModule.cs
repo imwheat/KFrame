@@ -19,23 +19,23 @@ namespace KFrame.Systems
         /// <summary>
         /// MasterMixerGroup
         /// </summary>
-        [SerializeField, LabelText("MasterMixerGroup")]
-        private AudioMixerGroup masterMixerGroup;
+        [SerializeField, LabelText("MasterMixerGroupId")]
+        private int masterMixerGroupIndex = 0;
         /// <summary>
         /// BGMMixerGroup
         /// </summary>
-        [SerializeField, LabelText("BGMMixerGroup")]
-        private AudioMixerGroup bgmMixerGroup;
+        [SerializeField, LabelText("BGMMixerGroupId")]
+        private int bgmMixerGroupIndex = 1;
         /// <summary>
         /// SFXMixerGroup
         /// </summary>
-        [SerializeField, LabelText("SFXMixerGroup")]
-        private AudioMixerGroup sfxMixerGroup;
+        [SerializeField, LabelText("SFXMixerGroupId")]
+        private int sfxMixerGroupIndex = 2;
         /// <summary>
         /// UIMixerGroup
         /// </summary>
-        [SerializeField, LabelText("uiMixerGroup")]
-        private AudioMixerGroup uiMixerGroup;
+        [SerializeField, LabelText("uiMixerGroupId")]
+        private int uiMixerGroupIndex = 3;
         /// <summary>
         /// UIGroup
         /// </summary>
@@ -92,7 +92,7 @@ namespace KFrame.Systems
         /// </summary>
         public float MasterlVolume
         {
-            get => masterGroup.CurVolume;
+            get => masterGroup.Volume;
             set
             {
                 if (UISetPropertyUtility.SetStruct(ref masterGroup.Volume, value))
@@ -106,7 +106,7 @@ namespace KFrame.Systems
         /// </summary>
         public float BGMVolume
         {
-            get => bgmGroup.CurVolume;
+            get => bgmGroup.Volume;
             set
             {
                 if (UISetPropertyUtility.SetStruct(ref bgmGroup.Volume, value))
@@ -118,7 +118,7 @@ namespace KFrame.Systems
 
         public float SFXVolume
         {
-            get => sfxGroup.CurVolume;
+            get => sfxGroup.Volume;
             set
             {
                 if (UISetPropertyUtility.SetStruct(ref sfxGroup.Volume, value))
@@ -129,7 +129,7 @@ namespace KFrame.Systems
         }
         public float UIVolume
         {
-            get => uiGroup.CurVolume;
+            get => uiGroup.Volume;
             set
             {
                 if (UISetPropertyUtility.SetStruct(ref uiGroup.Volume, value))
@@ -157,10 +157,10 @@ namespace KFrame.Systems
             m_AudioPlayingDic = new Dictionary<int, List<AudioPlay>>();
             
             //初始化Group
-            masterGroup = AudioDic.GetAudioGroup(masterMixerGroup);
-            bgmGroup = AudioDic.GetAudioGroup(bgmMixerGroup);
-            sfxGroup = AudioDic.GetAudioGroup(sfxMixerGroup);
-            uiGroup = AudioDic.GetAudioGroup(uiMixerGroup);
+            masterGroup = AudioDic.GetAudioGroup(masterMixerGroupIndex);
+            bgmGroup = AudioDic.GetAudioGroup(bgmMixerGroupIndex);
+            sfxGroup = AudioDic.GetAudioGroup(sfxMixerGroupIndex);
+            uiGroup = AudioDic.GetAudioGroup(uiMixerGroupIndex);
             
             //防空
             if(bgmPlayer==null)

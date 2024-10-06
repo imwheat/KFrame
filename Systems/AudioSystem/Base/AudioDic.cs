@@ -16,6 +16,8 @@ namespace KFrame.Systems
         private static AudioLibrary audioLibrary;
         private static bool inited;
 
+        #region 字典
+
         /// <summary>
         /// 音效字典
         /// </summary>
@@ -30,12 +32,6 @@ namespace KFrame.Systems
         /// 音效分组字典
         /// </summary>
         private static Dictionary<int, AudioGroup> groupDic = new Dictionary<int, AudioGroup>();
-
-        /// <summary>
-        /// 音效分组字典
-        /// </summary>
-        private static Dictionary<AudioMixerGroup, AudioGroup>
-            groupDic2 = new Dictionary<AudioMixerGroup, AudioGroup>();
         
         /// <summary>
         /// 音效混音器分组字典
@@ -52,8 +48,17 @@ namespace KFrame.Systems
         /// </summary>
         private static Dictionary<int, AudioClip> bgmClipDic = new Dictionary<int, AudioClip>();
 
+        #endregion
+
+        #region 编辑器相关
+
 #if UNITY_EDITOR
         
+        /// <summary>
+        /// 音效分组字典
+        /// </summary>
+        private static readonly Dictionary<AudioMixerGroup, AudioGroup>
+            groupDic2 = new Dictionary<AudioMixerGroup, AudioGroup>();
         /// <summary>
         /// 音效Clip对id的字典(编辑器使用)
         /// </summary>
@@ -70,6 +75,10 @@ namespace KFrame.Systems
 
 #endif
 
+        #endregion
+
+        #region 初始化
+
         /// <summary>
         /// 同步初始化
         /// </summary>
@@ -81,7 +90,7 @@ namespace KFrame.Systems
             LoadResult(load);
         }
 
-        private static void LoadResult(AudioLibrary audioLibrary)
+        private static void LoadResult(AudioLibrary audioLib)
         {
             //如果已经初始化过了那就返回
             if (inited) return;
@@ -89,47 +98,49 @@ namespace KFrame.Systems
             try
             {
                 // 资源加载成功，可以在这里进行实例化或其他操作
-                AudioDic.audioLibrary = audioLibrary;
+                audioLibrary = audioLib;
 
                 //注册字典
-                foreach (var cp in audioLibrary.Audioes)
+                foreach (var cp in audioLib.Audioes)
                 {
                     audioDic.Add(cp.AudioIndex, cp);
                 }
 
-                foreach (var bgm in audioLibrary.BGMs)
+                foreach (var bgm in audioLib.BGMs)
                 {
                     bgmDic.Add(bgm.BGMIndex, bgm);
                 }
 
-                for (int i = 0; i < audioLibrary.AudioMixerGroups.Count; i++)
+                for (int i = 0; i < audioLib.AudioMixerGroups.Count; i++)
                 {
-                    mixerGroupDic[i] = audioLibrary.AudioMixerGroups[i];
+                    mixerGroupDic[i] = audioLib.AudioMixerGroups[i];
                 }
 
-                for (int i = 0; i < audioLibrary.AudioClips.Count; i++)
+                for (int i = 0; i < audioLib.AudioClips.Count; i++)
                 {
-                    audioClipDic[i] = audioLibrary.AudioClips[i];
+                    audioClipDic[i] = audioLib.AudioClips[i];
 
 #if UNITY_EDITOR
-                    audioClipIndexDic[audioLibrary.AudioClips[i]] = i;
+                    audioClipIndexDic[audioLib.AudioClips[i]] = i;
 #endif
                     
                 }
 
-                for (int i = 0; i < audioLibrary.BGMClips.Count; i++)
+                for (int i = 0; i < audioLib.BGMClips.Count; i++)
                 {
-                    bgmClipDic[i] = audioLibrary.BGMClips[i];
+                    bgmClipDic[i] = audioLib.BGMClips[i];
                     
 #if UNITY_EDITOR
-                    bgmClipIndexDic[audioLibrary.BGMClips[i]] = i;
+                    bgmClipIndexDic[audioLib.BGMClips[i]] = i;
 #endif
                 }
                 
-                foreach (var group in audioLibrary.AudioGroups)
+                foreach (var group in audioLib.AudioGroups)
                 {
                     groupDic.Add(group.GroupIndex, group);
+#if UNITY_EDITOR
                     groupDic2[GetAudioMixerGroup(group.GroupIndex)] = group;
+#endif
                 }
 
                 inited = true;
@@ -140,15 +151,19 @@ namespace KFrame.Systems
             }
         }
 
-        /// <summary>
+        #endregion
+
+        #region 数据获取
+
+         /// <summary>
         /// 获取音效信息文件
         /// </summary>
         /// <param name="index">音效id</param>
         public static AudioStack GetAudioStack(int index)
         {
-            if (audioDic.ContainsKey(index))
+            if (audioDic.TryGetValue(index, out var audioStack))
             {
-                return audioDic[index];
+                return audioStack;
             }
             else
             {
@@ -164,9 +179,9 @@ namespace KFrame.Systems
         /// <returns></returns>
         public static AudioGroup GetAudioGroup(int index)
         {
-            if (groupDic.ContainsKey(index))
+            if (groupDic.TryGetValue(index, out var group))
             {
-                return groupDic[index];
+                return group;
             }
             else
             {
@@ -192,22 +207,6 @@ namespace KFrame.Systems
                 return null;
             }
         }
-        /// <summary>
-        /// 查找AudioGroup(通过MixerGroup)
-        /// </summary>
-        public static AudioGroup GetAudioGroup(AudioMixerGroup mixerGroup)
-        {
-            //如果字典中有的话就返回
-            if (groupDic2.ContainsKey(mixerGroup))
-            {
-                return groupDic2[mixerGroup];
-            }
-            else
-            {
-                Debug.Log("无法找到对应的Group:" + mixerGroup.name);
-                return null;
-            }
-        }
 
         /// <summary>
         /// 获取所有的AudioGroup
@@ -226,9 +225,9 @@ namespace KFrame.Systems
         public static BGMStack GetBGMStack(int index)
         {
             //如果字典中有的话就返回
-            if (bgmDic.ContainsKey(index))
+            if (bgmDic.TryGetValue(index, out var stack))
             {
-                return bgmDic[index];
+                return stack;
             }
             else
             {
@@ -244,14 +243,7 @@ namespace KFrame.Systems
         public static AudioClip GetAudioClip(int index)
         {
             //如果字典中有的话就返回
-            if (audioClipDic.ContainsKey(index))
-            {
-                return audioClipDic[index];
-            }
-            else
-            {
-                return null;
-            }
+            return audioClipDic.GetValueOrDefault(index);
         }
 
         /// <summary>
@@ -261,15 +253,12 @@ namespace KFrame.Systems
         public static AudioClip GetBGMClip(int index)
         {
             //如果字典中有的话就返回
-            if (bgmClipDic.ContainsKey(index))
-            {
-                return bgmClipDic[index];
-            }
-            else
-            {
-                return null;
-            }
+            return bgmClipDic.GetValueOrDefault(index);
         }
+
+        #endregion
+
+        #region 播放操作
 
         /// <summary>
         /// 播放音效
@@ -312,7 +301,11 @@ namespace KFrame.Systems
             AudioSystem.PlayBGM(bgmStack);
         }
 
+        #endregion
 
+        #region 编辑器配置
+
+        
 #if UNITY_EDITOR
 
         /// <summary>
@@ -325,7 +318,7 @@ namespace KFrame.Systems
             //遍历查找，然后一个个添加
             foreach (int index in indexes)
             {
-                clips.Add(Systems.AudioDic.GetAudioClip(index));
+                clips.Add(GetAudioClip(index));
             }
         }
         /// <summary>
@@ -349,15 +342,8 @@ namespace KFrame.Systems
         public static int GetAudioClipIndex(AudioClip clip)
         {
             //如果字典中有的话就返回
-            if (audioClipIndexDic.ContainsKey(clip))
-            {
-                return audioClipIndexDic[clip];
-            }
-            else
-            {
-                //找不到返回-1
-                return -1;
-            }
+            //找不到返回-1
+            return audioClipIndexDic.GetValueOrDefault(clip, -1);
         }
         /// <summary>
         /// 查找AudioClip的id(编辑器使用)
@@ -366,15 +352,8 @@ namespace KFrame.Systems
         public static int GetBGMClipIndex(AudioClip clip)
         {
             //如果字典中有的话就返回
-            if (bgmClipIndexDic.ContainsKey(clip))
-            {
-                return bgmClipIndexDic[clip];
-            }
-            else
-            {
-                //找不到返回-1
-                return -1;
-            }
+            //找不到返回-1
+            return bgmClipIndexDic.GetValueOrDefault(clip, -1);
         }
 
         /// <summary>
@@ -427,19 +406,21 @@ namespace KFrame.Systems
         public static int GetAudioGroupIndex(AudioMixerGroup mixerGroup)
         {
             //如果字典中有的话就返回
-            if (groupDic2.ContainsKey(mixerGroup))
+            if (groupDic2.TryGetValue(mixerGroup, out var value))
             {
-                return groupDic2[mixerGroup].GroupIndex;
+                return value.GroupIndex;
             }
             else
             {
                 //找不到就返回0
                 return 0;
             }
+        }
 
 #endif
 
-        }
+        #endregion
+
     }
     
 }

@@ -18,7 +18,9 @@ namespace KFrame.Utilities
     /// <summary>
     /// 用来查询、管理框架配置的一些路径
     /// </summary>
+#if UNITY_EDITOR
     [InitializeOnLoad]
+#endif
     public static class KFrameAssetsPath
     {
         /// <summary>

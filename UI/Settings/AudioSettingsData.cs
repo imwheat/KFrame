@@ -7,6 +7,7 @@
 
 namespace KFrame.UI
 {
+    [System.Serializable]
     public class AudioSettingsData
     {
         

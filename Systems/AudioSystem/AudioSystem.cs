@@ -16,15 +16,15 @@ namespace KFrame.Systems
         /// </summary>
         public static void Init()
         {
+            InitAudio();
             audioModule = FrameRoot.RootTransform.GetComponentInChildren<AudioModule>();
             audioModule.Init();
-            InitAudioes();
         }
 
         /// <summary>
         /// 初始化音效配置
         /// </summary>
-        private static void InitAudioes()
+        private static void InitAudio()
         {
             //初始化Audio字典
             AudioDic.Init();
@@ -38,7 +38,7 @@ namespace KFrame.Systems
                 //遍历获取
                 foreach (var index in group.ChildrenIndexes)
                 {
-                    group.Children.Add(AudioDic.GetAudioGroup(index));
+                    group.AddChild(index);
                 }
             }
         }

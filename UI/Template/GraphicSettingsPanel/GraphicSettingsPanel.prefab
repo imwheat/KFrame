@@ -157,6 +157,9 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 1598133614489182878}
   m_TargetGraphics: []
+  onSelect:
+    m_PersistentCalls:
+      m_Calls: []
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -279,6 +282,9 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 6639961191051804016}
   m_TargetGraphics: []
+  onSelect:
+    m_PersistentCalls:
+      m_Calls: []
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -448,6 +454,9 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 5995399232107179830}
   m_TargetGraphics: []
+  onSelect:
+    m_PersistentCalls:
+      m_Calls: []
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -630,6 +639,9 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 339644227230752520}
   m_TargetGraphics: []
+  onSelect:
+    m_PersistentCalls:
+      m_Calls: []
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -887,6 +899,9 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 76465781819809710}
   m_TargetGraphics: []
+  onSelect:
+    m_PersistentCalls:
+      m_Calls: []
   onClick:
     m_PersistentCalls:
       m_Calls: []
@@ -1154,6 +1169,9 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 4030374890192306083}
   m_TargetGraphics: []
+  onSelect:
+    m_PersistentCalls:
+      m_Calls: []
   onClick:
     m_PersistentCalls:
       m_Calls: []
@@ -1281,6 +1299,9 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 3977215646328752958}
   m_TargetGraphics: []
+  onSelect:
+    m_PersistentCalls:
+      m_Calls: []
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -1403,6 +1424,9 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 3518588382621333795}
   m_TargetGraphics: []
+  onSelect:
+    m_PersistentCalls:
+      m_Calls: []
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -1586,6 +1610,9 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 1878220955178239031}
   m_TargetGraphics: []
+  onSelect:
+    m_PersistentCalls:
+      m_Calls: []
   onClick:
     m_PersistentCalls:
       m_Calls: []
@@ -2137,6 +2164,9 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 4833883688549057316}
   m_TargetGraphics: []
+  onSelect:
+    m_PersistentCalls:
+      m_Calls: []
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -2433,6 +2463,9 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 124551132229242775}
   m_TargetGraphics: []
+  onSelect:
+    m_PersistentCalls:
+      m_Calls: []
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -2555,6 +2588,9 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 2482295023095255844}
   m_TargetGraphics: []
+  onSelect:
+    m_PersistentCalls:
+      m_Calls: []
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -2737,6 +2773,9 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 5166717792763231157}
   m_TargetGraphics: []
+  onSelect:
+    m_PersistentCalls:
+      m_Calls: []
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -3381,6 +3420,9 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 8749182297388252945}
   m_TargetGraphics: []
+  onSelect:
+    m_PersistentCalls:
+      m_Calls: []
   onClick:
     m_PersistentCalls:
       m_Calls: []
@@ -3470,8 +3512,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   localiztionSets:
-  - Key: ui_FullScreen
-    Component: {fileID: 1878220955178239031}
   - Key: ui_ReturnButton
     Component: {fileID: 339644227230752520}
   - Key: ui_FullScreen
@@ -3487,6 +3527,7 @@ MonoBehaviour:
   - Key: ui_Apply
     Component: {fileID: 5166717792763231157}
   defaultSelection: {fileID: 3554957549392211602}
+  panelScrollBar: {fileID: 0}
   anim: {fileID: 6881628761190842014}
   closeAnimTrigger: close
   fullScreenBtn: {fileID: 3554957549392211602}

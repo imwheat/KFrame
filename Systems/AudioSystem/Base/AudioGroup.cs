@@ -17,6 +17,8 @@ namespace KFrame.Systems
     [System.Serializable]
     public class AudioGroup
     {
+        #region 配置参数
+
         /// <summary>
         /// 分组名称
         /// </summary>
@@ -28,16 +30,21 @@ namespace KFrame.Systems
         [KLabelText("分组id")]
         public int GroupIndex;
         /// <summary>
-        /// 这个分组的父级，会受到父级音量影响
-        /// </summary>
-        [KLabelText("父级")]
-        public AudioGroup Parent;
-        /// <summary>
         /// 子集id列表
         /// 用于序列化保存子集
         /// </summary>
         [KLabelText("子集下标")]
         public List<int> ChildrenIndexes;
+        
+        #endregion
+
+        #region 参数
+
+        /// <summary>
+        /// 这个分组的父级，会受到父级音量影响
+        /// </summary>
+        [KLabelText("父级"), NonSerialized]
+        public AudioGroup Parent;
         /// <summary>
         /// 这个分组的子集
         /// </summary>
@@ -63,13 +70,17 @@ namespace KFrame.Systems
         /// 更新音量事件
         /// </summary>
         public Action<float> UpdateVolumeAction;
+        
+        #endregion
+
+        #region 构造函数
+
         public AudioGroup() 
         {
             Volume = 1f;
             Children = new List<AudioGroup>();
             ChildrenIndexes = new List<int>();
         }
-
         public AudioGroup(string groupName) : this()
         {
             GroupName = groupName;
@@ -79,6 +90,11 @@ namespace KFrame.Systems
             GroupName = groupName;
             GroupIndex = groupIndex;
         }
+
+        #endregion
+
+        #region 音量调节
+
         /// <summary>
         /// 更新音量
         /// </summary>
@@ -118,6 +134,11 @@ namespace KFrame.Systems
             //返回音量
             return volume;
         }
+
+        #endregion
+
+        #region 参数配置获取
+
         /// <summary>
         /// 获取MixerGroup
         /// </summary>
@@ -125,6 +146,24 @@ namespace KFrame.Systems
         {
             return AudioDic.GetAudioMixerGroup(GroupIndex);
         }
+        /// <summary>
+        /// 初始化的时候配置Child使用
+        /// </summary>
+        public void AddChild(int index)
+        {
+            //获取子集
+            var group = AudioDic.GetAudioGroup(index);
+            if(group == null) return;
+            //设置父级，然后添加到列表里
+            group.Parent = this;
+            Children.Add(group);
+        }
+
+        #endregion
+
+        #region 编辑器使用
+
+                
 #if UNITY_EDITOR
         /// <summary>
         /// 绑定父级group
@@ -133,16 +172,16 @@ namespace KFrame.Systems
         public void SetParentGroup(AudioGroup parent)
         {
             //如果现在已经有父级了，先把现在的父级解绑先
-            if(Parent != null)
-            {
-                Parent.ChildrenIndexes.Remove(this.GroupIndex);
-            }
+            Parent?.ChildrenIndexes.Remove(GroupIndex);
 
             //更新父级
             Parent = parent;
-            Parent.ChildrenIndexes.Add(this.GroupIndex);
+            Parent.ChildrenIndexes.Add(GroupIndex);
         }
 #endif
+
+        #endregion
+
 
     }
 }

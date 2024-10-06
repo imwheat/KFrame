@@ -1,5 +1,5 @@
 //****************** 代码文件申明 ************************
-//* 文件：ResSystem_Rescourse                      
+//* 文件：ResSystem_Resource                      
 //* 作者：wheat
 //* 创建时间：2023年08月27日 星期日 12:47
 //* 功能：基于Resources进行资源管理
@@ -186,10 +186,10 @@ namespace KFrame.Systems
         {
             GameObject go;
             go = PoolSystem.GetGameObject(keyName, parent);
-            if (!go.IsNull()) return go;
+            if (go) return go;
 
             GameObject prefab = LoadAsset<GameObject>(keyName);
-            if (!prefab.IsNull())
+            if (prefab)
             {
                 go = GameObject.Instantiate(prefab, parent);
                 go.name = keyName;
@@ -212,10 +212,10 @@ namespace KFrame.Systems
             GameObject go;
             if (keyName == null) go = PoolSystem.GetGameObject(assetName, parent);
             else go = PoolSystem.GetGameObject(keyName, parent);
-            if (!go.IsNull()) return go;
+            if (go) return go;
 
             GameObject prefab = LoadAsset<GameObject>(assetPath);
-            if (!prefab.IsNull())
+            if (prefab)
             {
                 go = GameObject.Instantiate(prefab, parent);
                 go.name = keyName != null ? keyName : assetName;
@@ -233,7 +233,7 @@ namespace KFrame.Systems
         public static T InstantiateGameObject<T>(Transform parent, string keyName) where T : UnityEngine.Component
         {
             GameObject go = InstantiateGameObject(parent, keyName);
-            if (!go.IsNull())
+            if (go)
             {
                 return go.GetComponent<T>();
             }
@@ -250,7 +250,7 @@ namespace KFrame.Systems
             where T : UnityEngine.Component
         {
             GameObject go = InstantiateGameObject(assetPath, parent, keyName);
-            if (!go.IsNull())
+            if (go)
             {
                 return go.GetComponent<T>();
             }
@@ -270,7 +270,7 @@ namespace KFrame.Systems
             if (keyName == null) go = PoolSystem.GetGameObject(assetName, parent);
             else go = PoolSystem.GetGameObject(keyName, parent);
             // 对象池有
-            if (!go.IsNull())
+            if (go)
             {
                 callBack?.Invoke(go);
                 return;
@@ -294,7 +294,7 @@ namespace KFrame.Systems
             if (keyName == null) go = PoolSystem.GetGameObject(assetName, parent);
             else go = PoolSystem.GetGameObject(keyName, parent);
             // 对象有
-            if (!go.IsNull())
+            if (go)
             {
                 callBack?.Invoke(go.GetComponent<T>());
                 return;
