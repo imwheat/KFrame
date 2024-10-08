@@ -5,6 +5,7 @@
 //* 描述：拓展一些EditorUtility的功能
 //*******************************************************
 
+using System.IO;
 using UnityEngine;
 using UnityEditor;
 using Object = UnityEngine.Object;
@@ -53,6 +54,27 @@ namespace KFrame.Editor
                 UnityEditor.PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup,
                     group.Replace(";" + name, string.Empty));
             }
+        }
+        /// <summary>
+        /// 获取Asset的文件后缀
+        /// </summary>
+        /// <param name="asset">查询的Asset</param>
+        /// <returns>Asset的后缀</returns>
+        public static string GetAssetExtension(this Object asset)
+        {
+            if (asset == null) return "";
+
+            return Path.GetExtension(AssetDatabase.GetAssetPath(asset));
+        }
+        /// <summary>
+        /// 检测Asset的文件后缀
+        /// </summary>
+        /// <param name="asset">查询的Asset</param>
+        /// <param name="extension">后缀</param>
+        /// <returns>如果是目标后缀的话返回true</returns>
+        public static bool CheckAssetExtension(this Object asset, string extension)
+        {
+            return asset.GetAssetExtension() == extension;
         }
     }
 }

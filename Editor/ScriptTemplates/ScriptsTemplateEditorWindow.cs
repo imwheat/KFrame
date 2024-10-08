@@ -39,8 +39,8 @@ namespace KFrame.Editor
 
         private const string ScriptTop = "//****************** 代码文件声明 ***********************\n" +
                                          "//* 文件：#SCRIPTNAME#\n" +
-                                         "//* 作者：#AUTHORNAME#\n" +
-                                         "//* 创建时间：#CREATETIME#\n" +
+                                         "//* 作者：wheat\n" +
+                                         "//* 创建时间：2024/10/08 09:33:59 星期二\n" +
                                          "//* 描述：\n" +
                                          "//*******************************************************\n";
         private string scriptsTop;
