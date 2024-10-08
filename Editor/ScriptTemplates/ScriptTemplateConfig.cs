@@ -121,11 +121,11 @@ namespace KFrame.Editor
             //初始化字典
             TemplateDic = new Dictionary<string, TextAsset>();
             //遍历赋值
-            for (int i = 0; i < Templates.Count; i++)
+            foreach (var t in Templates)
             {
-                if (Templates[i] != null)
+                if (t != null)
                 {
-                    TemplateDic[Templates[i].name] = Templates[i];
+                    TemplateDic[t.name] = t;
                 }
             }
         }

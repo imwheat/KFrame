@@ -13,6 +13,7 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 using System.Text;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace KFrame.Editor
 {
@@ -36,12 +37,12 @@ namespace KFrame.Editor
         private string groupName = "";
         private string groupName2 = "";
 
-        public const string SCRIPTTOP = "//****************** 代码文件声明 ***********************\n" +
-                                    "//* 文件：#SCRIPTNAME#\n" +
-                                    "//* 作者：#AUTHORNAME#\n" +
-                                    "//* 创建时间：#CREATETIME#\n" +
-                                    "//* 描述：\n" +
-                                    "//*******************************************************\n";
+        private const string ScriptTop = "//****************** 代码文件声明 ***********************\n" +
+                                         "//* 文件：#SCRIPTNAME#\n" +
+                                         "//* 作者：#AUTHORNAME#\n" +
+                                         "//* 创建时间：#CREATETIME#\n" +
+                                         "//* 描述：\n" +
+                                         "//*******************************************************\n";
         private string scriptsTop;
         /// <summary>
         /// 上次刷新的时候模版数量
@@ -63,6 +64,70 @@ namespace KFrame.Editor
         /// 模版文件
         /// </summary>
         private List<TextAsset> templates;
+
+
+        #endregion
+
+        #region 脚本模版创建GUI相关
+            
+        /// <summary>
+        /// 模版文件类型
+        /// </summary>
+        private enum TemplateAssetType
+        {
+            /// <summary>
+            /// 空
+            /// </summary>
+            Null = 0,
+            /// <summary>
+            /// 文本文件
+            /// </summary>
+            Text = 1,
+            /// <summary>
+            /// 脚本文件
+            /// </summary>
+            ScriptFile = 2,
+        }
+        /// <summary>
+        /// 模版文件类型
+        /// </summary>
+        private TemplateAssetType templateAssetType;
+        /// <summary>
+        /// 预览脚本的ScrollPosition
+        /// </summary>
+        private Vector2 previewCodeScrollPosition;
+        /// <summary>
+        /// 预览脚本的Style
+        /// </summary>
+        private GUIStyle previewCodeStyle;
+        /// <summary>
+        /// 预览脚本的Style
+        /// </summary>
+        private GUIStyle PreviewCodeStyle
+        {
+            get
+            {
+                if (previewCodeStyle == null)
+                {
+                    previewCodeStyle = new GUIStyle("ControlLabel")
+                    {
+                        fontSize = 12,
+                        alignment = TextAnchor.UpperLeft,
+                    };
+                }
+
+                return previewCodeStyle;
+            }
+        }
+        /// <summary>
+        /// 预览脚本的高度
+        /// </summary>
+        private float previewCodeHeight;
+        /// <summary>
+        /// 预览脚本
+        /// </summary>
+        private string previewCode;
+
         #endregion
 
         #region 生命周期
@@ -77,7 +142,7 @@ namespace KFrame.Editor
             template = "";
             templateName = "";
             searchFilter = string.Empty;
-            scriptsTop = SCRIPTTOP;
+            scriptsTop = ScriptTop;
             ignoreCsElement = true;
         }
 
@@ -212,17 +277,44 @@ namespace KFrame.Editor
             EditorGUILayout.EndVertical();
         }
         /// <summary>
+        /// 更新预览脚本代码
+        /// </summary>
+        private void UpdatePreviewCode()
+        {
+            previewCodeScrollPosition = Vector2.zero;
+            
+            if (addTextAsset == null)
+            {
+                previewCode = "";
+                templateAssetType = TemplateAssetType.Null;
+            }
+            else if (addTextAsset.GetAssetExtension() == ".cs")
+            {
+                previewCode = ConvertCsToTemplate(addTextAsset.text, ignoreCsElement);
+                templateAssetType = TemplateAssetType.ScriptFile;
+            }
+            else
+            {
+                previewCode = addTextAsset.text;
+                templateAssetType = TemplateAssetType.Text;
+            }
+
+            previewCodeHeight = previewCode.Count(c => c == '\n') * 20f;
+        }
+        /// <summary>
         /// 添加已有模版的GUI
         /// </summary>
         private void DrawAddExistTemplateGUI()
         {
             EditorGUILayout.BeginVertical();
-
+            
+            EditorGUI.BeginChangeCheck();
+            
             //要添加的模版
             addTextAsset = EditorGUILayout.ObjectField("要添加的模版:",addTextAsset, typeof(TextAsset), false) as TextAsset;
 
             //是cs文件的话，那就显示是否启用忽略CS参数和方法选项
-            if (addTextAsset != null && !addTextAsset.name.EndsWith(".cs"))
+            if (templateAssetType == TemplateAssetType.ScriptFile)
             {
                 GUILayout.Space(5);
 
@@ -231,14 +323,40 @@ namespace KFrame.Editor
                 GUILayout.Space(5);
 
             }
+            
+            //检测刷新预览代码
+            if (EditorGUI.EndChangeCheck())
+            {
+                UpdatePreviewCode();
+            }            
+            
             //模版名称
             GUILayout.Label("脚本模版名称:");
             addCsTemplateName = EditorGUILayout.TextField(addCsTemplateName, GUILayout.Height(30f));
             //分类名称
             GUILayout.Label("脚本分类名称:(可选)");
             groupName2 = EditorGUILayout.TextArea(groupName2, GUILayout.Height(30));
+
+            //脚本预览
+            if (GUILayout.Button("刷新预览脚本"))
+            {
+                UpdatePreviewCode();
+            }
+
+            if (previewCodeHeight > 0f)
+            {
+                EditorGUILayout.LabelField("预览代码", EditorStyles.boldLabel);
+                
+                previewCodeScrollPosition = EditorGUILayout.BeginScrollView(previewCodeScrollPosition);
+
+                EditorGUILayout.LabelField(previewCode, PreviewCodeStyle,GUILayout.Height(previewCodeHeight));
+            
+                EditorGUILayout.EndScrollView();
+            }
+            
+            //创建添加
             GUILayout.Space(5);
-            if (GUILayout.Button("添加"))
+            if (GUILayout.Button("创建添加"))
             {
                 //结束文本编辑
                 EditorGUITool.EndEditTextField();
@@ -248,15 +366,10 @@ namespace KFrame.Editor
                 }
                 else
                 {
-                    AddScripTemplate(addTextAsset, addCsTemplateName, groupName2, ignoreCsElement);
+                    AddScriptTemplate(addTextAsset, addCsTemplateName, groupName2, ignoreCsElement);
                 }
             }
-
-            if (GUILayout.Button("测试"))
-            {
-                Debug.Log(ConvertCSToTemplate(addTextAsset.text, ignoreCsElement));
-            }
-
+            
             EditorGUILayout.EndVertical();
         }
         /// <summary>
@@ -317,11 +430,6 @@ namespace KFrame.Editor
 
             GUILayout.FlexibleSpace();
 
-            if(GUILayout.Button("搜索已存在的模版"))
-            {
-
-            }
-
             EditorGUILayout.EndVertical();
         }
         /// <summary>
@@ -342,9 +450,9 @@ namespace KFrame.Editor
             }
 
             //创建GUI
-            for (int i = 0; i < templates.Count; i++)
+            foreach (var t in templates)
             {
-                templateGUI.Add(new GUIContent($"{templates[i].name}"));
+                templateGUI.Add(new GUIContent($"{t.name}"));
             }
 
             prevRefreshTemplateCount = templates.Count;
@@ -352,10 +460,10 @@ namespace KFrame.Editor
         /// <summary>
         /// 打开指定的template
         /// </summary>
-        /// <param name="template">要打开的模版</param>
-        private void OpenTemplate(TextAsset template)
+        /// <param name="templateAsset">要打开的模版</param>
+        private void OpenTemplate(TextAsset templateAsset)
         {
-            AssetDatabase.OpenAsset(template);
+            AssetDatabase.OpenAsset(templateAsset);
         }
         #endregion
 
@@ -364,8 +472,11 @@ namespace KFrame.Editor
         /// <summary>
         /// 通过文本文件添加模版
         /// </summary>
+        /// <param name="groupName">分组名称</param>
         /// <param name="ignoreElements">将CS文件转为模版的时候是否忽略方法参数</param>
-        public static void AddScripTemplate(TextAsset textAsset, string assetName,string groupName, bool ignoreElements)
+        /// <param name="textAsset">模版文件</param>
+        /// <param name="assetName">保存模版名称</param>
+        private static void AddScriptTemplate(TextAsset textAsset, string assetName,string groupName, bool ignoreElements)
         {
             if(textAsset == null)
             {
@@ -379,7 +490,7 @@ namespace KFrame.Editor
             {
                 //先创建脚本txt文件
                 string templateName = textAsset.name;
-                CreateScriptTemplate(templateName, ConvertCSToTemplate(textAsset.text, ignoreElements), groupName);
+                CreateScriptTemplate(templateName, ConvertCsToTemplate(textAsset.text, ignoreElements), groupName);
                 //获取模版路径
                 string templatePath = ScriptTemplateConfig.FrameScriptTemplatesPath;
                 //如果有分组
@@ -391,24 +502,15 @@ namespace KFrame.Editor
                 assetPath = templatePath + templateName + groupName + ".cs.txt";
                 textAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(assetPath);
             }
-            //是cs文本文件
+            //其他文件就报错
             else if(assetPath.EndsWith(".cs.txt") == false)
             {
                 EditorUtility.DisplayDialog("错误", "模版需要是.cs.txt或.cs结尾文件", "确认");
                 return;
             }
 
-            //如果已经有了就不再添加
-            if(ScriptTemplateConfig.TemplateDic.ContainsKey(assetName))
-            {
-                return;
-            }
-
             //创建MenuItem
-            if (CreateScriptTemplateMenuItem(assetName, groupName) == false)
-            {
-                return;
-            }
+            CreateScriptTemplateMenuItem(assetName, groupName);
             //添加进模版库
             ScriptTemplateConfig.AddTemplate(textAsset);
             //在GUI里面添加
@@ -473,11 +575,13 @@ namespace KFrame.Editor
                 Debug.LogError("保存模版的时候发生了错误: " + e.Message);
             }
         }
+
         /// <summary>
         /// 检查模版是否合理
         /// </summary>
         /// <param name="templateName">模版名称</param>
         /// <param name="text">模版内容</param>
+        /// <param name="group">分组名称</param>
         /// <returns>合理的话返回true</returns>
         private static bool CheckTemplateIsValid(string templateName, string text, string group = "")
         {
@@ -514,19 +618,23 @@ namespace KFrame.Editor
 
             return true;
         }
+
         /// <summary>
         /// 自动生成脚本模版的MenuItem
         /// </summary>
         /// <param name="assetName">模版Asset文件名称</param>
+        /// <param name="groupName">分组名称</param>
         private static bool CreateScriptTemplateMenuItem(string assetName, string groupName)
         {
             //生成新的MenuItem的代码
             return ScriptTool.AddCode<ScriptsTemplatesMenuItem>(GenerateScriptTemplateMenuItemCode(assetName, groupName), assetName);
         }
+
         /// <summary>
         /// 生成脚本模版的MenuItem的代码
         /// </summary>
         /// <param name="assetName">模版Asset文件名称</param>
+        /// <param name="groupName">分组名称</param>
         private static string GenerateScriptTemplateMenuItemCode(string assetName, string groupName) 
         {
             StringBuilder sb = new StringBuilder();
@@ -556,13 +664,14 @@ namespace KFrame.Editor
         /// <summary>
         /// 把cs文件的text转为模版text
         /// </summary>
+        /// <param name="csText">代码文本</param>
         /// <param name="ignoreElements">忽略所有参数</param>
-        private static string ConvertCSToTemplate(string csText, bool ignoreElements)
+        private static string ConvertCsToTemplate(string csText, bool ignoreElements)
         {
             //新建StringBuilder
             StringBuilder sb = new StringBuilder();
             //添加顶部申明
-            sb.Append(SCRIPTTOP);
+            sb.Append(ScriptTop);
 
             //把原文本切分为一行一行
             string[] lines = csText.Split('\n');
@@ -588,10 +697,10 @@ namespace KFrame.Editor
 
             //获取type名称
             string typeName = "";
-            int typeStartIndex = lines[startIndex].IndexOf("class");
+            int typeStartIndex = lines[startIndex].IndexOf("class", StringComparison.Ordinal);
             if (typeStartIndex == -1)
             {
-                typeStartIndex = lines[startIndex].IndexOf("interface");
+                typeStartIndex = lines[startIndex].IndexOf("interface", StringComparison.Ordinal);
 
                 //发生错误
                 if (typeStartIndex == -1)
@@ -688,11 +797,11 @@ namespace KFrame.Editor
                         //如果找到了在同一行，那就移除掉{}
                         if (k == i)
                         {
-                            int _start = lines[i].IndexOf('{');
-                            int _end = lines[i].IndexOf('}');
-                            if (_start != -1 && _end != -1)
+                            int start = lines[i].IndexOf('{');
+                            int end = lines[i].IndexOf('}');
+                            if (start != -1 && end != -1)
                             {
-                                lines[i] = lines[i].Substring(0, lines[i].Length - _end + _start);
+                                lines[i] = lines[i].Substring(0, lines[i].Length - end + start);
                             }
                         }
                         
@@ -768,19 +877,19 @@ namespace KFrame.Editor
         private void DeleteTemplate(int i)
         {
             //获取模版名称
-            string templateName = templateGUI[i].text.Replace(".cs", string.Empty);
+            string tName = templateGUI[i].text.Replace(".cs", string.Empty);
 
             //先删除文件
             AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(templates[i]));
 
             //再删除MenuItem
-            ScriptTool.RemoveCode<ScriptsTemplatesMenuItem>(templateName);
+            ScriptTool.RemoveCode<ScriptsTemplatesMenuItem>(tName);
 
             //再从GUI里面移除
             templateGUI.RemoveAt(i);
             //再从ScriptTemplateConfig里面移除
             ScriptTemplateConfig.Templates.RemoveAt(i);
-            ScriptTemplateConfig.TemplateDic.Remove(templateName);
+            ScriptTemplateConfig.TemplateDic.Remove(tName);
 
             //保存
             EditorUtility.SetDirty(ScriptTemplateConfig.Instance);
@@ -789,6 +898,6 @@ namespace KFrame.Editor
         }
 
         #endregion
-
+        
     }
 }

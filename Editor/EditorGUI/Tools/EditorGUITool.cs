@@ -608,6 +608,32 @@ namespace KFrame.Editor
 
         #endregion
 
+        #region Asset相关工具
+
+        /// <summary>
+        /// 获取Asset的文件后缀
+        /// </summary>
+        /// <param name="asset">查询的Asset</param>
+        /// <returns>Asset的后缀</returns>
+        public static string GetAssetExtension(this Object asset)
+        {
+            if (asset == null) return "";
+
+            return Path.GetExtension(AssetDatabase.GetAssetPath(asset));
+        }
+        /// <summary>
+        /// 检测Asset的文件后缀
+        /// </summary>
+        /// <param name="asset">查询的Asset</param>
+        /// <param name="extension">后缀</param>
+        /// <returns>如果是目标后缀的话返回true</returns>
+        public static bool CheckAssetExtension(this Object asset, string extension)
+        {
+            return asset.GetAssetExtension() == extension;
+        }
+
+        #endregion
+        
         #region 其他通用操作
         
         /// <summary>
@@ -645,7 +671,7 @@ namespace KFrame.Editor
         /// 以默认的方式绘制的属性
         /// </summary>
         /// <param name="instance">被绘制的类的实例</param>
-        public static void DrawDefalutProperties<T>(T instance)
+        public static void DrawDefaultProperties<T>(T instance)
         {
             //获取所有字段
             FieldInfo[] fieldInfos = typeof(T).GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
