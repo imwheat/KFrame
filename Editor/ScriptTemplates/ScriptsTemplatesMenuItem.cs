@@ -1,8 +1,7 @@
 using KFrame.Utilities;
 using UnityEditor;
 
-
-namespace KFrame.Editor
+namespace KFrame.Editor.ScriptTemplates
 {
     public class ScriptsTemplatesMenuItem
     {
@@ -84,7 +83,6 @@ namespace KFrame.Editor
         //代码生成结束标识FrameClass
 
 
-        
         //代码生成开始标识UISystem
 
         [MenuItem("Assets/Frame C#/SystemMono", false, 0)]
@@ -106,6 +104,6 @@ namespace KFrame.Editor
 
         //代码生成结束标识KUI
 
-        #endregion 代码生成结束标识
+		#endregion 代码生成结束标识
     }
 }

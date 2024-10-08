@@ -4,25 +4,25 @@
 //* 创建时间：2023年04月26日 星期五 09:47
 //* 描述：有一些管理、创建脚本的工具方法
 //*****************************************************
-using KFrame.Utilities;
+
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
+using KFrame.Utilities;
 using UnityEditor;
 using UnityEngine;
 using StringExtensions = KFrame.Utilities.StringExtensions;
 
-namespace KFrame.Editor
+namespace KFrame.Editor.Tools
 {
     public static class ScriptTool
     {
+        private const string CodeGeneratorStartTextRegion = "#region 代码生成开始标识";
+        private const string CodeGeneratorStartText = "//代码生成开始标识";
 
-        public const string CodeGenerator_StartTextRegion = "#region 代码生成开始标识";
-        public const string CodeGenerator_StartText = "//代码生成开始标识";
 
-
-        public const string CodeGenerator_EndTextRegion = "#endregion 代码生成结束标识";
-        public const string CodeGenerator_EndText = "//代码生成结束标识";
+        private const string CodeGeneratorEndTextRegion = "#endregion 代码生成结束标识";
+        private const string CodeGeneratorEndText = "//代码生成结束标识";
 
         /// <summary>
         /// 通过位置标记来更新代码(添加)
@@ -36,11 +36,12 @@ namespace KFrame.Editor
         /// <typeparam name="T">类类型</typeparam>
         /// <param name="addContentTag">新增部分的代码的Tag</param>
         /// <param name="regionTag">限制region的Tag</param>
+        /// <param name="space">空格</param>
         /// <param name="useRegion">代码生成标识是否使用region</param>
-        public static bool AddCode<T>(string addContent, string addContentTag, string regionTag = "", bool useRegion = false)
+        public static bool AddCode<T>(string addContent, string addContentTag, string regionTag = "", string space = "\t\t",bool useRegion = false)
         {
             //先查找cs文件路径
-            bool findPath = TryGetCSFilePath<T>(out string classFilePath);
+            bool findPath = TryGetCsFilePath<T>(out string classFilePath);
             if (findPath == false)
             {
                 Debug.LogWarning("终止生成,请在形参csPath填入绝对路径");
@@ -48,8 +49,9 @@ namespace KFrame.Editor
             }
 
             //然后开始生成
-            return AddScriptCode(addContent, addContentTag, classFilePath, regionTag, useRegion);
+            return AddScriptCode(addContent, addContentTag, classFilePath, regionTag, space, useRegion);
         }
+
         /// <summary>
         /// 通过位置标记来更新代码(添加)
         /// 位置标记为:
@@ -62,8 +64,9 @@ namespace KFrame.Editor
         /// <param name="addContentTag">新增部分的代码的Tag</param>
         /// <param name="regionTag">限制region的Tag</param>
         /// <param name="csPath">cs文件的路径</param>
+        /// <param name="space">空格</param>
         /// <param name="useRegion">代码生成标识是否使用region</param>
-        private static bool AddScriptCode(string addContent, string addContentTag, string csPath, string regionTag = "", bool useRegion = false)
+        private static bool AddScriptCode(string addContent, string addContentTag, string csPath, string regionTag = "", string space = "\t\t",bool useRegion = false)
         {
             //检查路径
             if (File.Exists(csPath) == false)
@@ -76,8 +79,8 @@ namespace KFrame.Editor
             string csText = File.ReadAllText(csPath);
 
             //检测一下有没有画好region，有的话获取region的下标，没有的话返回
-            int startRegionIndex = csText.IndexOf(CodeGenerator_StartTextRegion + regionTag, StringComparison.Ordinal) + (CodeGenerator_StartTextRegion + regionTag).Length;
-            int endRegionIndex = csText.IndexOf(CodeGenerator_EndTextRegion + regionTag, StringComparison.Ordinal);
+            int startRegionIndex = csText.IndexOf(CodeGeneratorStartTextRegion + regionTag, StringComparison.Ordinal) + (CodeGeneratorStartTextRegion + regionTag).Length;
+            int endRegionIndex = csText.IndexOf(CodeGeneratorEndTextRegion + regionTag, StringComparison.Ordinal);
             if (startRegionIndex == -1 || endRegionIndex == -1)
             {
                 Debug.LogError("请先画好region的范围以后再生成");
@@ -85,21 +88,21 @@ namespace KFrame.Editor
             }
 
             //开始和结束的Tag
-            string _CodeGenerator_StartText = (useRegion ? CodeGenerator_StartTextRegion : CodeGenerator_StartText) + addContentTag;
-            string _CodeGenerator_EndText = (useRegion ? CodeGenerator_EndTextRegion : CodeGenerator_EndText) + addContentTag;
+            string codeGeneratorStartText = (useRegion ? CodeGeneratorStartTextRegion : CodeGeneratorStartText) + addContentTag;
+            if (codeGeneratorStartText == null) throw new ArgumentNullException(nameof(codeGeneratorStartText));
+            string codeGeneratorEndText = (useRegion ? CodeGeneratorEndTextRegion : CodeGeneratorEndText) + addContentTag;
 
             //检查一下是不是已经存在了
-            int existIndex = StringExtensions.IndexOf(csText, _CodeGenerator_StartText, startRegionIndex, endRegionIndex);
+            int existIndex = StringExtensions.IndexOf(csText, codeGeneratorStartText, startRegionIndex, endRegionIndex);
             if (existIndex != -1)
             {
                 Debug.LogError($"已经存在相同的tag的代码了，如果你要更新替换旧的请使用{nameof(UpdateCode)}");
                 return false;
             }
-            string space = "        ";
             //在原代码中添加新的部分
-            string newCSText = csText.Insert(endRegionIndex, $"\n{space}{_CodeGenerator_StartText}\n\n{addContent}\n{space}{_CodeGenerator_EndText}\n\n{space}");
+            string newCsText = csText.Insert(endRegionIndex, $"\n{space}{codeGeneratorStartText}\n\n{addContent}\n{space}{codeGeneratorEndText}\n\n{space}");
             //写入结果
-            File.WriteAllText(csPath, newCSText);
+            File.WriteAllText(csPath, newCsText);
             AssetDatabase.Refresh();
             AssetDatabase.SaveAssets();
 
@@ -120,7 +123,7 @@ namespace KFrame.Editor
         public static void RemoveCode<T>(string removeContentTag, string regionTag = "", bool useRegion = false)
         {
             //先查找cs文件路径
-            bool findPath = TryGetCSFilePath<T>(out string classFilePath);
+            bool findPath = TryGetCsFilePath<T>(out string classFilePath);
             if (findPath == false)
             {
                 Debug.LogWarning("终止生成,请在形参csPath填入绝对路径");
@@ -155,8 +158,8 @@ namespace KFrame.Editor
             string csText = File.ReadAllText(csPath);
 
             //检测一下有没有画好region，有的话获取region的下标，没有的话返回
-            int startRegionIndex = csText.IndexOf(CodeGenerator_StartTextRegion + regionTag) + (CodeGenerator_StartTextRegion + regionTag).Length;
-            int endRegionIndex = csText.IndexOf(CodeGenerator_EndTextRegion + regionTag);
+            int startRegionIndex = csText.IndexOf(CodeGeneratorStartTextRegion + regionTag, StringComparison.Ordinal) + (CodeGeneratorStartTextRegion + regionTag).Length + 1;
+            int endRegionIndex = csText.IndexOf(CodeGeneratorEndTextRegion + regionTag, StringComparison.Ordinal) - 1;
             if (startRegionIndex == -1 || endRegionIndex == -1)
             {
                 Debug.LogError("请先画好region的范围以后再删除");
@@ -164,23 +167,24 @@ namespace KFrame.Editor
             }
 
             //开始和结束的Tag
-            string _CodeGenerator_StartText = (useRegion ? CodeGenerator_StartTextRegion : CodeGenerator_StartText) + removeContentTag;
-            string _CodeGenerator_EndText = (useRegion ? CodeGenerator_EndTextRegion : CodeGenerator_EndText) + removeContentTag;
+            string codeGeneratorStartText = (useRegion ? CodeGeneratorStartTextRegion : CodeGeneratorStartText) + removeContentTag;
+            string codeGeneratorEndText = (useRegion ? CodeGeneratorEndTextRegion : CodeGeneratorEndText) + removeContentTag;
 
             //检查一下是不是已经不存在了
-            int startIndex = StringExtensions.IndexOf(csText, _CodeGenerator_StartText, startRegionIndex, endRegionIndex);
-            int endIndex = StringExtensions.IndexOf(csText, _CodeGenerator_EndText, startRegionIndex, endRegionIndex);
+            int startIndex = StringExtensions.IndexOf(csText, codeGeneratorStartText, startRegionIndex, endRegionIndex);
+            int endIndex = StringExtensions.IndexOf(csText, codeGeneratorEndText, startRegionIndex, endRegionIndex);
             if (startIndex == -1 || endIndex == -1)
             {
-                Debug.Log( $"标记文本{_CodeGenerator_StartText},开始id:{startRegionIndex},结束id:{endRegionIndex}");
+                Debug.Log( $"标记开始文本{codeGeneratorStartText}，结束文本{codeGeneratorEndText},区域开始id:{startRegionIndex},区域结束id:{endRegionIndex}，搜寻到的开始id{startIndex}, 搜寻到的结束id:{endIndex}");
                 Debug.Log($"一开始就不存在该部分代码");
                 return;
             }
-            endIndex += _CodeGenerator_EndText.Length;
+            endIndex += codeGeneratorEndText.Length + 1;
+            
             //在原代码中删除要移除的内容
-            string newCSText = csText.Remove(startIndex, endIndex - startIndex);
+            string newCsText = csText.Remove(startIndex, endIndex - startIndex);
             //写入结果
-            File.WriteAllText(csPath, newCSText);
+            File.WriteAllText(csPath, newCsText);
             AssetDatabase.Refresh();
             AssetDatabase.SaveAssets();
         }
@@ -201,7 +205,7 @@ namespace KFrame.Editor
         /// <param name="refresh">刷新unity</param>
         public static void UpdateCode(string fileName, string updateContent, string space = "", string customTag = "", bool useRegion = true, bool refresh = true)
         {
-            bool findPath = TryGetCSFilePath(fileName, out string classFilePath);
+            bool findPath = TryGetCsFilePath(fileName, out var classFilePath);
             if (findPath == false)
             {
                 Debug.LogWarning("终止生成,请在形参csPath填入绝对路径");
@@ -227,7 +231,7 @@ namespace KFrame.Editor
         /// <typeparam name="T">类类型</typeparam>
         public static void UpdateCode<T>(string updateContent, string space = "", string customTag = "", bool useRegion = true, bool refresh = true)
         {
-            bool findPath = TryGetCSFilePath<T>(out string classFilePath);
+            bool findPath = TryGetCsFilePath<T>(out string classFilePath);
             if (findPath == false)
             {
                 Debug.LogWarning("终止生成,请在形参csPath填入绝对路径");
@@ -265,14 +269,14 @@ namespace KFrame.Editor
             //读取cs文件
             string csText = File.ReadAllText(csPath);
 
-            string _CodeGenerator_StartText = (useRegion ? CodeGenerator_StartTextRegion : CodeGenerator_StartText) + customTag;
-            string _CodeGenerator_EndText = (useRegion ? CodeGenerator_EndTextRegion : CodeGenerator_EndText) + customTag;
+            string codeGeneratorStartText = (useRegion ? CodeGeneratorStartTextRegion : CodeGeneratorStartText) + customTag;
+            string codeGeneratorEndText = (useRegion ? CodeGeneratorEndTextRegion : CodeGeneratorEndText) + customTag;
 
             //找到新的标记位置
-            int startIndex = csText.IndexOf(_CodeGenerator_StartText, StringComparison.Ordinal) +
-                             _CodeGenerator_StartText.Length;
+            int startIndex = csText.IndexOf(codeGeneratorStartText, StringComparison.Ordinal) +
+                             codeGeneratorStartText.Length;
 
-            int endIndex = csText.IndexOf(_CodeGenerator_EndText, StringComparison.Ordinal);
+            int endIndex = csText.IndexOf(codeGeneratorEndText, StringComparison.Ordinal);
 
             //先将start和end之间的代码删除干净
             string newContents = csText.Remove(startIndex, endIndex - startIndex);
@@ -295,17 +299,14 @@ namespace KFrame.Editor
         /// <param name="csPath">输出结果</param>
         /// <param name="searchInFolders">限制的文件夹</param>
         /// <returns>如果找不到返回false</returns>
-        public static bool TryGetCSFilePath(string fileName,out string csPath, string[] searchInFolders = null)
+        private static bool TryGetCsFilePath(string fileName,out string csPath, string[] searchInFolders = null)
         {
             //如果没有限制的搜索文件夹，那就默认整个Assets
-            if (searchInFolders == null)
-            {
-                searchInFolders = new string[] { "Assets" };
-            }
+            searchInFolders ??= new string[] { "Assets" };
 
             csPath = "";
             // 获取程序集所在目录
-            string[] findAssets = AssetDatabase.FindAssets(fileName, searchInFolders);
+            var findAssets = AssetDatabase.FindAssets(fileName, searchInFolders);
 
             //如果找到了多个文件
             if (findAssets.Length > 1)
@@ -342,7 +343,7 @@ namespace KFrame.Editor
             }
             else if (findAssets.Length == 1)
             {
-                csPath = FileExtensions.ConvertAssetPathToSystemPath(AssetDatabase.GUIDToAssetPath(findAssets[0]));
+                csPath = AssetDatabase.GUIDToAssetPath(findAssets[0]).ConvertAssetPathToSystemPath();
                 return true;
             }
             else
@@ -357,15 +358,12 @@ namespace KFrame.Editor
         /// <param name="csPath">输出结果</param>
         /// <param name="searchInFolders">限制的文件夹</param>
         /// <returns>如果找不到返回false</returns>
-        public static bool TryGetCSFilePath<T>(out string csPath, string[] searchInFolders = null)
+        private static bool TryGetCsFilePath<T>(out string csPath, string[] searchInFolders = null)
         {
             //如果没有限制的搜索文件夹，那就默认整个Assets
-            if (searchInFolders == null)
-            {
-                searchInFolders = new string[] { "Assets" };
-            }
+            searchInFolders ??= new string[] { "Assets" };
 
-            return TryGetCSFilePath(typeof(T).Name, out csPath, searchInFolders);
+            return TryGetCsFilePath(typeof(T).Name, out csPath, searchInFolders);
         }
 
         /// <summary>
@@ -412,20 +410,24 @@ namespace KFrame.Editor
 
         private static int FindMatchingClosingBrace(string text, int startIndex)
         {
-            int count = 0;
+            var count = 0;
 
-            for (int i = startIndex; i < text.Length; i++)
+            for (var i = startIndex; i < text.Length; i++)
             {
-                if (text[i] == '{')
+                switch (text[i])
                 {
-                    count++;
-                }
-                else if (text[i] == '}')
-                {
-                    count--;
-                    if (count == 0)
+                    case '{':
+                        count++;
+                        break;
+                    case '}':
                     {
-                        return i;
+                        count--;
+                        if (count == 0)
+                        {
+                            return i;
+                        }
+
+                        break;
                     }
                 }
             }

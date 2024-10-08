@@ -5,15 +5,10 @@
 //* 描述：
 //*******************************************************
 
-using UnityEngine;
-using UnityEditor;
-using KFrame;
-using KFrame.Utilities;
-using System;
-using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
-namespace KFrame.Editor
+namespace KFrame.Editor.Tools
 {
     public class AnimatorParameterData
     {

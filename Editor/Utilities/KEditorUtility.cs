@@ -6,6 +6,7 @@
 //*******************************************************
 
 using System.IO;
+using KFrame.Utilities;
 using UnityEngine;
 using UnityEditor;
 using Object = UnityEngine.Object;
@@ -75,6 +76,41 @@ namespace KFrame.Editor
         public static bool CheckAssetExtension(this Object asset, string extension)
         {
             return asset.GetAssetExtension() == extension;
+        }
+        /// <summary>
+        /// 获取Asset的Asset路径
+        /// </summary>
+        /// <param name="asset">查询的Asset</param>
+        /// <returns>Asset的路径</returns>
+        public static string GetAssetPath(this Object asset)
+        {
+            if (asset == null) return "";
+            
+            return AssetDatabase.GetAssetPath(asset);
+        }
+        /// <summary>
+        /// 获取Asset在电脑里的本地路径
+        /// </summary>
+        /// <param name="asset">查询的Asset</param>
+        /// <returns>Asset在电脑里的本地路径</returns>
+        public static string GetFullPath(this Object asset)
+        {
+            return asset.GetAssetPath().ConvertAssetPathToSystemPath();
+        }
+        /// <summary>
+        /// 删除文件夹
+        /// </summary>
+        /// <param name="assetPath">Asset的路径</param>
+        public static void DeleteFolder(string assetPath)
+        {
+            //路径不能为空
+            if(string.IsNullOrEmpty(assetPath)) return;
+            //转为本地路径
+            string fullPath = assetPath.ConvertAssetPathToSystemPath();
+            string folderName = Path.GetFileName(fullPath);
+            //删除文件夹以及它的meta文件
+            Directory.Delete(fullPath);
+            File.Delete(FileExtensions.GetParentDirectory(fullPath, 1) + "/" + folderName + ".meta");
         }
     }
 }

@@ -5,12 +5,12 @@
 //* 描述：存储Layer、Tag、SortingLayer的一些数据
 //*******************************************************
 
-using KFrame.Utilities;
 using System.Collections.Generic;
 using KFrame.Attributes;
+using KFrame.Utilities;
 using UnityEngine;
 
-namespace KFrame.Editor
+namespace KFrame.Editor.Tools
 {
     [KGlobalConfigPath(GlobalPathType.Editor, typeof(TagAndLayerDatas), true)]
     internal class TagAndLayerDatas : GlobalConfigBase<TagAndLayerDatas>

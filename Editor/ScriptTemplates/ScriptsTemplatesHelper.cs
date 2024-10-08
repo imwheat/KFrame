@@ -1,4 +1,3 @@
-
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -6,7 +5,7 @@ using UnityEditor;
 using UnityEditor.ProjectWindowCallback;
 using UnityEngine;
 
-namespace KFrame.Editor
+namespace KFrame.Editor.ScriptTemplates
 {
     /// <summary>
     /// 帮忙创建脚本模版
@@ -25,7 +24,7 @@ namespace KFrame.Editor
             //创建脚本
             ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0,
                 ScriptableObject.CreateInstance<MyDoCreateScriptAsset_Mono>(),
-                locationPath + "/" + scriptName, null, ScriptTemplateConfig.GetTemplatePath(templateName));
+                locationPath + "/" + scriptName, null, ScriptTemplateConfig.GetTemplateFullPath(templateName));
         }
         /// <summary>
         /// 获取当前创建脚本选择的路径
@@ -63,7 +62,7 @@ namespace KFrame.Editor
                 streamReader.Close();
                 string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(pathName);
                 //替换文件名
-                text = Regex.Replace(text, ScriptTemplateConfig.SCRIPTNAME, fileNameWithoutExtension);
+                text = Regex.Replace(text, ScriptTemplateConfig.ScriptName, fileNameWithoutExtension);
                 bool encoderShouldEmitUTF8Identifier = true;
                 bool throwOnInvalidBytes = false;
                 UTF8Encoding encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier, throwOnInvalidBytes);

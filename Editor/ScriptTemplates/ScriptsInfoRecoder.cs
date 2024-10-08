@@ -1,6 +1,7 @@
 using System;
 using System.IO;
-namespace KFrame
+
+namespace KFrame.Editor.ScriptTemplates
 {
     public class ScriptsInfoRecoder : UnityEditor.AssetModificationProcessor
     {

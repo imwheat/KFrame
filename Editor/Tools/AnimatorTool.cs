@@ -11,11 +11,11 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using UnityEngine;
-using UnityEditor;
 using KFrame.Utilities;
+using UnityEditor;
+using UnityEngine;
 
-namespace KFrame.Editor
+namespace KFrame.Editor.Tools
 {
     public static class AnimatorTool
     {

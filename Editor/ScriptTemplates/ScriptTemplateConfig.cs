@@ -5,13 +5,14 @@
 //* 描述：脚本模版配置
 //*******************************************************
 
-using UnityEngine;
-using UnityEditor;
-using KFrame.Utilities;
+using System;
 using System.Collections.Generic;
 using KFrame.Attributes;
+using KFrame.Utilities;
+using UnityEditor;
+using UnityEngine;
 
-namespace KFrame.Editor
+namespace KFrame.Editor.ScriptTemplates
 {
     [KGlobalConfigPath(GlobalPathType.Editor, typeof(ScriptTemplateConfig), true)]
     public class ScriptTemplateConfig : GlobalConfigBase<ScriptTemplateConfig>
@@ -19,29 +20,23 @@ namespace KFrame.Editor
         /// <summary>
         /// 模版中的脚本名
         /// </summary>
-        public const string SCRIPTNAME = "#SCRIPTNAME#";
+        public const string ScriptName = "#SCRIPTNAME#";
         /// <summary>
         /// 脚本模版路径
         /// </summary>
-        public static string FrameScriptTemplatesPath => KFrameAssetsPath.GetPath(GlobalPathType.Editor) + "ScriptTemplates/Templates/";
+        public static string FrameScriptTemplatesPath => KFrameAssetsPath.GetPath(GlobalPathType.Editor) + "Templates/";
         /// <summary>
         /// 脚本模版列表
         /// </summary>
         public static List<TextAsset> Templates
         {
-            get
-            {
-                return Instance._templates;
-            }
-            private set
-            {
-                Instance._templates = value;
-            }
+            get => Instance._templates;
+            private set => Instance._templates = value;
         }
         /// <summary>
         /// 模版字典
         /// </summary>
-        private static Dictionary<string, TextAsset> _templateDic;
+        private static Dictionary<string, TextAsset> mTemplateDic;
         /// <summary>
         /// 模版字典
         /// </summary>
@@ -49,17 +44,14 @@ namespace KFrame.Editor
         {
             get
             {
-                if (_templateDic == null)
+                if (mTemplateDic == null)
                 {
                     InitTemplateDic();
                 }
 
-                return _templateDic;
+                return mTemplateDic;
             }
-            set
-            {
-                _templateDic = value;
-            }
+            set => mTemplateDic = value;
         }
         [SerializeField]
         private List<TextAsset> _templates;
@@ -80,15 +72,18 @@ namespace KFrame.Editor
         /// <param name="template"></param>
         public static void AddTemplate(TextAsset template)
         {
-            //不能添加空的
+            //不能添加空
             if (template == null) return;
-
+            
+            //如果已经有了那就返回
+            if(TemplateDic.ContainsKey(template.name)) return;
+            
             //防空
             if (Templates == null)
             {
                 Templates = new List<TextAsset>();
             }
-
+            
             Templates.Add(template);
             TemplateDic[template.name] = template;
 
@@ -102,12 +97,12 @@ namespace KFrame.Editor
         /// </summary>
         /// <param name="templateName">模版名称</param>
         /// <returns>如果找不到的话返回""</returns>
-        public static string GetTemplatePath(string templateName)
+        public static string GetTemplateFullPath(string templateName)
         {
             //如果字典里面有的话那就从字典里面获取
             if (TemplateDic.ContainsKey(templateName))
             {
-                return FileExtensions.ConvertAssetPathToSystemPath(AssetDatabase.GetAssetPath(TemplateDic[templateName]));
+                return TemplateDic[templateName].GetFullPath();
             }
 
             Debug.LogWarning($"找不到模版，模版名称:{templateName}");

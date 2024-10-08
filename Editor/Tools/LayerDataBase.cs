@@ -5,7 +5,7 @@
 //* 描述：单个Layer的存储数据
 //*******************************************************
 
-namespace KFrame.Editor
+namespace KFrame.Editor.Tools
 {
     /// <summary>
     /// 单个Layer的存储数据

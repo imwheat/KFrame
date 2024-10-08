@@ -5,13 +5,13 @@
 //* 描述：管理生成游戏内Tag、SortingLayer、Layer的工具
 //*******************************************************
 
-using UnityEngine;
-using KFrame.Utilities;
 using System.Collections.Generic;
 using System.Text;
+using KFrame.Utilities;
 using UnityEditor;
+using UnityEngine;
 
-namespace KFrame.Editor
+namespace KFrame.Editor.Tools
 {
     internal static class TagLayerTool
     {

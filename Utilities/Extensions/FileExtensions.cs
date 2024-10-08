@@ -217,22 +217,22 @@ namespace KFrame.Utilities
         /// <param name="path">文件夹路径</param>
         public static void CreateDirectoryIfNotExist(string path)
         {
+#if UNITY_EDITOR
+
+            //如果是编辑器的文件夹
+            if(path.StartsWith("Assets") && !AssetDatabase.IsValidFolder(path))
+            {
+                UnityEngine.Windows.Directory.CreateDirectory(path);
+                return;
+            }
+
+#endif
+            
             //如果存在就不用创建
             if (Directory.Exists(path)) return;
 
             //创建
             Directory.CreateDirectory(path);
-
-#if UNITY_EDITOR
-
-            //编辑器创建文件夹就刷新一下
-            if(path.Contains("Assets"))
-            {
-                AssetDatabase.Refresh();
-            }
-
-#endif
-
         }
 
         /// <summary>
@@ -267,7 +267,7 @@ namespace KFrame.Utilities
         /// </summary>
         /// <param name="assetsPath"></param>
         /// <returns></returns>
-        public static string ConvertAssetPathToSystemPath(string assetsPath)
+        public static string ConvertAssetPathToSystemPath(this string assetsPath)
         {
             return Application.dataPath.Substring(0, Application.dataPath.Length - "Assets".Length) + assetsPath;
         }
@@ -276,7 +276,7 @@ namespace KFrame.Utilities
         /// 把系统绝对路径转换成Unity相对路径
         /// </summary>
         /// <returns></returns>
-        public static string ConvertSystemPathToAssetPath(string systemPath)
+        public static string ConvertSystemPathToAssetPath(this string systemPath)
         {
             //把前缀给换掉
             return systemPath.Replace(Application.dataPath, "Assets");

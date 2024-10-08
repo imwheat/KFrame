@@ -6,6 +6,7 @@
 //*******************************************************
 using System.Collections;
 using System.Collections.Generic;
+using KFrame.Editor.ScriptTemplates;
 using KFrame.StarTable;
 using UnityEngine;
 using UnityEditor;

@@ -5,7 +5,7 @@
 //* 描述：
 //*******************************************************
 
-namespace KFrame.Editor
+namespace KFrame.Editor.Tools
 {
     [System.Serializable]
     internal class TagDataBase
