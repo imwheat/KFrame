@@ -111,7 +111,7 @@ namespace KFrame
         /// 注册Model
         /// </summary>
         /// <typeparam name="T">Model的类型</typeparam>
-        public T RegisterModel<T>(T model) where T : IModel, new()
+        public T RegisterModel<T>(T model) where T : IModel
         {
             model.Owner = this;
             modelDic[typeof(T).GetNiceName()] = model;
@@ -133,7 +133,7 @@ namespace KFrame
         /// 注册System
         /// </summary>
         /// <typeparam name="T">System的类型</typeparam>
-        public T RegisterSystem<T>(T system) where T : ISystem, new()
+        public T RegisterSystem<T>(T system) where T : ISystem
         {
             //设置Owner，塞入字典
             system.Owner = this;
