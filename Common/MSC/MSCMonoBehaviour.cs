@@ -19,25 +19,16 @@ namespace KFrame
         /// <summary>
         /// 存储Model的字典
         /// </summary>
-        private Dictionary<string, IModel> _modelDic;
-
-        /// <summary>
-        /// 存储Model的字典
-        /// </summary>
-        private Dictionary<string, IModel> ModelDic => _modelDic ??= new Dictionary<string, IModel>();
+        private Dictionary<string, IModel> modelDic;
         /// <summary>
         /// 存储System的字典
         /// </summary>
-        private Dictionary<string, ISystem> _systemDic;
+        private Dictionary<string, ISystem> systemDic;
 
-        /// <summary>
-        /// 存储System的字典
-        /// </summary>
-        private Dictionary<string, ISystem> SystemDic => _systemDic ??= new Dictionary<string, ISystem>();
         /// <summary>
         /// Update生命周期调用事件
         /// </summary>
-        private Action _onControllerUpdate;
+        private Action onControllerUpdate;
 
         #endregion
 
@@ -49,8 +40,7 @@ namespace KFrame
         /// </summary>
         protected virtual void InitRegisterModels()
         {
-            _modelDic ??= new Dictionary<string, IModel>();
-            _systemDic ??= new Dictionary<string, ISystem>();
+            modelDic = new Dictionary<string, IModel>();
         }
 
         /// <summary>
@@ -58,6 +48,7 @@ namespace KFrame
         /// </summary>
         protected virtual void InitRegisterSystems()
         {
+            systemDic = new Dictionary<string, ISystem>();
         }
         /// <summary>
         /// 初始化MSC系统
@@ -74,16 +65,16 @@ namespace KFrame
         public virtual void Dispose()
         {
             //遍历释放资源
-            foreach (var model in ModelDic.Values)
+            foreach (var model in modelDic.Values)
             {
                 model.Dispose();
             }
-            foreach (var system in SystemDic.Values)
+            foreach (var system in systemDic.Values)
             {
                 system.Dispose();
             }
             //清空事件
-            _onControllerUpdate = null;
+            onControllerUpdate = null;
         }
         
         protected virtual void Awake()
@@ -94,7 +85,7 @@ namespace KFrame
 
         protected virtual void Update()
         {
-            _onControllerUpdate?.Invoke();
+            onControllerUpdate?.Invoke();
         }
 
         protected virtual void OnDestroy()
@@ -123,7 +114,7 @@ namespace KFrame
         public T RegisterModel<T>(T model) where T : IModel, new()
         {
             model.Owner = this;
-            ModelDic[typeof(T).GetNiceName()] = model;
+            modelDic[typeof(T).GetNiceName()] = model;
 
             return model;
         }
@@ -146,7 +137,7 @@ namespace KFrame
         {
             //设置Owner，塞入字典
             system.Owner = this;
-            SystemDic[typeof(T).GetNiceName()] = system;
+            systemDic[typeof(T).GetNiceName()] = system;
 
             return system;
         }
@@ -158,7 +149,7 @@ namespace KFrame
         {
             //获取key然后获取Model，然后删除
             var keyName = typeof(T).GetNiceName();
-            if (!ModelDic.Remove(keyName, out var model)) return;
+            if (!modelDic.Remove(keyName, out var model)) return;
             //释放资源
             model.Dispose();
         }
@@ -170,7 +161,7 @@ namespace KFrame
         {
             //获取key然后获取system，然后删除
             var keyName = typeof(T).GetNiceName();
-            if (!SystemDic.Remove(keyName, out var system)) return;
+            if (!systemDic.Remove(keyName, out var system)) return;
             //释放资源
             system.Dispose();
         }
@@ -187,7 +178,7 @@ namespace KFrame
         {
             //尝试从字典中获取，如果没有那就创建注册
             var keyName = typeof(T).GetNiceName();
-            if (ModelDic.TryGetValue(keyName, out var model))
+            if (modelDic.TryGetValue(keyName, out var model))
             {
                 return (T)model;
             }
@@ -206,7 +197,7 @@ namespace KFrame
         {
             //尝试从字典中获取，如果没有那就创建注册
             var keyName = typeof(T).GetNiceName();
-            if (SystemDic.TryGetValue(keyName, out var system))
+            if (systemDic.TryGetValue(keyName, out var system))
             {
                 return (T)system;
             }
@@ -226,7 +217,7 @@ namespace KFrame
         /// <param name="updateEvent">Update事件</param>
         public void AddUpdateListener(Action updateEvent)
         {
-            _onControllerUpdate += updateEvent;
+            onControllerUpdate += updateEvent;
         }
         /// <summary>
         /// 注销Update事件
@@ -234,7 +225,7 @@ namespace KFrame
         /// <param name="updateEvent">Update事件</param>
         public void RemoveUpdateListener(Action updateEvent)
         {
-            _onControllerUpdate -= updateEvent;
+            onControllerUpdate -= updateEvent;
         }
 
         #endregion
