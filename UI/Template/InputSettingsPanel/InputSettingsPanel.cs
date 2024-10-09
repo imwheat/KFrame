@@ -263,7 +263,7 @@ namespace KFrame.UI
             foreach (var setUIData in inputSetUIDatas)
             {
                 //如果已经有数据了那就跳过
-                if(config.GetLocalizedText(setUIData.localizationKey, LanguageType.SimplifiedChinese) != String.Empty) continue;
+                if(config.GetLocalizedText(setUIData.localizationKey, (int)LanguageType.SimplifiedChinese) != String.Empty) continue;
                 //没有那就添加
                 LocalizationStringData stringData = new LocalizationStringData(setUIData.localizationKey);
                 foreach (var language in languages)

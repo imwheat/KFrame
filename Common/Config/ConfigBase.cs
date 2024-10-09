@@ -10,7 +10,7 @@ using UnityEngine;
 namespace KFrame
 {
     /// <summary>
-    /// 非Odin的属性配置
+    /// 配置基类
     /// </summary>
     public class ConfigBase : ScriptableObject { }
 }

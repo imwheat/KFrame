@@ -6,11 +6,21 @@
 //*******************************************************
 
 using System;
+using UnityEngine;
 
 namespace KFrame
 {
     public interface IController : IDisposable
     {
+        #region 属性
+        
+        /// <summary>
+        /// 控制器的GameObject
+        /// </summary>
+        public GameObject GameObject { get; }
+
+        #endregion
+        
         #region 创建与删除
 
         /// <summary>

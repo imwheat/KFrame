@@ -454,34 +454,6 @@ namespace KFrame.Systems
             Addressables.LoadAssetsAsync<T>(keyName, callBackOnEveryOne).Completed += callBack;
         }
 
-        /// <summary>
-        /// 释放资源
-        /// </summary>
-        /// <typeparam name="T">对象类型</typeparam>
-        /// <param name="obj">具体对象</param>
-        public static void UnloadAsset<T>(T obj)
-        {
-            Addressables.Release(obj);
-        }
-
-        /// <summary>
-        /// 卸载因为批量加载而产生的handle
-        /// </summary>
-        /// <typeparam name="TObject"></typeparam>
-        /// <param name="handle"></param>
-        public static void UnLoadAssetsHandle<TObject>(AsyncOperationHandle<TObject> handle)
-        {
-            Addressables.Release(handle);
-        }
-
-        /// <summary>
-        /// 销毁游戏物体并释放资源
-        /// </summary>
-        public static bool UnloadInstance(GameObject obj)
-        {
-            return Addressables.ReleaseInstance(obj);
-        }
-
         #endregion
 
         #region 场景资源加载
@@ -508,6 +480,38 @@ namespace KFrame.Systems
             LoadSceneMode mode = LoadSceneMode.Single)
         {
             Addressables.LoadSceneAsync(sceneName, mode).WaitForCompletion().ActivateAsync();
+        }
+
+        #endregion
+
+        #region 资源释放
+
+        /// <summary>
+        /// 释放资源
+        /// </summary>
+        /// <typeparam name="T">对象类型</typeparam>
+        /// <param name="obj">具体对象</param>
+        public static void ReleaseAsset<T>(T obj)
+        {
+            Addressables.Release(obj);
+        }
+
+        /// <summary>
+        /// 卸载因为批量加载而产生的handle
+        /// </summary>
+        /// <typeparam name="TObject"></typeparam>
+        /// <param name="handle"></param>
+        public static void ReleaseAssetsHandle<TObject>(AsyncOperationHandle<TObject> handle)
+        {
+            Addressables.Release(handle);
+        }
+
+        /// <summary>
+        /// 销毁游戏物体并释放资源
+        /// </summary>
+        public static bool ReleaseInstance(GameObject obj)
+        {
+            return Addressables.ReleaseInstance(obj);
         }
 
         #endregion

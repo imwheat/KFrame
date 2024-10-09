@@ -97,7 +97,7 @@ namespace KFrame.UI
             //注册事件
             RegisterEventListener();
             //更新语言
-            curLanguage = LocalizationSystem.LanguageType;
+            curLanguage = (LanguageType)LocalizationSystem.LanguageType;
             UpdateChildLanguage();
         }
         /// <summary>

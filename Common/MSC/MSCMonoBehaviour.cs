@@ -15,7 +15,11 @@ namespace KFrame
     public abstract class MSCMonoBehaviour : MonoBehaviour, IController
     {
         #region 参数属性
-
+        
+        /// <summary>
+        /// 控制器GameObject
+        /// </summary>
+        public GameObject GameObject => gameObject;
         /// <summary>
         /// 存储Model的字典
         /// </summary>

@@ -354,3 +354,10 @@ MonoBehaviour:
     - Language: 3
       Text: "\u3044\u3044\u3048"
   ImageDatas: []
+  packageReferences:
+  - languageId: 0
+    languageName: SC
+    packagePath: Assets/KFrame/Assets/Test/LanguagePackageSC.asset
+  - languageId: 1
+    languageName: EN
+    packagePath: gePackageEN.assetets/Test/LanguagePackageEN.asset

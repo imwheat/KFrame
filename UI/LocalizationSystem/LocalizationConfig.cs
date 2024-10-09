@@ -9,9 +9,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Sirenix.OdinInspector;
-using System.IO;
 using KFrame.Attributes;
+using KFrame.Systems;
 using KFrame.Utilities;
 
 #if UNITY_EDITOR
@@ -36,14 +35,24 @@ namespace KFrame.UI
         /// </summary>
         public List<LocalizationImageData> ImageDatas;
         
+        /// <summary>
+        /// 语言包
+        /// </summary>
+        public List<LanguagePackageReference> packageReferences;
+        
 
         #endregion
 
         #region 本地化搜索字典
 
-        private Dictionary<string, Dictionary<LanguageType, string>> textDic;
+        /// <summary>
+        /// 语言包字典
+        /// </summary>
+        private Dictionary<int, LanguagePackageReference> packageDic;
+        private Dictionary<string, string> textDictionary;
+        private Dictionary<string, Dictionary<int, string>> textDic;
 
-        public Dictionary<string, Dictionary<LanguageType, string>> TextDic
+        public Dictionary<string, Dictionary<int, string>> TextDic
         {
             get
             {
@@ -55,9 +64,9 @@ namespace KFrame.UI
                 return textDic;
             }
         }
-        private Dictionary<string, Dictionary<LanguageType, Sprite>> imgDic;
+        private Dictionary<string, Dictionary<int, Sprite>> imgDic;
 
-        private Dictionary<string, Dictionary<LanguageType, Sprite>> ImgDic
+        private Dictionary<string, Dictionary<int, Sprite>> ImgDic
         {
             get
             {
@@ -69,8 +78,8 @@ namespace KFrame.UI
                 return imgDic;
             }
         }
-        public Dictionary<LanguageType, int> LanguageFontSize
-            = new Dictionary<LanguageType, int>();
+        public Dictionary<int, int> LanguageFontSize
+            = new Dictionary<int, int>();
 
         #endregion
 
@@ -82,10 +91,16 @@ namespace KFrame.UI
         public void Init()
         {
             //注册语言类型的字典
-            textDic = new Dictionary<string, Dictionary<LanguageType, string>>();
-            imgDic = new Dictionary<string, Dictionary<LanguageType, Sprite>>();
+            packageDic = new Dictionary<int, LanguagePackageReference>();
+            textDictionary = new Dictionary<string, string>();
+            textDic = new Dictionary<string, Dictionary<int, string>>();
+            imgDic = new Dictionary<string, Dictionary<int, Sprite>>();
 
             //然后遍历每个数据然后添加入字典中
+            foreach (var packageReference in packageReferences)
+            {
+                packageDic[packageReference.languageId] = packageReference;
+            }
             foreach (LocalizationStringData stringData in TextDatas)
             {
                 RegisterTextData(stringData);
@@ -96,16 +111,42 @@ namespace KFrame.UI
             }
         }
         /// <summary>
+        /// 加载语言包
+        /// </summary>
+        /// <param name="id">语言的id</param>
+        private void LoadLanguagePackage(int id)
+        {
+            //如果不存在该语言类型就报错然后返回
+            if (!packageDic.TryGetValue(id, out var packageReference))
+            {
+                Debug.LogError($"错误：不存在id为{id}的语言");
+                return;
+            }
+
+            //从资源库里面读取加载语言包
+            LanguagePackage package = ResSystem.LoadAsset<LanguagePackage>(packageReference.packagePath);
+            if (package == null)
+            {
+                throw new Exception($"错误：路径{packageReference.packagePath} 的语言包不存在！");
+            }
+            
+            //遍历每个数据，然后更新文本
+            foreach (var data in package.datas)
+            {
+                textDictionary[data.key] = data.text;
+            }
+        }
+        /// <summary>
         /// 注册文本数据
         /// </summary>
         /// <param name="stringData">文本数据</param>
         private void RegisterTextData(LocalizationStringData stringData)
         {
-            textDic[stringData.Key] = new Dictionary<LanguageType, string>();
+            textDic[stringData.Key] = new Dictionary<int, string>();
             //遍历所有数据，然后注册进入字典
             foreach (LocalizationStringDataBase data in stringData.Datas)
             {
-                textDic[stringData.Key][data.Language] = data.Text;
+                textDic[stringData.Key][(int)data.Language] = data.Text;
             }
         }
         /// <summary>
@@ -114,11 +155,11 @@ namespace KFrame.UI
         /// <param name="imageData">图片数据</param>
         private void RegisterImageData(LocalizationImageData imageData)
         {
-            imgDic[imageData.Key] = new Dictionary<LanguageType, Sprite>();
+            imgDic[imageData.Key] = new Dictionary<int, Sprite>();
             //遍历所有数据，然后注册进入字典
             foreach (LocalizationImageDataBase data in imageData.Datas)
             {
-                imgDic[imageData.Key][data.Language] = data.Sprite;
+                imgDic[imageData.Key][(int)data.Language] = data.Sprite;
             }
         }
         #endregion
@@ -131,7 +172,7 @@ namespace KFrame.UI
         /// <param name="key">key</param>
         /// <param name="language">语言类型</param>
         /// <returns>本地化后的文本，如果没有就返回""</returns>
-        public string GetLocalizedText(string key, LanguageType language)
+        public string GetLocalizedText(string key, int language)
         {
             if (TextDic.TryGetValue(key, out var dic) && dic.TryGetValue(language, out string text))
             {
@@ -146,7 +187,7 @@ namespace KFrame.UI
         /// <param name="key">key</param>
         /// <param name="language">语言类型</param>
         /// <returns>本如果没有就返回false</returns>
-        public bool TryGetLocalizedText(string key, LanguageType language, out string text)
+        public bool TryGetLocalizedText(string key, int language, out string text)
         {
             text = GetLocalizedText(key, language);
 
@@ -158,7 +199,7 @@ namespace KFrame.UI
         /// <param name="key">key</param>
         /// <param name="language">语言类型</param>
         /// <returns>本地化后的文本，如果没有就返回null</returns>
-        public Sprite GetLocalizedImage(string key, LanguageType language)
+        public Sprite GetLocalizedImage(string key, int language)
         {
             if (ImgDic.TryGetValue(key, out var dic) && dic.TryGetValue(language, out Sprite sprite))
             {
@@ -173,7 +214,7 @@ namespace KFrame.UI
         /// <param name="key">key</param>
         /// <param name="language">语言类型</param>
         /// <returns>本如果没有就返回false</returns>
-        public bool TryGetLocalizedImage(string key, LanguageType language, out Sprite sprite)
+        public bool TryGetLocalizedImage(string key, int language, out Sprite sprite)
         {
             sprite = GetLocalizedImage(key, language);
 
@@ -385,7 +426,7 @@ namespace KFrame.UI
             //保存
             SaveAsset();
         }
-        
+
         #endif
 
         #endregion

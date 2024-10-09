@@ -20,11 +20,11 @@ namespace KFrame.UI
         /// <summary>
         /// 语言类型
         /// </summary>
-        private static LanguageType languageType;
+        private static int languageType;
         /// <summary>
         /// 语言类型，设置时会自动分发语言修改事件
         /// </summary>
-        public static LanguageType LanguageType
+        public static int LanguageType
         {
             get
             {
@@ -55,7 +55,7 @@ namespace KFrame.UI
         /// <param name="key">key</param>
         /// <param name="language">语言类型</param>
         /// <returns>没有的话返回""</returns>
-        public static string GetLocalizedText(string key, LanguageType language)
+        public static string GetLocalizedText(string key, int language)
         {
             if (Config == null)
             {
@@ -82,7 +82,7 @@ namespace KFrame.UI
         /// <returns>没有的话返回false</returns>
         public static bool TryGetLocalizedText(string key, LanguageType language, out string text)
         {
-            return Config.TryGetLocalizedText(key, language, out text);
+            return Config.TryGetLocalizedText(key, (int)language, out text);
         }
         /// <summary>
         /// 获取本地化图片数据
@@ -98,7 +98,7 @@ namespace KFrame.UI
                 return null;
             }
 
-            return Config.GetLocalizedImage(key, language);
+            return Config.GetLocalizedImage(key, (int)language);
         }
         /// <summary>
         /// 获取当前语言类型的本地化图片数据
@@ -107,7 +107,7 @@ namespace KFrame.UI
         /// <returns>没有的话返回null</returns>
         public static Sprite GetLocalizedImageInCurLanguage(string key)
         {
-            return GetLocalizedImage(key, LanguageType);
+            return GetLocalizedImage(key, (LanguageType)LanguageType);
         }
         /// <summary>
         /// 尝试获取本地化文本数据
@@ -117,7 +117,7 @@ namespace KFrame.UI
         /// <returns>没有的话返回false</returns>
         public static bool TryGetLocalizedImage(string key, LanguageType language, out Sprite sprite)
         {
-            return Config.TryGetLocalizedImage(key, language, out sprite);
+            return Config.TryGetLocalizedImage(key, (int)language, out sprite);
         }
         public static void RegisterLanguageEvent(Action<LanguageType> action)
         {

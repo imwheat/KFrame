@@ -35,8 +35,22 @@ namespace KFrame.UI.Editor
         /// </summary>
         private enum SelectType
         {
+            /// <summary>
+            /// 文本数据
+            /// </summary>
             StringData = 0,
+            /// <summary>
+            /// 图片数据
+            /// </summary>
             ImageData = 1,
+            /// <summary>
+            /// 语言包
+            /// </summary>
+            LanguagePackage = 2,
+            /// <summary>
+            /// 语言包的Key
+            /// </summary>
+            LanguagePackageKey = 3,
         }
         /// <summary>
         /// 编辑器模式
@@ -159,6 +173,10 @@ namespace KFrame.UI.Editor
         /// 图片数据搜索栏
         /// </summary>
         private string imageDataSearchText;
+        /// <summary>
+        /// 语言包key搜索
+        /// </summary>
+        private string packageKeySearchText;
         /// <summary>
         /// 文本数据的列表滚轮位置
         /// </summary>
@@ -588,21 +606,31 @@ namespace KFrame.UI.Editor
             EditorGUILayout.BeginVertical();
 
             EditorGUILayout.BeginHorizontal();
-            
-            EditorGUITool.ShowAClearFoldOut(ref filterFoldout, "语言筛选");
+
+            if (curSelectType != SelectType.LanguagePackage && curSelectType != SelectType.LanguagePackageKey)
+            {
+                EditorGUITool.ShowAClearFoldOut(ref filterFoldout, "语言筛选");
+            }
                 
             //绘制搜索栏
-            Rect searchRect =
-                EditorGUILayout.GetControlRect(GUILayout.Height(MStyle.labelHeight), GUILayout.ExpandWidth(true));
-            switch (curSelectType)
+            if (curSelectType != SelectType.LanguagePackage)
             {
-                case SelectType.StringData:
-                    stringDataSearchText = KEditorGUI.SearchTextField(searchRect, stringDataSearchText);
-                    break;
-                case SelectType.ImageData:
-                    imageDataSearchText = KEditorGUI.SearchTextField(searchRect, imageDataSearchText);
-                    break;
+                Rect searchRect =
+                    EditorGUILayout.GetControlRect(GUILayout.Height(MStyle.labelHeight), GUILayout.ExpandWidth(true));
+                switch (curSelectType)
+                {
+                    case SelectType.StringData:
+                        stringDataSearchText = KEditorGUI.SearchTextField(searchRect, stringDataSearchText);
+                        break;
+                    case SelectType.ImageData:
+                        imageDataSearchText = KEditorGUI.SearchTextField(searchRect, imageDataSearchText);
+                        break;
+                    case SelectType.LanguagePackageKey:
+                        packageKeySearchText = KEditorGUI.SearchTextField(searchRect, packageKeySearchText);
+                        break;
+                }
             }
+
             
             EditorGUILayout.EndHorizontal();
             
