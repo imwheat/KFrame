@@ -18,13 +18,21 @@ namespace KFrame
         /// </summary>
         /// <typeparam name="T">Model的类型</typeparam>
         public T RegisterModel<T>() where T : IModel, new();
-
+        /// <summary>
+        /// 注册Model
+        /// </summary>
+        /// <typeparam name="T">Model的类型</typeparam>
+        public T RegisterModel<T>(T model) where T : IModel, new();
         /// <summary>
         /// 注册System
         /// </summary>
         /// <typeparam name="T">System的类型</typeparam>
         public T RegisterSystem<T>() where T : ISystem, new();
-
+        /// <summary>
+        /// 注册System
+        /// </summary>
+        /// <typeparam name="T">System的类型</typeparam>
+        public T RegisterSystem<T>(T system) where T : ISystem, new();
         /// <summary>
         /// 注销Model
         /// </summary>
