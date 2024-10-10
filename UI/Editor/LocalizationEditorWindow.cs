@@ -214,6 +214,10 @@ namespace KFrame.UI.Editor
         /// </summary>
         private int editKeyIndex = -1;
         /// <summary>
+        /// 创建新的语言包
+        /// </summary>
+        private bool createNewPackage = false;
+        /// <summary>
         /// 正在编辑的Key的文本
         /// </summary>
         private string editKeyText;
@@ -562,7 +566,7 @@ namespace KFrame.UI.Editor
 
             if (GUILayout.Button(data.languageName, GUILayout.Height(MStyle.labelHeight)))
             {
-                
+                LanguagePackageEditorWindow.ShowWindow(EditorConfig.packages[index]);
             }
             
             EditorGUILayout.EndHorizontal();
@@ -645,7 +649,8 @@ namespace KFrame.UI.Editor
                             if (EditorUtility.DisplayDialog("警告", "这是一项危险操作，你确定要删除吗？", "确定", "取消"))
                             {
                                 //移除数据
-                                EditorConfig.localizationKeys.RemoveAt(index);
+                                var keyData = EditorConfig.localizationKeys[index];
+                                EditorConfig.RemoveKey(keyData);
                                 EditorConfig.SaveAsset();
                                 //重绘GUI
                                 Repaint();
@@ -901,6 +906,45 @@ namespace KFrame.UI.Editor
         {
             EditorGUILayout.BeginVertical();
 
+            if (createNewPackage)
+            {
+                EditorGUILayout.BeginHorizontal();
+                
+                //新建语言名称
+                editKeyText = EditorGUILayout.TextField("新建语言名称：", editKeyText);
+                
+                //创建按钮
+                if (GUILayout.Button("创建", GUILayout.Width(40f)))
+                {
+                    if (string.IsNullOrEmpty(editKeyText))
+                    {
+                        EditorUtility.DisplayDialog("错误", "语言名称不能为空", "确定");
+                    }
+                    else
+                    {
+                        LocalizationEditorConfig.Instance.AddLanguagePackage(editKeyText);
+                        editKeyText = "";
+                        createNewPackage = false;
+                    }
+                }
+                
+                //取消按钮
+                if (GUILayout.Button("取消", GUILayout.Width(40f)))
+                {
+                    editKeyText = "";
+                    createNewPackage = false;
+                }
+                
+                EditorGUILayout.EndHorizontal();
+            }
+            else
+            {
+                if (GUILayout.Button("新建", GUILayout.Width(40f)))
+                {
+                    editKeyText = "";
+                    createNewPackage = true;
+                }
+            }
             if (Config.packageReferences.Count == 0)
             {
                 EditorGUILayout.LabelField("目前还没有创建语言包。", EditorStyles.boldLabel);
@@ -1009,6 +1053,7 @@ namespace KFrame.UI.Editor
         private void SwitchDrawList(SelectType type)
         {
             curSelectType = type;
+            createNewPackage = false;
             editKeyIndex = -1;
             editKeyText = "";
             Repaint();
@@ -1046,20 +1091,20 @@ namespace KFrame.UI.Editor
                     }
             
                     GUILayout.FlexibleSpace();
-            
-                    if (GUILayout.Button("新建", GUILayout.Width(MStyle.filterTypeWidth)))
+
+                    if (curSelectType != SelectType.LanguagePackage)
                     {
-                        switch (curSelectType)
+                        if (GUILayout.Button("新建", GUILayout.Width(MStyle.filterTypeWidth)))
                         {
-                            case SelectType.LanguagePackage:
-                                
-                                break;
-                            case SelectType.LanguagePackageKey:
-                                LanguageKeyCreateWindow.ShowWindow();
-                                break;
-                            default:
-                                LocalizationCreateEditorWindow.ShowWindow();
-                                break;
+                            switch (curSelectType)
+                            {
+                                case SelectType.LanguagePackageKey:
+                                    LanguageKeyCreateWindow.ShowWindow();
+                                    break;
+                                default:
+                                    LocalizationCreateEditorWindow.ShowWindow();
+                                    break;
+                            }
                         }
                     }
             

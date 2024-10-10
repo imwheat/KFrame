@@ -9,13 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dbea5d4bdff543f429615e069f677777, type: 3}
-  m_Name: LocalizationEditorConfig
+  m_Script: {fileID: 11500000, guid: 324e3f9b7b497414598ca0c7af0b14b8, type: 3}
+  m_Name: SimplifiedChinese
   m_EditorClassIdentifier: 
-  localizationKeys:
+  language:
+    languageId: 0
+    languageName: SimplifiedChinese
+  datas:
   - key: test
-    notes: 
+    text: 
   - key: ddd
-    notes: 
-  packages:
-  - {fileID: 11400000, guid: c9d4e097d6e8d6c4f9eef9923ae1d236, type: 2}
+    text: 

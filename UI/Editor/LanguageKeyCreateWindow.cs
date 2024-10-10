@@ -271,7 +271,7 @@ namespace KFrame.UI.Editor
             
             EditorGUILayout.EndHorizontal();
             
-            GUILayout.Space(10f);
+            GUILayout.Space(Spacing);
 
             EditorGUILayout.EndVertical();
         }

@@ -6,6 +6,7 @@
 //*******************************************************
 
 using System.Collections.Generic;
+using System.IO;
 using KFrame.Utilities;
 using KFrame.Attributes;
 using KFrame.Editor;
@@ -209,6 +210,7 @@ namespace KFrame.UI.Editor
             EditorUtility.SetDirty(this);
             
             //保存文件
+            FileExtensions.CreateDirectoryIfNotExist(Path.GetDirectoryName(path));
             AssetDatabase.CreateAsset(package, path);
         }
         /// <summary>
@@ -242,6 +244,52 @@ namespace KFrame.UI.Editor
             //删除文件
             AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(package));
             
+        }
+        /// <summary>
+        /// 更新语言名称
+        /// </summary>
+        /// <param name="prevName">之前的名称</param>
+        /// <param name="newName">新的名称</param>
+        public void UpdateLanguageName(string prevName, string newName)
+        {
+            if (string.IsNullOrEmpty(newName))
+            {
+                EditorUtility.DisplayDialog("错误", "语言名称不能为空！", "确认");
+                return;
+            }
+            //如果和之前的一样那就返回
+            if(prevName == newName) return;
+            //先寻找要改名字的语言包，如果没有就返回
+            LanguagePackage target = null;
+            foreach (var package in packages)
+            {
+                if (package.name == prevName)
+                {
+                    target = package;
+                }
+                else if (package.name == newName)
+                {
+                    EditorUtility.DisplayDialog("错误", "语言名称不能重复！", "确认");
+                    return;
+                }
+            }
+            if(target == null) return;
+            
+            //获取本地化配置文件
+            LocalizationConfig config = LocalizationConfig.Instance;
+            
+            //获取数据然后修改名称
+            var references = config.packageReferences.Find(x => x.languageName == prevName);
+            if (references != null)
+            {
+                references.languageName = newName;
+            }
+            target.language.languageName = newName;
+            
+            //保存
+            EditorUtility.SetDirty(target);
+            EditorUtility.SetDirty(config);
+            this.SaveAsset();
         }
 
         #endregion
