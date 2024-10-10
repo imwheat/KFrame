@@ -22,6 +22,18 @@ namespace KFrame.UI
         /// 语言包路径
         /// </summary>
         public string packagePath;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id">语言id</param>
+        /// <param name="name">语言名称</param>
+        /// <param name="path">语言包路径</param>
+        public LanguagePackageReference(int id, string name, string path)
+        {
+            languageId = id;
+            languageName = name;
+            packagePath = path;
+        }
     }
 }
 
