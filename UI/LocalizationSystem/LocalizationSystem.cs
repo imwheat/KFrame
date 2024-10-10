@@ -20,7 +20,7 @@ namespace KFrame.UI
         /// <summary>
         /// 语言类型
         /// </summary>
-        private static int languageType;
+        private static int languageType = -1;
         /// <summary>
         /// 语言类型，设置时会自动分发语言修改事件
         /// </summary>
@@ -47,6 +47,9 @@ namespace KFrame.UI
 
         public static void OnLanguageValueChanged()
         {
+            //切换语言包
+            LocalizationConfig.Instance.LoadLanguagePackage(languageType);
+            
             EventBroadCastSystem.EventTrigger(OnUpdateLanguage, languageType);
         }
         /// <summary>

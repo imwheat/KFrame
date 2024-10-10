@@ -34,11 +34,10 @@ namespace KFrame.UI.Editor
 
         #region GUI绘制相关
         
-#if UNITY_2018_3_OR_NEWER
-            private static readonly float Spacing = EditorGUIUtility.standardVerticalSpacing;
-#else
-            private static readonly float Spacing = 2.0f;
-#endif
+        /// <summary>
+        /// GUI空格
+        /// </summary>
+        private static float Spacing => KGUIStyle.spacing;
         /// <summary>
         /// 每列的标题
         /// </summary>

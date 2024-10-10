@@ -19,7 +19,7 @@ namespace KFrame.Editor
 #if UNITY_2018_3_OR_NEWER
         internal static readonly float spacing = EditorGUIUtility.standardVerticalSpacing;
 #else
-            internal static readonly float spacing = 2.0f;
+        internal static readonly float spacing = 2.0f;
 #endif
         internal static readonly float padding = 6.0f;
 

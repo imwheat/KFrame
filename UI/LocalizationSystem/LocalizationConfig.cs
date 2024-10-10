@@ -107,12 +107,13 @@ namespace KFrame.UI
             {
                 RegisterImageData(imageData);
             }
+            
         }
         /// <summary>
         /// 加载语言包
         /// </summary>
         /// <param name="id">语言的id</param>
-        private void LoadLanguagePackage(int id)
+        public void LoadLanguagePackage(int id)
         {
             //如果不存在该语言类型就报错然后返回
             if (!packageDic.TryGetValue(id, out var packageReference))
@@ -163,7 +164,27 @@ namespace KFrame.UI
         #endregion
 
         #region 获取本地化信息
+        
+        /// <summary>
+        /// 获取语言包里的指定文本
+        /// </summary>
+        /// <param name="key">文本key</param>
+        /// <returns>语言包里的文本</returns>
+        public string GetLPackageText(string key)
+        {
+            return textDictionary.GetValueOrDefault(key, "");
+        }
 
+        /// <summary>
+        /// 尝试获取语言包里的指定文本
+        /// </summary>
+        /// <param name="key">文本key</param>
+        /// <param name="text">输出文本</param>
+        /// <returns>如果没有那就输出false</returns>
+        public bool TryGetLPackageText(string key, out string text)
+        {
+            return textDictionary.TryGetValue(key, out text);
+        }
         /// <summary>
         /// 获取本地化文本
         /// </summary>
