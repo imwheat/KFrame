@@ -34,12 +34,10 @@ namespace KFrame.UI
         /// 本地化的图片数据
         /// </summary>
         public List<LocalizationImageData> ImageDatas;
-        
         /// <summary>
         /// 语言包
         /// </summary>
         public List<LanguagePackageReference> packageReferences;
-        
 
         #endregion
 

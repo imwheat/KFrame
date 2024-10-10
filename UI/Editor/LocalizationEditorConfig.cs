@@ -49,7 +49,7 @@ namespace KFrame.UI.Editor
         /// <summary>
         /// key字典
         /// </summary>
-        private Dictionary<string, LanguagePackageKeyData> KeyDic
+        public Dictionary<string, LanguagePackageKeyData> KeyDic
         {
             get
             {
@@ -93,6 +93,11 @@ namespace KFrame.UI.Editor
             {
                 packages[i].AddKey(keyData.key);
             }
+            //更新字典
+            if (keyDic != null)
+            {
+                keyDic[keyData.key] = keyData;
+            }
             
             //保存
             EditorUtility.SetDirty(this);
@@ -114,6 +119,11 @@ namespace KFrame.UI.Editor
             for (int i = 0; i < packages.Count; i++)
             {
                 packages[i].RemoveKey(keyData.key);
+            }
+            //更新字典
+            if (keyDic != null)
+            {
+                keyDic.Remove(keyData.key);
             }
             
             //保存

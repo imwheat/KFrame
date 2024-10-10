@@ -12,4 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbea5d4bdff543f429615e069f677777, type: 3}
   m_Name: LocalizationEditorConfig
   m_EditorClassIdentifier: 
-  localizationKeys: []
+  localizationKeys:
+  - key: test
+    notes: 
+  - key: ddd
+    notes: 
+  - key: asd
+    notes: 
+  packages: []

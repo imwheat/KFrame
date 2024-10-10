@@ -1049,7 +1049,18 @@ namespace KFrame.UI.Editor
             
                     if (GUILayout.Button("新建", GUILayout.Width(MStyle.filterTypeWidth)))
                     {
-                        LocalizationCreateEditorWindow.ShowWindow();
+                        switch (curSelectType)
+                        {
+                            case SelectType.LanguagePackage:
+                                
+                                break;
+                            case SelectType.LanguagePackageKey:
+                                LanguageKeyCreateWindow.ShowWindow();
+                                break;
+                            default:
+                                LocalizationCreateEditorWindow.ShowWindow();
+                                break;
+                        }
                     }
             
                     EditorGUILayout.EndHorizontal();
