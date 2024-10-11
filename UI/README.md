@@ -26,4 +26,4 @@
 
 ### 本地化编辑
 你可以使用“项目工具/本地化编辑器”来进行编辑你的本地化配置。  
-编辑器脚本见 [编辑器脚本]("./Editor/LocalizationEditorWindow.cs)
+编辑器脚本见 [编辑器脚本]("./Editor/LocalizationEditorWindow.cs")
