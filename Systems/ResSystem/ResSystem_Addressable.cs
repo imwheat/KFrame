@@ -141,9 +141,9 @@ namespace KFrame.Systems
         /// <param name="autoRelease">物体销毁时，会自动去调用一次Addressables.Release</param>
         public static GameObject InstantiateGameObject(Transform parent, string keyName, bool autoRelease = true)
         {
-            //先尝试从对象池中获取Gameobject
+            //先尝试从对象池中获取GameObject
             GameObject go = PoolSystem.GetGameObject(keyName, parent);
-            if (go== null) return go;
+            if (go) return go;
             else
             {
                 //如果没有那就加载预制体后生成
@@ -179,7 +179,7 @@ namespace KFrame.Systems
         {
             GameObject go = PoolSystem.GetGameObject(keyName, parent);
             
-            if (go == null) callback?.Invoke(go);
+            if (go) callback?.Invoke(go);
             else
             {
                 //如果没有那就加载预制体后生成
@@ -216,9 +216,9 @@ namespace KFrame.Systems
         public static GameObject InstantiateGameObject(string assetName, Transform parent = null, string keyName = null,
             bool autoRelease = true)
         {
-            //先尝试从对象池中获取Gameobject
+            //先尝试从对象池中获取GameObject
             GameObject go = PoolSystem.GetGameObject(keyName, parent);
-            if (go== null) return go;
+            if (go) return go;
             else
             {
                 //如果没有那就加载预制体后生成
@@ -257,7 +257,7 @@ namespace KFrame.Systems
             if (string.IsNullOrEmpty(keyName)) go = PoolSystem.GetGameObject(assetName, parent);
             else go = PoolSystem.GetGameObject(keyName, parent);
 
-            if (go.IsNull() == false) callback?.Invoke(go);
+            if (go) callback?.Invoke(go);
             else
             {
                 //如果没有那就加载预制体后生成
@@ -293,7 +293,7 @@ namespace KFrame.Systems
             where T : Component
         {
             GameObject go = InstantiateGameObject(parent, keyName, autoRelease);
-            if (go.IsNull() == false) return go.GetComponent<T>();
+            if (go) return go.GetComponent<T>();
             else return null;
         }
 
@@ -309,7 +309,7 @@ namespace KFrame.Systems
             bool autoRelease = true) where T : Component
         {
             GameObject go = InstantiateGameObject(assetName, parent, keyName, autoRelease);
-            if (go.IsNull() == false) return go.GetComponent<T>();
+            if (go) return go.GetComponent<T>();
             else return null;
         }
 
@@ -329,7 +329,7 @@ namespace KFrame.Systems
             if (keyName == null) go = PoolSystem.GetGameObject(assetName, parent);
             else go = PoolSystem.GetGameObject(keyName, parent);
             // 对象池中有
-            if (!go.IsNull())
+            if (go)
             {
                 if (autoRelease) go.transform.OnReleaseAddressableAsset(AutomaticReleaseAssetAction);
                 callback?.Invoke(go.GetComponent<T>());
@@ -454,6 +454,34 @@ namespace KFrame.Systems
             Addressables.LoadAssetsAsync<T>(keyName, callBackOnEveryOne).Completed += callBack;
         }
 
+        /// <summary>
+        /// 释放资源
+        /// </summary>
+        /// <typeparam name="T">对象类型</typeparam>
+        /// <param name="obj">具体对象</param>
+        public static void UnloadAsset<T>(T obj)
+        {
+            Addressables.Release(obj);
+        }
+
+        /// <summary>
+        /// 卸载因为批量加载而产生的handle
+        /// </summary>
+        /// <typeparam name="TObject"></typeparam>
+        /// <param name="handle"></param>
+        public static void UnLoadAssetsHandle<TObject>(AsyncOperationHandle<TObject> handle)
+        {
+            Addressables.Release(handle);
+        }
+
+        /// <summary>
+        /// 销毁游戏物体并释放资源
+        /// </summary>
+        public static bool UnloadInstance(GameObject obj)
+        {
+            return Addressables.ReleaseInstance(obj);
+        }
+
         #endregion
 
         #region 场景资源加载
@@ -480,38 +508,6 @@ namespace KFrame.Systems
             LoadSceneMode mode = LoadSceneMode.Single)
         {
             Addressables.LoadSceneAsync(sceneName, mode).WaitForCompletion().ActivateAsync();
-        }
-
-        #endregion
-
-        #region 资源释放
-
-        /// <summary>
-        /// 释放资源
-        /// </summary>
-        /// <typeparam name="T">对象类型</typeparam>
-        /// <param name="obj">具体对象</param>
-        public static void ReleaseAsset<T>(T obj)
-        {
-            Addressables.Release(obj);
-        }
-
-        /// <summary>
-        /// 卸载因为批量加载而产生的handle
-        /// </summary>
-        /// <typeparam name="TObject"></typeparam>
-        /// <param name="handle"></param>
-        public static void ReleaseAssetsHandle<TObject>(AsyncOperationHandle<TObject> handle)
-        {
-            Addressables.Release(handle);
-        }
-
-        /// <summary>
-        /// 销毁游戏物体并释放资源
-        /// </summary>
-        public static bool ReleaseInstance(GameObject obj)
-        {
-            return Addressables.ReleaseInstance(obj);
         }
 
         #endregion
