@@ -56,7 +56,7 @@ namespace KFrame.UI
         /// <summary>
         /// 当前的语言类型
         /// </summary>
-        protected LanguageType curLanguage;
+        protected int curLanguage = -1;
         /// <summary>
         /// 本地化配置列表
         /// </summary>
@@ -97,8 +97,7 @@ namespace KFrame.UI
             //注册事件
             RegisterEventListener();
             //更新语言
-            curLanguage = (LanguageType)LocalizationSystem.LanguageType;
-            UpdateChildLanguage();
+            OnUpdateLanguage(LocalizationSystem.UILanguageType);
         }
         /// <summary>
         /// 显示时执行额外内容
@@ -141,7 +140,7 @@ namespace KFrame.UI
         /// </summary>
         protected virtual void RegisterEventListener()
         {
-            LocalizationSystem.RegisterLanguageEvent(OnUpdateLanguage);
+            LocalizationSystem.RegisterUILanguageEvent(OnUpdateLanguage);
         }
 
         /// <summary>
@@ -149,7 +148,7 @@ namespace KFrame.UI
         /// </summary>
         protected virtual void UnRegisterEventListener() 
         { 
-            LocalizationSystem.UnregisterLanguageEvent(OnUpdateLanguage);
+            LocalizationSystem.UnregisterUILanguageEvent(OnUpdateLanguage);
         }
         
 
@@ -158,7 +157,7 @@ namespace KFrame.UI
         /// <summary>
         /// 当语言更新时
         /// </summary>
-        protected virtual void OnUpdateLanguage(LanguageType languageType)
+        protected virtual void OnUpdateLanguage(int languageType)
         {
             //如果当前语言类型和要修改的一样那就返回
             if(curLanguage == languageType) return;

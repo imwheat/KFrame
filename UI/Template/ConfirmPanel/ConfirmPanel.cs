@@ -90,9 +90,9 @@ namespace KFrame.UI
             if(panelInitData == null) return;
             
             //更新UI
-            contentText.text = LocalizationSystem.GetLocalizedTextInCurLanguage(panelInitData.ContentKey);
-            confirmText.text = LocalizationSystem.GetLocalizedTextInCurLanguage(panelInitData.ConfirmKey);
-            cancelText.text = LocalizationSystem.GetLocalizedTextInCurLanguage(panelInitData.CancelKey);
+            contentText.text = LocalizationSystem.GetUITextInCurLanguage(panelInitData.ContentKey);
+            confirmText.text = LocalizationSystem.GetUITextInCurLanguage(panelInitData.ConfirmKey);
+            cancelText.text = LocalizationSystem.GetUITextInCurLanguage(panelInitData.CancelKey);
             
             //注册事件
             onConfirm = panelInitData.ConfirmAction;

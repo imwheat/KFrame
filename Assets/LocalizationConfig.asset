@@ -15,346 +15,363 @@ MonoBehaviour:
   TextDatas:
   - Key: ui_LanguageType
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u7B80\u4F53\u4E2D\u6587"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u7E41\u9AD4\u4E2D\u6587"
-    - Language: 2
+    - LanguageId: 2
       Text: English
-    - Language: 3
+    - LanguageId: 3
       Text: "\u65E5\u672C\u8A9E"
   - Key: ui_Language
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u8BED\u8A00"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u8A9E\u8A00"
-    - Language: 2
+    - LanguageId: 2
       Text: Language
-    - Language: 3
+    - LanguageId: 3
       Text: "\u8A00\u8A9E"
   - Key: ui_GameSettings
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u6E38\u620F\u8BBE\u7F6E"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u904A\u6232\u8A2D\u7F6E"
-    - Language: 2
+    - LanguageId: 2
       Text: Game
-    - Language: 3
+    - LanguageId: 3
       Text: "\u30B2\u30FC\u30E0\u8A2D\u5B9A"
   - Key: ui_ReturnButton
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u8FD4\u56DE"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u8FD4\u56DE"
-    - Language: 2
+    - LanguageId: 2
       Text: Back
-    - Language: 3
+    - LanguageId: 3
       Text: "\u623B\u308B"
   - Key: ui_AudioSettings
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u97F3\u6548\u8BBE\u7F6E"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u97F3\u6548\u8A2D\u7F6E"
-    - Language: 2
+    - LanguageId: 2
       Text: Audio
-    - Language: 3
+    - LanguageId: 3
       Text: "\u97F3\u58F0\u8A2D\u5B9A"
   - Key: ui_GraphicSettings
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u753B\u9762\u8BBE\u7F6E"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u756B\u9762\u8A2D\u7F6E"
-    - Language: 2
+    - LanguageId: 2
       Text: Graphic
-    - Language: 3
+    - LanguageId: 3
       Text: "\u6620\u753B\u8A2D\u5B9A"
   - Key: ui_InputSettings
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u6309\u952E\u8BBE\u7F6E"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u6309\u9375\u8A2D\u7F6E"
-    - Language: 2
+    - LanguageId: 2
       Text: Input
-    - Language: 3
+    - LanguageId: 3
       Text: "\u30AD\u30FC\u8A2D\u5B9A"
   - Key: ui_ContinueGame
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u7EE7\u7EED\u6E38\u620F"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u7E7C\u7E8C\u904A\u6232"
-    - Language: 2
+    - LanguageId: 2
       Text: Continue
-    - Language: 3
+    - LanguageId: 3
       Text: "\u7D9A\u3051\u308B"
   - Key: ui_QuitToMenu
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u8FD4\u56DE\u4E3B\u83DC\u5355"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u8FD4\u56DE\u4E3B\u83DC\u55AE"
-    - Language: 2
+    - LanguageId: 2
       Text: Quit To Menu
-    - Language: 3
+    - LanguageId: 3
       Text: "\u30E1\u30CB\u30E6\u2015\u306B\u623B\u308B"
   - Key: ui_QuitGame
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u9000\u51FA\u6E38\u620F"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u9000\u51FA\u904A\u6232"
-    - Language: 2
+    - LanguageId: 2
       Text: Quit Game
-    - Language: 3
+    - LanguageId: 3
       Text: "\u7D42\u4E86"
   - Key: ui_Settings
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u7CFB\u7EDF\u8BBE\u7F6E"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u7CFB\u7D71\u8A2D\u7F6E"
-    - Language: 2
+    - LanguageId: 2
       Text: Settings
-    - Language: 3
+    - LanguageId: 3
       Text: "\u8A2D\u5B9A"
   - Key: ui_SFXVolume
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u97F3\u6548"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u97F3\u6548"
-    - Language: 2
+    - LanguageId: 2
       Text: Sound
-    - Language: 3
+    - LanguageId: 3
       Text: "\u52B9\u679C\u97F3"
   - Key: ui_BGMVolume
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u97F3\u4E50"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u97F3\u6A02"
-    - Language: 2
+    - LanguageId: 2
       Text: Music
-    - Language: 3
+    - LanguageId: 3
       Text: "\u97F3\u697D"
   - Key: ui_UIVolume
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: UI
-    - Language: 1
+    - LanguageId: 1
       Text: UI
-    - Language: 2
+    - LanguageId: 2
       Text: UI
-    - Language: 3
+    - LanguageId: 3
       Text: UI
   - Key: ui_MasterVolume
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u4E3B\u97F3\u91CF"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u4E3B\u97F3\u91CF"
-    - Language: 2
+    - LanguageId: 2
       Text: Master
-    - Language: 3
+    - LanguageId: 3
       Text: "\u4E3B\u97F3\u91CF"
   - Key: ui_Resolution
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u5206\u8FA8\u7387"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u5206\u8FA8\u7387"
-    - Language: 2
+    - LanguageId: 2
       Text: Resolution
-    - Language: 3
+    - LanguageId: 3
       Text: "\u89E3\u50CF\u5EA6"
   - Key: ui_FullScreen
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u5168\u5C4F"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u5168\u5C4F"
-    - Language: 2
+    - LanguageId: 2
       Text: Full Screen
-    - Language: 3
+    - LanguageId: 3
       Text: "\u5168\u753B\u9762"
   - Key: ui_Vsync
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u5782\u76F4\u540C\u6B65"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u5782\u76F4\u540C\u6B65"
-    - Language: 2
+    - LanguageId: 2
       Text: V-Sync
-    - Language: 3
+    - LanguageId: 3
       Text: "\u5782\u76F4\u540C\u671F"
   - Key: ui_FrameRateCap
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u5E27\u7387\u9650\u5236"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u5E40\u7387\u9650\u5236"
-    - Language: 2
+    - LanguageId: 2
       Text: Frame Rate Cap
-    - Language: 3
+    - LanguageId: 3
       Text: "\u30D5\u30EC\u30FC\u30E0\u30EC\u30FC\u30C8\u306E\u4E0A\u9650"
   - Key: ui_ResetDefault
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u91CD\u7F6E\u4E3A\u9ED8\u8BA4\u503C"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u91CD\u7F6E\u70BA\u9ED8\u8A8D\u503C"
-    - Language: 2
+    - LanguageId: 2
       Text: Reset Defaults
-    - Language: 3
+    - LanguageId: 3
       Text: "\u521D\u671F\u8A2D\u5B9A\u306B\u623B\u308B"
   - Key: ui_On
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u5F00\u542F"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u958B\u555F"
-    - Language: 2
+    - LanguageId: 2
       Text: On
-    - Language: 3
+    - LanguageId: 3
       Text: "\u30AA\u30F3"
   - Key: ui_Off
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u5173\u95ED"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u95DC\u9589"
-    - Language: 2
+    - LanguageId: 2
       Text: Off
-    - Language: 3
+    - LanguageId: 3
       Text: "\u30AA\u30D5"
   - Key: ui_Apply
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u5E94\u7528"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u61C9\u7528"
-    - Language: 2
+    - LanguageId: 2
       Text: Apply
-    - Language: 3
+    - LanguageId: 3
       Text: "\u30A2\u30D7\u30EA"
   - Key: ui_FullScreenWindowConfig
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u65E0\u8FB9\u6846"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u7121\u908A\u6846"
-    - Language: 2
+    - LanguageId: 2
       Text: Borderless
-    - Language: 3
+    - LanguageId: 3
       Text: "\u7121\u5883\u754C"
   - Key: ui_FullScreenConfig
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u5F00\u542F"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u958B\u555F"
-    - Language: 2
+    - LanguageId: 2
       Text: On
-    - Language: 3
+    - LanguageId: 3
       Text: "\u30AA\u30F3"
   - Key: ui_WindowConfig
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u5173\u95ED"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u95DC\u9589"
-    - Language: 2
+    - LanguageId: 2
       Text: Off
-    - Language: 3
+    - LanguageId: 3
       Text: "\u30AA\u30D5"
   - Key: keySet_MoveUp
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u4E0A"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u4E0A"
-    - Language: 2
+    - LanguageId: 2
       Text: Up
-    - Language: 3
+    - LanguageId: 3
       Text: "\u4E0A"
   - Key: keySet_MoveDown
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u4E0B"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u4E0B"
-    - Language: 2
+    - LanguageId: 2
       Text: Down
-    - Language: 3
+    - LanguageId: 3
       Text: "\u4E0B"
   - Key: keySet_MoveLeft
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u5DE6"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u5DE6"
-    - Language: 2
+    - LanguageId: 2
       Text: Left
-    - Language: 3
+    - LanguageId: 3
       Text: "\u5DE6"
   - Key: keySet_MoveRight
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u53F3"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u53F3"
-    - Language: 2
+    - LanguageId: 2
       Text: Right
-    - Language: 3
+    - LanguageId: 3
       Text: "\u53F3"
   - Key: keySet_Interact
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u4EA4\u4E92"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u4EA4\u4E92"
-    - Language: 2
+    - LanguageId: 2
       Text: Interact
-    - Language: 3
+    - LanguageId: 3
       Text: "\u64CD\u4F5C"
   - Key: ui_InputSettingsPanel_Content
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u4FDD\u5B58\u8BBE\u7F6E\uFF1F"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u4FDD\u5B58\u8A2D\u7F6E\uFF1F"
-    - Language: 2
+    - LanguageId: 2
       Text: Save Settings ?
-    - Language: 3
+    - LanguageId: 3
       Text: "\u4FDD\u5B58\u8A2D\u5B9A\uFF1F"
   - Key: ui_InputSettingsPanel_Confirm
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u786E\u8BA4"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u78BA\u8A8D"
-    - Language: 2
+    - LanguageId: 2
       Text: Save
-    - Language: 3
+    - LanguageId: 3
       Text: "\u306F\u3044"
   - Key: ui_InputSettingsPanel_Cancel
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u53D6\u6D88"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u53D6\u6D88"
-    - Language: 2
+    - LanguageId: 2
       Text: Cancel
-    - Language: 3
+    - LanguageId: 3
       Text: "\u3044\u3044\u3048"
   ImageDatas: []
   packageReferences:
-  - languageId: 0
-    languageName: SimplifiedChinese
+  - language:
+      languageId: 0
+      languageKey: SimplifiedChinese
+      languageName: "\u7B80\u4F53\u4E2D\u6587"
     packagePath: Assets/KFrame/Assets/LanguagePackages/SimplifiedChinese.asset
+  - language:
+      languageId: 1
+      languageKey: TraditionalChinese
+      languageName: "\u7E41\u9AD4\u4E2D\u6587"
+    packagePath: Assets/KFrame/Assets/LanguagePackages/TraditionalChinese.asset
+  - language:
+      languageId: 2
+      languageKey: English
+      languageName: English
+    packagePath: Assets/KFrame/Assets/LanguagePackages/English.asset
+  - language:
+      languageId: 3
+      languageKey: Japanese
+      languageName: "\u65E5\u672C\u8A9E"
+    packagePath: Assets/KFrame/Assets/LanguagePackages/Japanese.asset

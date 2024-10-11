@@ -37,15 +37,15 @@ namespace KFrame.UI.Editor
         /// <summary>
         /// 所有语言类型
         /// </summary>
-        private LanguageType[] languages;
+        private int[] languages;
         /// <summary>
         /// 语言文本
         /// </summary>
-        private Dictionary<LanguageType, string> languageTexts;
+        private Dictionary<int, string> languageTexts;
         /// <summary>
         /// 语言图片
         /// </summary>
-        private Dictionary<LanguageType, Sprite> languageSprites;
+        private Dictionary<int, Sprite> languageSprites;
 
         #endregion
         
@@ -105,11 +105,11 @@ namespace KFrame.UI.Editor
             //清空key
             saveKey = "";
             //获取所有语言类型，然后初始化每种语言数据
-            languages = EnumExtensions.GetValues<LanguageType>();
-            languageTexts = new Dictionary<LanguageType, string>();
-            languageSprites = new Dictionary<LanguageType, Sprite>();
+            languages = LocalizationConfig.GetLanguageIdArray();
+            languageTexts = new Dictionary<int, string>();
+            languageSprites = new Dictionary<int, Sprite>();
             //遍历设置key清空参数
-            foreach (LanguageType language in languages)
+            foreach (var language in languages)
             {
                 languageTexts[language] = "";
                 languageSprites[language] = null;
@@ -183,9 +183,9 @@ namespace KFrame.UI.Editor
             GUILayout.Space(MStyle.spacing);
             saveKey = EditorGUILayout.TextField("保存key",saveKey, GUILayout.Height(MStyle.labelHeight));
             GUILayout.Space(MStyle.spacing);
-            foreach (LanguageType language in languages)
+            foreach (var languageId in languages)
             {
-                languageTexts[language] = EditorGUILayout.TextField(EditorGUITool.TryGetEnumLabel(language),languageTexts[language], GUILayout.Height(MStyle.labelHeight));
+                languageTexts[languageId] = EditorGUILayout.TextField(LocalizationConfig.GetLanguageName(languageId),languageTexts[languageId], GUILayout.Height(MStyle.labelHeight));
                 GUILayout.Space(MStyle.spacing);
             }
             
@@ -201,9 +201,9 @@ namespace KFrame.UI.Editor
             GUILayout.Space(MStyle.spacing);
             saveKey = EditorGUILayout.TextField("保存key",saveKey, GUILayout.Height(MStyle.labelHeight));
             GUILayout.Space(MStyle.spacing);
-            foreach (LanguageType language in languages)
+            foreach (var language in languages)
             {
-                languageSprites[language] = (Sprite)EditorGUILayout.ObjectField(EditorGUITool.TryGetEnumLabel(language),languageSprites[language], typeof(Sprite), false);
+                languageSprites[language] = (Sprite)EditorGUILayout.ObjectField(LocalizationConfig.GetLanguageName(language),languageSprites[language], typeof(Sprite), false);
                 GUILayout.Space(MStyle.spacing);
             }
             
@@ -281,7 +281,7 @@ namespace KFrame.UI.Editor
 
             //新建数据
             LocalizationStringData data = new LocalizationStringData(saveKey);
-            foreach (LanguageType language in languages)
+            foreach (var language in languages)
             {
                 data.Datas.Add(new LocalizationStringDataBase(language, languageTexts[language]));
             }
@@ -304,7 +304,7 @@ namespace KFrame.UI.Editor
 
             //新建数据
             LocalizationImageData data = new LocalizationImageData(saveKey);
-            foreach (LanguageType language in languages)
+            foreach (var language in languages)
             {
                 data.Datas.Add(new LocalizationImageDataBase(language, languageSprites[language]));
             }

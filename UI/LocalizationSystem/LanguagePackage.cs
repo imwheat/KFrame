@@ -27,6 +27,33 @@ namespace KFrame.UI
         public List<LanguagePackageTextData> datas = new();
 
         #region 编辑器使用
+        
+        /// <summary>
+        /// 语言id
+        /// </summary>
+        public int LanguageId
+        {
+            get => language.languageId;
+            set => language.languageId = value;
+        }
+
+        /// <summary>
+        /// 语言key
+        /// </summary>
+        public string LanguageKey
+        {
+            get => language.languageKey;
+            set => language.languageKey = value;
+        }
+
+        /// <summary>
+        /// 语言名称
+        /// </summary>
+        public string LanguageName
+        {
+            get => language.languageName;
+            set => language.languageName = value;
+        }
 
         #if UNITY_EDITOR
         

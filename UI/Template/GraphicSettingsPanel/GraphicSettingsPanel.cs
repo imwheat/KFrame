@@ -190,7 +190,7 @@ namespace KFrame.UI
         /// <param name="v">值</param>
         private void OnSwitchFullScreen(int v)
         {
-            fullScreenText.text = LocalizationSystem.GetLocalizedTextInCurLanguage(FullScreenConfigUIKey[v]);
+            fullScreenText.text = LocalizationSystem.GetUITextInCurLanguage(FullScreenConfigUIKey[v]);
         }
         /// <summary>
         /// 切换分辨率
@@ -207,7 +207,7 @@ namespace KFrame.UI
         /// <param name="v">值</param>
         private void OnSwitchVsync(int v)
         {
-            vSyncText.text = LocalizationSystem.GetLocalizedTextInCurLanguage(UISystem.GetOnOffUIKey(v == 1));
+            vSyncText.text = LocalizationSystem.GetUITextInCurLanguage(UISystem.GetOnOffUIKey(v == 1));
         }
         /// <summary>
         /// 切换帧率限制
@@ -216,7 +216,7 @@ namespace KFrame.UI
         private void OnSwitchFrameRateCap(int v)
         {
             var rate = frameRateCapConfig[v];
-            frameRateCapText.text = rate == -1 ? LocalizationSystem.GetLocalizedTextInCurLanguage(UISystem.GetOnOffUIKey(false)) : rate.ToString();
+            frameRateCapText.text = rate == -1 ? LocalizationSystem.GetUITextInCurLanguage(UISystem.GetOnOffUIKey(false)) : rate.ToString();
         }
         /// <summary>
         /// 按下应用设置按钮

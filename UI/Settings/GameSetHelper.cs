@@ -39,17 +39,22 @@ namespace KFrame.UI
         }
         /// <summary>
         /// 设置语言
+        /// 只更新UI的语言，游戏语言需要另外更新
+        /// 自行调用<see cref="KFrame.UI.LocalizationSystem.UpdateGameLanguage"/>>
+        /// 重启游戏会自动调用，一般在开始游戏的时候使用更新
         /// </summary>
         /// <param name="languageType">语言类型</param>
-        public static void SetLanguage(LanguageType languageType)
+        public static void SetLanguage(int languageType)
         {
             CurSettingsData.Language = languageType;
-            LocalizationSystem.LanguageType = (int)languageType;
+            LocalizationSystem.UILanguageType = languageType;
         }
-
+        /// <summary>
+        /// 加载游戏设置
+        /// </summary>
         public static void LoadGameSettings()
         {
-            LocalizationSystem.LanguageType = (int)CurSettingsData.Language;
+            LocalizationSystem.UpdateGameLanguage(CurSettingsData.Language);
         }
     }
 }

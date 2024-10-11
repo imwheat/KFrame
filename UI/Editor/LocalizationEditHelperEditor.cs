@@ -21,6 +21,8 @@ namespace KFrame.UI.Editor
     public class LocalizationEditHelperEditor : UnityEditor.Editor
     {
         private LocalizationEditHelper localEditor;
+        private static int[] languageTypeValues;
+        private static string[] languageDisplays;
 
         private void OnEnable()
         {
@@ -29,13 +31,18 @@ namespace KFrame.UI.Editor
                 localEditor = target as LocalizationEditHelper;
                 localEditor?.RefreshLinkedData();
             }
-        }
-        /// <summary>
-        /// 获取语言类型的label文本
-        /// </summary>
-        private static string TryGetLanguageLabel(LanguageType language)
-        {
-            return EditorGUITool.TryGetEnumLabel(language);
+
+            if (languageDisplays == null)
+            {
+                LocalizationConfig config = LocalizationConfig.Instance;
+                languageDisplays = new string[config.packageReferences.Count];
+                languageTypeValues = new int[config.packageReferences.Count];
+                for (int i = 0; i < config.packageReferences.Count; i++)
+                {
+                    languageDisplays[i] = config.packageReferences[i].LanguageName;
+                    languageTypeValues[i] = config.packageReferences[i].LanguageId;
+                }
+            }
         }
         /// <summary>
         /// 绘制文本的GUI
@@ -43,7 +50,7 @@ namespace KFrame.UI.Editor
         private void DrawTextGUI(LocalizationStringDataBase stringDataBase)
         {
             stringDataBase.Text = EditorGUILayout.TextField(
-                KGUIHelper.TempContent(TryGetLanguageLabel(stringDataBase.Language)),
+                KGUIHelper.TempContent(LocalizationConfig.GetLanguageName(stringDataBase.LanguageId)),
                 stringDataBase.Text);
         }
         /// <summary>
@@ -52,7 +59,7 @@ namespace KFrame.UI.Editor
         private void DrawImageGUI(LocalizationImageDataBase imageDataBase)
         {
             imageDataBase.Sprite = (Sprite)EditorGUILayout.ObjectField(
-                KGUIHelper.TempContent(TryGetLanguageLabel(imageDataBase.Language)),
+                KGUIHelper.TempContent(LocalizationConfig.GetLanguageName(imageDataBase.LanguageId)),
                 imageDataBase.Sprite, typeof(Sprite), false);
         }
         public override void OnInspectorGUI()
@@ -71,11 +78,16 @@ namespace KFrame.UI.Editor
                 
                 EditorGUILayout.BeginVertical();
                 
-                EditorGUITool.ShowEnumSelectOption<LanguageType>("当前的语言类型:", localEditor.CurLanguage.ToString(), (x) =>
+                EditorGUI.BeginChangeCheck();;
+                
+                localEditor.CurLanguage = EditorGUILayout.IntPopup("当前语言类型:", localEditor.CurLanguage, languageDisplays,
+                    languageTypeValues);
+
+                if (EditorGUI.EndChangeCheck())
                 {
-                    localEditor.CurLanguage = (LanguageType)x;
-                    serializedObject.ApplyModifiedProperties();
-                });
+                    EditorUtility.SetDirty(target);
+                    localEditor.UpdateLanguage(localEditor.CurLanguage);
+                }
                 
                 EditorGUI.BeginChangeCheck();;
 

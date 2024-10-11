@@ -175,11 +175,12 @@ namespace KFrame.UI.Editor
         /// <summary>
         /// 创建添加新的语言包
         /// </summary>
+        /// <param name="languageKey">语言key</param>
         /// <param name="languageName">语言名称</param>
-        public void AddLanguagePackage(string languageName)
+        public void AddLanguagePackage(string languageKey, string languageName)
         {
             //防空
-            if (string.IsNullOrEmpty(languageName))
+            if (string.IsNullOrEmpty(languageKey))
             {
                 EditorUtility.DisplayDialog("错误", "语言的名称不能为空", "确定");
                 return;
@@ -191,7 +192,8 @@ namespace KFrame.UI.Editor
             //创建新的语言包
             LanguagePackage package = ScriptableObject.CreateInstance<LanguagePackage>();
             int id = config.packageReferences.Count;
-            package.language = new LanguageClass(id, languageName);
+            LanguageClass languageClass = new LanguageClass(id, languageKey, languageName);
+            package.language = languageClass;
             //把目前已有的key添加入数据
             foreach (var data in localizationKeys)
             {
@@ -199,10 +201,10 @@ namespace KFrame.UI.Editor
             }
             
             //获取路径
-            string path = PackageCreateFolder + languageName + ".asset";
+            string path = PackageCreateFolder + languageKey + ".asset";
             
             //在配置中添加引用
-            config.packageReferences.Add(new LanguagePackageReference(id, languageName, path));
+            config.packageReferences.Add(new LanguagePackageReference(languageClass, path));
             EditorUtility.SetDirty(config);
             
             //添加入语言包列表
@@ -220,7 +222,7 @@ namespace KFrame.UI.Editor
         public void RemoveLanguagePackage(string languageName)
         {
             //先寻找目标语言包，要是没有就返回
-            LanguagePackage package = packages.Find(x => x.language.languageName == languageName);
+            LanguagePackage package = packages.Find(x => x.language.languageKey == languageName);
             if(package == null) return;
             
             //从列表中移除
@@ -230,7 +232,7 @@ namespace KFrame.UI.Editor
             //找到指定目标然后删除
             for (int i = 0; i < config.packageReferences.Count; i++)
             {
-                if (config.packageReferences[i].languageName == languageName)
+                if (config.packageReferences[i].LanguageKey == languageName)
                 {
                     config.packageReferences.RemoveAt(i);
                     break;
@@ -250,11 +252,11 @@ namespace KFrame.UI.Editor
         /// </summary>
         /// <param name="prevName">之前的名称</param>
         /// <param name="newName">新的名称</param>
-        public void UpdateLanguageName(string prevName, string newName)
+        public void UpdateLanguageKey(string prevName, string newName)
         {
             if (string.IsNullOrEmpty(newName))
             {
-                EditorUtility.DisplayDialog("错误", "语言名称不能为空！", "确认");
+                EditorUtility.DisplayDialog("错误", "语言Key不能为空！", "确认");
                 return;
             }
             //如果和之前的一样那就返回
@@ -269,7 +271,7 @@ namespace KFrame.UI.Editor
                 }
                 else if (package.name == newName)
                 {
-                    EditorUtility.DisplayDialog("错误", "语言名称不能重复！", "确认");
+                    EditorUtility.DisplayDialog("错误", "语言Key不能重复！", "确认");
                     return;
                 }
             }
@@ -279,12 +281,12 @@ namespace KFrame.UI.Editor
             LocalizationConfig config = LocalizationConfig.Instance;
             
             //获取数据然后修改名称
-            var references = config.packageReferences.Find(x => x.languageName == prevName);
+            var references = config.packageReferences.Find(x => x.LanguageKey == prevName);
             if (references != null)
             {
-                references.languageName = newName;
+                references.LanguageKey = newName;
             }
-            target.language.languageName = newName;
+            target.language.languageKey = newName;
             
             //保存
             EditorUtility.SetDirty(target);

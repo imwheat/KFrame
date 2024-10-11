@@ -15,11 +15,11 @@ namespace KFrame.UI
         /// <summary>
         /// 游戏语言
         /// </summary>
-        public LanguageType Language;
+        public int Language;
 
         public GameSettingsData()
         {
-            Language = LanguageType.SimplifiedChinese;
+            Language = 0;
         }
 
         /// <summary>

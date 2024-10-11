@@ -5,6 +5,7 @@
 //* 描述：语言包编辑器
 //*******************************************************
 
+using System;
 using UnityEditor;
 using KFrame.Editor;
 using UnityEngine;
@@ -35,7 +36,7 @@ namespace KFrame.UI.Editor
         /// <summary>
         /// 要更改的心得语言名称
         /// </summary>
-        private string newLanguageName = "";
+        private string newLanguageKey = "";
         /// <summary>
         /// 编辑语言名称
         /// </summary>
@@ -149,6 +150,16 @@ namespace KFrame.UI.Editor
             return window;
         }
 
+        private void OnDestroy()
+        {
+            if (editPackage != null)
+            {
+                EditorUtility.SetDirty(editPackage);
+                EditorUtility.SetDirty(LocalizationEditorConfig.Instance);
+                LocalizationConfig.Instance.SaveAsset();
+            }
+        }
+
         #endregion
 
         #region GUI绘制
@@ -236,21 +247,27 @@ namespace KFrame.UI.Editor
         private void DrawTopGUI()
         {
             EditorGUILayout.BeginVertical();
-            
+
+            EditorGUILayout.BeginHorizontal();
             //id
             EditorGUILayout.LabelField($"语言id {editPackage.language.languageId}");
             
             //语言名称
+            editPackage.LanguageName = EditorGUILayout.TextField("语言名称",editPackage.LanguageName);
+            
+            EditorGUILayout.EndHorizontal();
+            
+            //语言key
             EditorGUILayout.BeginHorizontal();
             
-            EditorGUILayout.LabelField("语言名称");
+            EditorGUILayout.LabelField("语言key");
 
             if (editLanguageName)
             {
-                newLanguageName = EditorGUILayout.TextField(newLanguageName);
+                newLanguageKey = EditorGUILayout.TextField(newLanguageKey);
                 if (GUILayout.Button("保存",GUILayout.Width(40f)))
                 {
-                    EditorConfig.UpdateLanguageName(editPackage.language.languageName, newLanguageName);
+                    EditorConfig.UpdateLanguageKey(editPackage.language.languageKey, newLanguageKey);
                     editLanguageName = false;
                     Repaint();
                 }
@@ -262,11 +279,11 @@ namespace KFrame.UI.Editor
             }
             else
             {
-                EditorGUILayout.LabelField(editPackage.language.languageName);
+                EditorGUILayout.LabelField(editPackage.language.languageKey);
                 if (GUILayout.Button("编辑", GUILayout.Width(40f)))
                 {
                     editLanguageName = true;
-                    newLanguageName = editPackage.language.languageName;
+                    newLanguageKey = editPackage.language.languageKey;
                     Repaint();
                 }
             }

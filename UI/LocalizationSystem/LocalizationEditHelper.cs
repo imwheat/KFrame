@@ -31,19 +31,16 @@ namespace KFrame.UI
         /// <summary>
         /// 当前的语言类型
         /// </summary>
-        private LanguageType curLanguage;
+        private int curLanguage;
         /// <summary>
         /// 当前的语言类型
         /// </summary>
-        public LanguageType CurLanguage
+        public int CurLanguage
         {
-            get
-            {
-                return curLanguage;
-            }
+            get => curLanguage;
             set
             {
-                if (UISetPropertyUtility.SetStruct<LanguageType>(ref curLanguage, value))
+                if (UISetPropertyUtility.SetStruct(ref curLanguage, value))
                 {
                     UpdateLanguage(value);
                 }
@@ -167,43 +164,43 @@ namespace KFrame.UI
             }
 
             //获取语言的所有类型
-            LanguageType[] languages = (LanguageType[])Enum.GetValues(typeof(LanguageType));
+            int[] languages = LocalizationConfig.GetLanguageIdArray();
+
             //记录添加数据中没有的语言类型
-            HashSet<LanguageType> stringLanguage = new HashSet<LanguageType>();
-            HashSet<LanguageType> imageLanguage = new HashSet<LanguageType>();
+            HashSet<int> stringLanguage = new HashSet<int>();
+            HashSet<int> imageLanguage = new HashSet<int>();
             for (int i = StringData.Datas.Count - 1; i >= 0; i--)
             {
-                if (!stringLanguage.Add(StringData.Datas[i].Language))
+                if (!stringLanguage.Add(StringData.Datas[i].LanguageId))
                 {
                     StringData.Datas.RemoveAt(i);
                 }
             }
             for (int i = ImageData.Datas.Count - 1; i >= 0; i--)
             {
-                if (!stringLanguage.Add(ImageData.Datas[i].Language))
+                if (!stringLanguage.Add(ImageData.Datas[i].LanguageId))
                 {
                     ImageData.Datas.RemoveAt(i);
                 }
             }
             
             //遍历目前已经有的语言类型
-            foreach (LanguageType language in languages)
+            foreach (int id in languages)
             {
                 //如果数据里面还没有的话那就添加
-                if (!stringLanguage.Contains(language))
+                if (!stringLanguage.Contains(id))
                 {
-                    StringData.Datas.Add(new LocalizationStringDataBase(language, ""));
+                    StringData.Datas.Add(new LocalizationStringDataBase(id, ""));
                 }
-                if (!imageLanguage.Contains(language))
+                if (!imageLanguage.Contains(id))
                 {
-                    ImageData.Datas.Add(new LocalizationImageDataBase(language, null));
+                    ImageData.Datas.Add(new LocalizationImageDataBase(id, null));
                 }
             }
             
         }
 
         #endregion
-
 
         #region 更新数据
 
@@ -226,7 +223,7 @@ namespace KFrame.UI
         /// <summary>
         /// 更新语言
         /// </summary>
-        public void UpdateLanguage(LanguageType languageType)
+        public void UpdateLanguage(int languageType)
         {
             curLanguage = languageType;
             //更新UI
@@ -243,13 +240,13 @@ namespace KFrame.UI
             switch (target)
             {
                 case Image img:
-                    img.sprite = ImageData.Datas.Find((x) =>x.Language == curLanguage).Sprite;
+                    img.sprite = ImageData.Datas.Find((x) =>x.LanguageId == curLanguage).Sprite;
                     break;
                 case Text text:
-                    text.text = StringData.Datas.Find((x => x.Language == curLanguage)).Text;
+                    text.text = StringData.Datas.Find((x => x.LanguageId == curLanguage)).Text;
                     break;
                 case TMP_Text tmpText:
-                    tmpText.text = StringData.Datas.Find((x => x.Language == curLanguage)).Text;
+                    tmpText.text = StringData.Datas.Find((x => x.LanguageId == curLanguage)).Text;
                     break;
             }
             
@@ -328,7 +325,6 @@ namespace KFrame.UI
                 }
             }
         }
-        
 
         #endregion
         

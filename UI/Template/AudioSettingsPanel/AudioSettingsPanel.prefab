@@ -367,24 +367,24 @@ MonoBehaviour:
   StringData:
     Key: ui_MasterVolume
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u4E3B\u97F3\u91CF"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u4E3B\u97F3\u91CF"
-    - Language: 2
+    - LanguageId: 2
       Text: Master
-    - Language: 3
+    - LanguageId: 3
       Text: "\u4E3B\u97F3\u91CF"
   ImageData:
     Key: 
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Sprite: {fileID: 0}
-    - Language: 1
+    - LanguageId: 1
       Sprite: {fileID: 0}
-    - Language: 2
+    - LanguageId: 2
       Sprite: {fileID: 0}
-    - Language: 3
+    - LanguageId: 3
       Sprite: {fileID: 0}
 --- !u!1 &897053219059194848
 GameObject:
@@ -636,24 +636,24 @@ MonoBehaviour:
   StringData:
     Key: ui_ReturnButton
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u8FD4\u56DE"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u8FD4\u56DE"
-    - Language: 2
+    - LanguageId: 2
       Text: Back
-    - Language: 3
+    - LanguageId: 3
       Text: "\u623B\u308B"
   ImageData:
     Key: 
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Sprite: {fileID: 0}
-    - Language: 1
+    - LanguageId: 1
       Sprite: {fileID: 0}
-    - Language: 2
+    - LanguageId: 2
       Sprite: {fileID: 0}
-    - Language: 3
+    - LanguageId: 3
       Sprite: {fileID: 0}
 --- !u!1 &1100580024969696314
 GameObject:
@@ -999,24 +999,24 @@ MonoBehaviour:
   StringData:
     Key: ui_SFXVolume
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u97F3\u6548"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u97F3\u6548"
-    - Language: 2
+    - LanguageId: 2
       Text: Sound
-    - Language: 3
+    - LanguageId: 3
       Text: "\u52B9\u679C\u97F3"
   ImageData:
     Key: 
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Sprite: {fileID: 0}
-    - Language: 1
+    - LanguageId: 1
       Sprite: {fileID: 0}
-    - Language: 2
+    - LanguageId: 2
       Sprite: {fileID: 0}
-    - Language: 3
+    - LanguageId: 3
       Sprite: {fileID: 0}
 --- !u!1 &1483191342208435318
 GameObject:
@@ -2065,24 +2065,24 @@ MonoBehaviour:
   StringData:
     Key: ui_UIVolume
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: UI
-    - Language: 1
+    - LanguageId: 1
       Text: UI
-    - Language: 2
+    - LanguageId: 2
       Text: UI
-    - Language: 3
+    - LanguageId: 3
       Text: UI
   ImageData:
     Key: 
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Sprite: {fileID: 0}
-    - Language: 1
+    - LanguageId: 1
       Sprite: {fileID: 0}
-    - Language: 2
+    - LanguageId: 2
       Sprite: {fileID: 0}
-    - Language: 3
+    - LanguageId: 3
       Sprite: {fileID: 0}
 --- !u!1 &4542153059457270005
 GameObject:
@@ -3194,24 +3194,24 @@ MonoBehaviour:
   StringData:
     Key: ui_BGMVolume
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u97F3\u4E50"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u97F3\u6A02"
-    - Language: 2
+    - LanguageId: 2
       Text: Music
-    - Language: 3
+    - LanguageId: 3
       Text: "\u97F3\u697D"
   ImageData:
     Key: 
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Sprite: {fileID: 0}
-    - Language: 1
+    - LanguageId: 1
       Sprite: {fileID: 0}
-    - Language: 2
+    - LanguageId: 2
       Sprite: {fileID: 0}
-    - Language: 3
+    - LanguageId: 3
       Sprite: {fileID: 0}
 --- !u!1 &8480158394418877932
 GameObject:
@@ -3502,24 +3502,24 @@ MonoBehaviour:
   StringData:
     Key: ui_AudioSettings
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u97F3\u6548\u8BBE\u7F6E"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u97F3\u6548\u8A2D\u7F6E"
-    - Language: 2
+    - LanguageId: 2
       Text: Audio
-    - Language: 3
+    - LanguageId: 3
       Text: "\u97F3\u58F0\u8A2D\u5B9A"
   ImageData:
     Key: 
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Sprite: {fileID: 0}
-    - Language: 1
+    - LanguageId: 1
       Sprite: {fileID: 0}
-    - Language: 2
+    - LanguageId: 2
       Sprite: {fileID: 0}
-    - Language: 3
+    - LanguageId: 3
       Sprite: {fileID: 0}
 --- !u!1 &8905562475410429703
 GameObject:

@@ -168,15 +168,15 @@ namespace KFrame.UI.Editor
         /// <summary>
         /// 当前语言种类
         /// </summary>
-        private LanguageType[] languageTypes;
+        private int[] languageTypes;
         /// <summary>
         /// 语言筛选
         /// </summary>
-        private Dictionary<LanguageType, bool> languageFilter;
+        private Dictionary<int, bool> languageFilter;
         /// <summary>
         /// 记录对应语言的GUI位置坐标
         /// </summary>
-        private Dictionary<LanguageType, float> languageGUIPos;
+        private Dictionary<int, float> languageGUIPos;
         /// <summary>
         /// 筛选栏折叠
         /// </summary>
@@ -275,11 +275,11 @@ namespace KFrame.UI.Editor
         }
         private void Init()
         {
-            languageTypes = EnumExtensions.GetValues<LanguageType>();
+            languageTypes = LocalizationConfig.GetLanguageIdArray();
             MStyle.visibleLanguageCount = languageTypes.Length;
-            languageFilter = new Dictionary<LanguageType, bool>();
-            languageGUIPos = new Dictionary<LanguageType, float>();
-            foreach (LanguageType languageType in languageTypes)
+            languageFilter = new Dictionary<int, bool>();
+            languageGUIPos = new Dictionary<int, float>();
+            foreach (var languageType in languageTypes)
             {
                 languageFilter[languageType] = true;
             }
@@ -295,26 +295,26 @@ namespace KFrame.UI.Editor
         /// <summary>
         /// 绘制单个筛选类型选项
         /// </summary>
-        private void DrawTypeFilter(LanguageType type)
+        private void DrawTypeFilter(int id)
         {
-            float toggleWdith = Mathf.Min(MStyle.filterTypeWidth / 3f, 20f);
-            float labelWidth = MStyle.filterTypeWidth - toggleWdith - 5f;
+            float toggleWidth = Mathf.Min(MStyle.filterTypeWidth / 3f, 20f);
+            float labelWidth = MStyle.filterTypeWidth - toggleWidth - 5f;
             
-            EditorGUILayout.LabelField(EditorGUITool.TryGetEnumLabel(type),
+            EditorGUILayout.LabelField(LocalizationConfig.GetLanguageName(id),
                 GUILayout.Width(labelWidth), GUILayout.Height(MStyle.labelHeight));
             
             GUILayout.Space(5f);
             
             EditorGUI.BeginChangeCheck();
             
-            languageFilter[type] = EditorGUILayout.Toggle(languageFilter[type],
-                GUILayout.Width(toggleWdith), GUILayout.Height(MStyle.labelHeight));
+            languageFilter[id] = EditorGUILayout.Toggle(languageFilter[id],
+                GUILayout.Width(toggleWidth), GUILayout.Height(MStyle.labelHeight));
 
             //如果筛选条件变了，列的排布需要更新
             if (EditorGUI.EndChangeCheck())
             {
                 //更新可见语言数量
-                if (languageFilter[type])
+                if (languageFilter[id])
                 {
                     MStyle.visibleLanguageCount++;
                 }
@@ -361,8 +361,8 @@ namespace KFrame.UI.Editor
             {
                 LocalizationStringDataBase stringData = data.Datas[i];
                 //如果不显示这个语言那就跳过
-                if(!languageFilter[stringData.Language]) continue;
-                languageRect.x = languageGUIPos[stringData.Language];
+                if(!languageFilter[stringData.LanguageId]) continue;
+                languageRect.x = languageGUIPos[stringData.LanguageId];
                 switch (editorMode)
                 {
                     case EditorMode.Edit:
@@ -474,8 +474,8 @@ namespace KFrame.UI.Editor
             {
                 LocalizationImageDataBase stringData = data.Datas[i];
                 //如果不显示这个语言那就跳过
-                if(!languageFilter[stringData.Language]) continue;
-                languageRect.x = languageGUIPos[stringData.Language];
+                if(!languageFilter[stringData.LanguageId]) continue;
+                languageRect.x = languageGUIPos[stringData.LanguageId];
                 switch (editorMode)
                 {
                     case EditorMode.Edit:
@@ -564,7 +564,7 @@ namespace KFrame.UI.Editor
         {
             EditorGUILayout.BeginHorizontal();
 
-            if (GUILayout.Button(data.languageName, GUILayout.Height(MStyle.labelHeight)))
+            if (GUILayout.Button(data.LanguageKey, GUILayout.Height(MStyle.labelHeight)))
             {
                 LanguagePackageEditorWindow.ShowWindow(EditorConfig.packages[index]);
             }
@@ -836,7 +836,7 @@ namespace KFrame.UI.Editor
             {
                 if (languageFilter[languageTypes[i]])
                 {
-                    EditorGUI.LabelField(titleRect, EditorGUITool.TryGetEnumLabel(languageTypes[i]), MStyle.RowTitle);
+                    EditorGUI.LabelField(titleRect, LocalizationConfig.GetLanguageName(languageTypes[i]), MStyle.RowTitle);
                     titleRect.x += rowInterval;
                 }
             }
@@ -922,7 +922,7 @@ namespace KFrame.UI.Editor
                     }
                     else
                     {
-                        LocalizationEditorConfig.Instance.AddLanguagePackage(editKeyText);
+                        LocalizationEditorConfig.Instance.AddLanguagePackage(editKeyText, editKeyText);
                         editKeyText = "";
                         createNewPackage = false;
                     }

@@ -76,6 +76,19 @@ namespace KFrame.UI
                 return imgDic;
             }
         }
+
+        public Dictionary<int, LanguagePackageReference> PackageDic
+        {
+            get
+            {
+                if (packageDic == null)
+                {
+                    Init();
+                }
+
+                return packageDic;
+            }
+        }
         public Dictionary<int, int> LanguageFontSize
             = new Dictionary<int, int>();
 
@@ -97,7 +110,7 @@ namespace KFrame.UI
             //然后遍历每个数据然后添加入字典中
             foreach (var packageReference in packageReferences)
             {
-                packageDic[packageReference.languageId] = packageReference;
+                packageDic[packageReference.LanguageId] = packageReference;
             }
             foreach (LocalizationStringData stringData in TextDatas)
             {
@@ -145,7 +158,7 @@ namespace KFrame.UI
             //遍历所有数据，然后注册进入字典
             foreach (LocalizationStringDataBase data in stringData.Datas)
             {
-                textDic[stringData.Key][(int)data.Language] = data.Text;
+                textDic[stringData.Key][data.LanguageId] = data.Text;
             }
         }
         /// <summary>
@@ -158,40 +171,49 @@ namespace KFrame.UI
             //遍历所有数据，然后注册进入字典
             foreach (LocalizationImageDataBase data in imageData.Datas)
             {
-                imgDic[imageData.Key][(int)data.Language] = data.Sprite;
+                imgDic[imageData.Key][data.LanguageId] = data.Sprite;
             }
         }
         #endregion
 
         #region 获取本地化信息
-        
+
         /// <summary>
-        /// 获取语言包里的指定文本
+        /// 获取语言包
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns>语言包信息</returns>
+        public LanguagePackageReference GetPackageReference(int id)
+        {
+            return PackageDic.GetValueOrDefault(id, null);
+        }
+        /// <summary>
+        /// 获取本地化文本
         /// </summary>
         /// <param name="key">文本key</param>
         /// <returns>语言包里的文本</returns>
-        public string GetLPackageText(string key)
+        public string GetLocalizedText(string key)
         {
             return textDictionary.GetValueOrDefault(key, "");
         }
 
         /// <summary>
-        /// 尝试获取语言包里的指定文本
+        /// 尝试获取本地化文本
         /// </summary>
         /// <param name="key">文本key</param>
         /// <param name="text">输出文本</param>
         /// <returns>如果没有那就输出false</returns>
-        public bool TryGetLPackageText(string key, out string text)
+        public bool TryGetLocalizedText(string key, out string text)
         {
             return textDictionary.TryGetValue(key, out text);
         }
         /// <summary>
-        /// 获取本地化文本
+        /// 获取本地化UI文本
         /// </summary>
         /// <param name="key">key</param>
         /// <param name="language">语言类型</param>
         /// <returns>本地化后的文本，如果没有就返回""</returns>
-        public string GetLocalizedText(string key, int language)
+        public string GetUIText(string key, int language)
         {
             if (TextDic.TryGetValue(key, out var dic) && dic.TryGetValue(language, out string text))
             {
@@ -200,25 +222,27 @@ namespace KFrame.UI
             
             return "";
         }
+
         /// <summary>
-        /// 尝试获取本地化文本
+        /// 尝试获取本地化UI文本
         /// </summary>
         /// <param name="key">key</param>
         /// <param name="language">语言类型</param>
+        /// <param name="text">输出文本</param>
         /// <returns>本如果没有就返回false</returns>
-        public bool TryGetLocalizedText(string key, int language, out string text)
+        public bool TryGetUIText(string key, int language, out string text)
         {
-            text = GetLocalizedText(key, language);
+            text = GetUIText(key, language);
 
             return text != string.Empty;
         }
         /// <summary>
-        /// 获取本地化文本
+        /// 获取本地化UI图片
         /// </summary>
         /// <param name="key">key</param>
         /// <param name="language">语言类型</param>
-        /// <returns>本地化后的文本，如果没有就返回null</returns>
-        public Sprite GetLocalizedImage(string key, int language)
+        /// <returns>本地化后的图片，如果没有就返回null</returns>
+        public Sprite GetUIImage(string key, int language)
         {
             if (ImgDic.TryGetValue(key, out var dic) && dic.TryGetValue(language, out Sprite sprite))
             {
@@ -227,15 +251,17 @@ namespace KFrame.UI
             
             return null;
         }
+
         /// <summary>
-        /// 尝试获取本地化文本
+        /// 尝试获取本地化UI图片
         /// </summary>
         /// <param name="key">key</param>
         /// <param name="language">语言类型</param>
+        /// <param name="sprite">输出图片</param>
         /// <returns>本如果没有就返回false</returns>
-        public bool TryGetLocalizedImage(string key, int language, out Sprite sprite)
+        public bool TryGetUIImage(string key, int language, out Sprite sprite)
         {
-            sprite = GetLocalizedImage(key, language);
+            sprite = GetUIImage(key, language);
 
             return sprite != null;
         }
@@ -272,6 +298,31 @@ namespace KFrame.UI
                 }
 
                 return imgDataDic;
+            }
+        }
+
+        /// <summary>
+        /// 语言包的名称子弹
+        /// </summary>
+        private static Dictionary<string, LanguagePackageReference> packageNameDic;
+
+        /// <summary>
+        /// 语言包的名称子弹
+        /// </summary>
+        private static Dictionary<string, LanguagePackageReference> PackageNameDic
+        {
+            get
+            {
+                if (packageNameDic == null)
+                {
+                    packageNameDic = new();
+                    foreach (var packageReference in Instance.packageReferences)
+                    {
+                        packageNameDic[packageReference.LanguageKey] = packageReference;
+                    }
+                }
+
+                return packageNameDic;
             }
         }
         /// <summary>
@@ -445,7 +496,50 @@ namespace KFrame.UI
             //保存
             SaveAsset();
         }
+        /// <summary>
+        /// 获取语言的id数组
+        /// </summary>
+        /// <returns></returns>
+        public static int[] GetLanguageIdArray()
+        {
+            int[] languages = new int[Instance.packageReferences.Count];
+            for (var index = 0; index < Instance.packageReferences.Count; index++)
+            {
+                var languagePackage = Instance.packageReferences[index];
+                languages[index] = languagePackage.LanguageId;
+            }
 
+            return languages;
+        }
+        /// <summary>
+        /// 通过语言key获取语言id
+        /// </summary>
+        /// <param name="key">语言的key</param>
+        /// <returns>找不到就返回-1</returns>
+        public static int GetLanguageId(string key)
+        {
+            if (PackageNameDic.TryGetValue(key, out var data))
+            {
+                return data.LanguageId;
+            }
+
+            return -1;
+        }
+        /// <summary>
+        /// 通过语言id获取语言名称
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>能获取到就返回名称，没有就返回""</returns>
+        public static string GetLanguageName(int id)
+        {
+            if (Instance.PackageDic.TryGetValue(id, out var data))
+            {
+                return data.LanguageName;
+            }
+
+            return "";
+        }
+        
         #endif
 
         #endregion

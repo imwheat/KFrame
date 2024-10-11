@@ -21,7 +21,7 @@ namespace KFrame.UI
         /// <summary>
         /// 更新UI语言
         /// </summary>
-        public static void UpdateUILanguage(Graphic component, string key, LanguageType languageType)
+        public static void UpdateUILanguage(Graphic component, string key, int languageType)
         {
             //如果传参有为空的就返回
             if (component == null || string.IsNullOrEmpty(key)) return;
@@ -30,19 +30,19 @@ namespace KFrame.UI
             switch (component)
             {   
                 case Text text:
-                    if (LocalizationSystem.TryGetLocalizedText(key, languageType, out string textData))
+                    if (LocalizationSystem.TryGetUIText(key, languageType, out string textData))
                     {
                         text.text = textData;
                     }
                     break;
                 case TMP_Text tmpText:
-                    if (LocalizationSystem.TryGetLocalizedText(key, languageType, out textData))
+                    if (LocalizationSystem.TryGetUIText(key, languageType, out textData))
                     {
                         tmpText.text = textData;
                     }
                     break;
                 case Image image:
-                    if (LocalizationSystem.TryGetLocalizedImage(key, languageType, out Sprite sprite))
+                    if (LocalizationSystem.TryGetUIImage(key, languageType, out Sprite sprite))
                     {
                         image.sprite = sprite;
                     }
@@ -53,7 +53,7 @@ namespace KFrame.UI
         /// <summary>
         /// 更新UI语言
         /// </summary>
-        public static void UpdateUILanguage(this UILocalizationData data, LanguageType languageType)
+        public static void UpdateUILanguage(this UILocalizationData data, int languageType)
         {
             //如果为空就返回
             if(data == null) return;

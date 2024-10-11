@@ -259,16 +259,16 @@ namespace KFrame.UI
         {
             //获取本地化配置
             LocalizationConfig config = LocalizationConfig.Instance;
-            var languages = EnumExtensions.GetValues<LanguageType>();
+            int[] languages = LocalizationConfig.GetLanguageIdArray();
             foreach (var setUIData in inputSetUIDatas)
             {
                 //如果已经有数据了那就跳过
-                if(config.GetLocalizedText(setUIData.localizationKey, (int)LanguageType.SimplifiedChinese) != String.Empty) continue;
+                if(config.GetUIText(setUIData.localizationKey, 0) != String.Empty) continue;
                 //没有那就添加
                 LocalizationStringData stringData = new LocalizationStringData(setUIData.localizationKey);
                 foreach (var language in languages)
                 {
-                    stringData.Datas.Add(new LocalizationStringDataBase(language, language == LanguageType.English ? setUIData.bindButton.KeyNameText.text : ""));
+                    stringData.Datas.Add(new LocalizationStringDataBase(language, language == 2 ? setUIData.bindButton.KeyNameText.text : ""));
                 }
                 config.SaveStringData(stringData);
             }

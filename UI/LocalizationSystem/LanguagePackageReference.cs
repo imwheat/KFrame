@@ -11,27 +11,48 @@ namespace KFrame.UI
     public class LanguagePackageReference
     {
         /// <summary>
+        /// 语言数据类
+        /// </summary>
+        public LanguageClass language;
+        /// <summary>
         /// 语言id
         /// </summary>
-        public int languageId;
+        public int LanguageId
+        {
+            get => language.languageId;
+            set => language.languageId = value;
+        }
+
+        /// <summary>
+        /// 语言key
+        /// </summary>
+        public string LanguageKey
+        {
+            get => language.languageKey;
+            set => language.languageKey = value;
+        }
+
         /// <summary>
         /// 语言名称
         /// </summary>
-        public string languageName;
+        public string LanguageName
+        {
+            get => language.languageName;
+            set => language.languageName = value;
+        }
         /// <summary>
         /// 语言包路径
         /// </summary>
         public string packagePath;
+
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="id">语言id</param>
-        /// <param name="name">语言名称</param>
+        /// <param name="language">语言数据类</param>
         /// <param name="path">语言包路径</param>
-        public LanguagePackageReference(int id, string name, string path)
+        public LanguagePackageReference(LanguageClass language,string path)
         {
-            languageId = id;
-            languageName = name;
+            this.language = language;
             packagePath = path;
         }
     }

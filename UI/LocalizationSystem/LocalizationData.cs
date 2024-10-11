@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace KFrame.UI
 {
@@ -24,7 +25,8 @@ namespace KFrame.UI
     [System.Serializable]
     public class LocalizationStringDataBase
     {
-        public LanguageType Language;
+        [FormerlySerializedAs("Language")]
+        public int LanguageId;
         public string Text;
 
         public LocalizationStringDataBase()
@@ -32,9 +34,9 @@ namespace KFrame.UI
             
         }
 
-        public LocalizationStringDataBase(LanguageType language, string text)
+        public LocalizationStringDataBase(int language, string text)
         {
-            Language = language;
+            LanguageId = language;
             Text = text;
         }
     }
@@ -62,7 +64,7 @@ namespace KFrame.UI
 
             foreach (LocalizationStringDataBase stringDataBase in data.Datas)
             {
-                Datas.Add(new LocalizationStringDataBase(stringDataBase.Language, stringDataBase.Text));
+                Datas.Add(new LocalizationStringDataBase(stringDataBase.LanguageId, stringDataBase.Text));
             }
         }
         
@@ -72,16 +74,17 @@ namespace KFrame.UI
     [System.Serializable]
     public class LocalizationImageDataBase
     {
-        public LanguageType Language;
+        [FormerlySerializedAs("Language")]
+        public int LanguageId;
         public Sprite Sprite;
         public LocalizationImageDataBase()
         {
             
         }
 
-        public LocalizationImageDataBase(LanguageType language, Sprite sprite)
+        public LocalizationImageDataBase(int language, Sprite sprite)
         {
-            Language = language;
+            LanguageId = language;
             Sprite = sprite;
         }
     }
@@ -108,7 +111,7 @@ namespace KFrame.UI
 
             foreach (LocalizationImageDataBase imageDataBase in data.Datas)
             {
-                Datas.Add(new LocalizationImageDataBase(imageDataBase.Language, imageDataBase.Sprite));
+                Datas.Add(new LocalizationImageDataBase(imageDataBase.LanguageId, imageDataBase.Sprite));
             }
         }
         
