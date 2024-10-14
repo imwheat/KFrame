@@ -73,17 +73,27 @@ namespace KFrame.UI
         /// </summary>
         public void InitUIDataOnEditor()
         {
+            //白名单
+            string[] whiteListAssembly = new[] { "Assembly-CSharp" };
+            string[] whiteListNameSpace = new[] { "GameBuild","KFrame" };
+            
             UIDatas.Clear();
-            // 获取所有程序集
-            System.Reflection.Assembly[] asms = AppDomain.CurrentDomain.GetAssemblies();
+            //获取所有程序集
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
             Type baseType = typeof(UIBase);
-            // 遍历程序集
-            foreach (System.Reflection.Assembly assembly in asms)
+            //遍历程序集
+            foreach (Assembly assembly in assemblies)
             {
-                // 遍历程序集下的每一个类型
+                //如果不符合白名单那就跳过
+                if (!assembly.FullName.ContainsAny(whiteListAssembly)) continue;
+                
+                //遍历程序集下的每一个类型
                 Type[] types = assembly.GetTypes();
                 foreach (Type type in types)
                 {
+                    //如果类型不在白名单内就跳过
+                    if(!type.FullName.ContainsAny(whiteListNameSpace)) continue;
+                    
                     if (baseType.IsAssignableFrom(type)
                         && !type.IsAbstract)
                     {

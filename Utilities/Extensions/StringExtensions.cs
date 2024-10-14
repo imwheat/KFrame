@@ -7,6 +7,7 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -457,6 +458,33 @@ namespace KFrame.Utilities
             }
 
             return true;
+        }
+        
+        /// <summary>
+        /// 判断text是否包含数字里的任意一个元素
+        /// </summary>
+        /// <param name="text">原文本</param>
+        /// <param name="array">检测数组</param>
+        /// <param name="comparison">检测方式</param>
+        /// <returns>如果符合就返回true</returns>
+        public static bool ContainsAny(this string text, IList<string> array, StringComparison comparison = StringComparison.Ordinal)
+        {
+            //如果数组和文本都为空返回true
+            if (array == null && string.IsNullOrEmpty(text)) return true;
+            //有一个为空返回false
+            else if (array == null || string.IsNullOrEmpty(text)) return false;
+
+            //逐个遍历检测
+            foreach (var str in array)
+            {
+                if (text.Contains(str, comparison))
+                {
+                    return true;
+                }
+            }
+            
+            //都不符合返回false
+            return false;
         }
     }
 }

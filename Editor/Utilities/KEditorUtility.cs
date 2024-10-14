@@ -112,6 +112,17 @@ namespace KFrame.Editor
             Directory.Delete(fullPath);
             File.Delete(FileExtensions.GetParentDirectory(fullPath, 1) + "/" + folderName + ".meta");
         }
+        /// <summary>
+        /// 错误警告的Dialog窗口
+        /// </summary>
+        /// <param name="message">要显示的内容</param>
+        /// <param name="title">标题</param>
+        /// <param name="ok">确定文本内容</param>
+        /// <returns></returns>
+        public static bool ErrorDialog(string message, string title = "错误", string ok = "确定")
+        {
+            return EditorUtility.DisplayDialog(title, message, ok);
+        }
     }
 }
 

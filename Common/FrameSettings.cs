@@ -112,6 +112,7 @@ namespace KFrame
         {
             SetResourcesSystemType();
             UIGlobalConfig.Instance.InitUIDataOnEditor();
+            KFramePathSearch.Instance.InitGlobalConfig();
         }
 
 

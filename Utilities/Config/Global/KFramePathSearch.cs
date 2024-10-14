@@ -6,14 +6,13 @@
 //*******************************************************
 
 using UnityEngine;
-using KFrame;
 using System.Collections.Generic;
 using System;
 using System.ComponentModel;
+using System.Reflection;
 using KFrame.Attributes;
 
 #if UNITY_EDITOR
-
 using UnityEditor;
 
 #endif
@@ -29,6 +28,8 @@ namespace KFrame.Utilities
 
 #if UNITY_EDITOR
 
+        #region 实例
+
         private static KFramePathSearch instance;
         public static KFramePathSearch Instance
         {
@@ -43,7 +44,66 @@ namespace KFrame.Utilities
             }
         }
 
+        #endregion
 
+        #region 编辑器初始化
+        
+        /// <summary>
+        /// 编辑器初始化GlobalConfig
+        /// </summary>
+        public void InitGlobalConfig()
+        {
+            //白名单
+            string[] whiteListAssembly = new[] { "Assembly-CSharp" };
+            string[] whiteListNameSpace = new[] { "GameBuild","KFrame" };
+            
+            //获取所有程序集
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            Type baseType = typeof(GlobalConfigBase<>);
+            //遍历程序集
+            foreach (Assembly assembly in assemblies)
+            {
+                //如果不符合白名单那就跳过
+                if (!assembly.FullName.ContainsAny(whiteListAssembly)) continue;
+                
+                //遍历程序集下的每一个类型
+                Type[] types = assembly.GetTypes();
+                foreach (Type type in types)
+                {
+                    //如果类型不在白名单内就跳过
+                    if(!type.FullName.ContainsAny(whiteListNameSpace)) continue;
+                    
+                    //判断类型
+                    if (type.BaseType is { IsGenericType: true } && type.BaseType.GetGenericTypeDefinition() == baseType
+                                                                 && !type.IsAbstract)
+                    {
+                        var attributes = type.GetCustomAttributes<KGlobalConfigPathAttribute>();
+                        foreach (var attribute in attributes)
+                        {
+                            //如果找不到会自动创建的话
+                            if (attribute.CreateIfNotFound)
+                            {
+                                string[] array = AssetDatabase.FindAssets("t:" + type.Name);
+                                //如果搜索不到，那就创建
+                                if (array.Length == 0)
+                                {
+                                    var asset = ScriptableObject.CreateInstance(type);
+                                    asset.name = attribute.FileName;
+                                    AssetDatabase.CreateAsset(asset, attribute.AssetPath + attribute.FileName + ".asset");
+                                }
+                                
+                            }
+                        }
+                        
+                    }
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region 数据存储
 
         /// <summary>
         /// 用来保存记录路径
@@ -83,6 +143,10 @@ namespace KFrame.Utilities
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public List<SearchPathStack> Pathes;
+
+        #endregion
+
+        #region 数据获取与设置
 
         /// <summary>
         /// 获取搜索Asset
@@ -162,7 +226,6 @@ namespace KFrame.Utilities
             }
 
         }
-
         /// <summary>
         /// 初始化子弟那
         /// </summary>
@@ -246,6 +309,7 @@ namespace KFrame.Utilities
             }
         }
 
+        #endregion
 
 #endif
 
