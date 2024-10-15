@@ -696,7 +696,7 @@ namespace KFrame.Editor.ScriptTemplates
                 //转换类型名称
                 lines[i] = lines[i].Replace(typeName, ScriptTemplateConfig.ScriptName);
                 //更新这一行的内容
-                sb.AppendLine(lines[i]);
+                sb.Append(lines[i]).Append('\n');
             }
 
             //计算一开始的深度，并填写开头代码
@@ -784,8 +784,8 @@ namespace KFrame.Editor.ScriptTemplates
                             i = k;
 
                             sb.Append(space).Append("{").Append('\n');
-                            sb.Append(space).AppendLine("    throw new System.NotImplementedException();");
-                            sb.Append(space).Append("}").Append('\n');
+                            sb.Append(space).Append("    throw new System.NotImplementedException();").Append('\n');
+                            sb.Append(space).Append("}");
                         }
 
                     }

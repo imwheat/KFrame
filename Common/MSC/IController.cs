@@ -42,7 +42,7 @@ namespace KFrame
         /// 注册System
         /// </summary>
         /// <typeparam name="T">System的类型</typeparam>
-        public T RegisterSystem<T>(T system) where T : ISystem;
+        public T RegisterSystem<T>(T system, string keyName) where T : ISystem;
         /// <summary>
         /// 注销Model
         /// </summary>

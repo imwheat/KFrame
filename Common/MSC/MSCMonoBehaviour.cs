@@ -131,17 +131,22 @@ namespace KFrame
             //新建System
             var system = new T();
 
-            return RegisterSystem(system);
+            return RegisterSystem(system, typeof(T).GetNiceName());
         }
         /// <summary>
         /// 注册System
         /// </summary>
         /// <typeparam name="T">System的类型</typeparam>
-        public T RegisterSystem<T>(T system) where T : ISystem
+        public T RegisterSystem<T>(T system, string keyName) where T : ISystem
         {
+            if (string.IsNullOrEmpty(keyName))
+            {
+                keyName = typeof(T).GetNiceName();
+            }
+            
             //设置Owner，塞入字典
             system.Owner = this;
-            systemDic[typeof(T).GetNiceName()] = system;
+            systemDic[keyName] = system;
 
             return system;
         }

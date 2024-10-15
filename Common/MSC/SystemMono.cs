@@ -23,6 +23,11 @@ namespace KFrame
         /// Model所属对象
         /// </summary>
         public IController Owner { get; set; }
+        /// <summary>
+        /// 获取System的keyName
+        /// </summary>
+        /// <returns></returns>
+        protected abstract string GetKeyName();
 
         #endregion
 
@@ -33,11 +38,11 @@ namespace KFrame
             //设置控制器
             if (controllerTransform == null)
             {
-                transform.GetComponent<IController>()?.RegisterSystem(this);
+                transform.GetComponent<IController>()?.RegisterSystem(this, GetKeyName());
             }
             else
             {
-                controllerTransform.GetComponent<IController>()?.RegisterSystem(this);
+                controllerTransform.GetComponent<IController>()?.RegisterSystem(this, GetKeyName());
             }
         }
 
