@@ -50,7 +50,7 @@ namespace KFrame.UI.Editor
         private void DrawTextGUI(LocalizationStringDataBase stringDataBase)
         {
             stringDataBase.Text = EditorGUILayout.TextField(
-                KGUIHelper.TempContent(LocalizationConfig.GetLanguageName(stringDataBase.LanguageId)),
+                KGUIHelper.TempContent(LocalizationDic.GetLanguageName(stringDataBase.LanguageId)),
                 stringDataBase.Text);
         }
         /// <summary>
@@ -59,7 +59,7 @@ namespace KFrame.UI.Editor
         private void DrawImageGUI(LocalizationImageDataBase imageDataBase)
         {
             imageDataBase.Sprite = (Sprite)EditorGUILayout.ObjectField(
-                KGUIHelper.TempContent(LocalizationConfig.GetLanguageName(imageDataBase.LanguageId)),
+                KGUIHelper.TempContent(LocalizationDic.GetLanguageName(imageDataBase.LanguageId)),
                 imageDataBase.Sprite, typeof(Sprite), false);
         }
         public override void OnInspectorGUI()

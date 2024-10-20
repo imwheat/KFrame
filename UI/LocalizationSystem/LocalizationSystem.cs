@@ -71,6 +71,7 @@ namespace KFrame.UI
 
         public static void Init()
         {
+            LocalizationDic.Init();
         }
         /// <summary>
         /// 更新游戏语言类型
@@ -84,7 +85,6 @@ namespace KFrame.UI
 
         #endregion
 
-
         #region UI数据获取
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace KFrame.UI
         /// <returns>没有的话返回""</returns>
         public static string GetLocalizedText(string key)
         {
-            return Config.GetLocalizedText(key);
+            return LocalizationDic.GetLocalizedText(key);
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace KFrame.UI
         /// <returns>没有的话返回false</returns>
         public static bool TryGetLocalizedText(string key, out string text)
         {
-            return Config.TryGetLocalizedText(key,out text);
+            return LocalizationDic.TryGetLocalizedText(key,out text);
         }
         /// <summary>
         /// 获取本地化的UI文本数据
@@ -121,7 +121,7 @@ namespace KFrame.UI
                 return null;
             }
 
-            return Config.GetUIText(key, language);
+            return LocalizationDic.GetUIText(key, language);
         }
         /// <summary>
         /// 获取当前语言类型的本地化UI文本数据
@@ -142,7 +142,7 @@ namespace KFrame.UI
         /// <returns>没有的话返回false</returns>
         public static bool TryGetUIText(string key, int language, out string text)
         {
-            return Config.TryGetUIText(key, language, out text);
+            return LocalizationDic.TryGetUIText(key, language, out text);
         }
         /// <summary>
         /// 获取本地化UI图片数据
@@ -158,7 +158,7 @@ namespace KFrame.UI
                 return null;
             }
 
-            return Config.GetUIImage(key, language);
+            return LocalizationDic.GetUIImage(key, language);
         }
         /// <summary>
         /// 获取当前语言类型的本地化UI图片数据
@@ -179,11 +179,10 @@ namespace KFrame.UI
         /// <returns>没有的话返回false</returns>
         public static bool TryGetUIImage(string key, int language, out Sprite sprite)
         {
-            return Config.TryGetUIImage(key, language, out sprite);
+            return LocalizationDic.TryGetUIImage(key, language, out sprite);
         }
 
         #endregion
-
 
         #region 事件
         
@@ -200,7 +199,7 @@ namespace KFrame.UI
         private static void OnLanguageValueChanged()
         {
             //加载语言包
-            Config.LoadLanguagePackage(languageType);
+            LocalizationDic.LoadLanguagePackage(languageType);
             EventBroadCastSystem.EventTrigger(OnUpdateLanguage, LanguageType);
         }
         

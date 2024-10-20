@@ -258,19 +258,18 @@ namespace KFrame.UI
         private void AutoSetLocalizationConfig()
         {
             //获取本地化配置
-            LocalizationConfig config = LocalizationConfig.Instance;
-            int[] languages = LocalizationConfig.GetLanguageIdArray();
+            int[] languages = LocalizationDic.GetLanguageIdArray();
             foreach (var setUIData in inputSetUIDatas)
             {
                 //如果已经有数据了那就跳过
-                if(config.GetUIText(setUIData.localizationKey, 0) != String.Empty) continue;
+                if(LocalizationDic.GetUIText(setUIData.localizationKey, 0) != String.Empty) continue;
                 //没有那就添加
                 LocalizationStringData stringData = new LocalizationStringData(setUIData.localizationKey);
                 foreach (var language in languages)
                 {
                     stringData.Datas.Add(new LocalizationStringDataBase(language, language == 2 ? setUIData.bindButton.KeyNameText.text : ""));
                 }
-                config.SaveStringData(stringData);
+                LocalizationDic.SaveUITextData(stringData);
             }
         }
         /// <summary>

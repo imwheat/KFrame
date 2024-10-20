@@ -164,7 +164,7 @@ namespace KFrame.UI
             }
 
             //获取语言的所有类型
-            int[] languages = LocalizationConfig.GetLanguageIdArray();
+            int[] languages = LocalizationDic.GetLanguageIdArray();
 
             //记录添加数据中没有的语言类型
             HashSet<int> stringLanguage = new HashSet<int>();
@@ -273,12 +273,12 @@ namespace KFrame.UI
             if (DrawImgData)
             {
                 ImageData.Key = Key;
-                LocalizationConfig.Instance .SaveImageData(ImageData);
+                LocalizationDic.SaveImageData(ImageData);
             }
             else
             {
                 StringData.Key = Key;
-                LocalizationConfig.Instance .SaveStringData(StringData);
+                LocalizationDic.SaveUITextData(StringData);
             }
             
         }
@@ -297,7 +297,7 @@ namespace KFrame.UI
             if (DrawImgData)
             {
                 //尝试获取数据
-                var imageData = LocalizationConfig.Instance.GetImageData(Key);
+                var imageData = LocalizationDic.GetImageData(Key);
                 if (imageData == null)
                 {
                     EditorUtility.DisplayDialog("提示", $"不存在Key为{Key}的数据", "确认");
@@ -312,7 +312,7 @@ namespace KFrame.UI
             else
             {
                 //尝试获取数据
-                var stringData = LocalizationConfig.Instance.GetStringData(Key);
+                var stringData = LocalizationDic.GetStringData(Key);
                 if (stringData == null)
                 {
                     EditorUtility.DisplayDialog("提示", $"不存在Key为{Key}的数据", "确认");

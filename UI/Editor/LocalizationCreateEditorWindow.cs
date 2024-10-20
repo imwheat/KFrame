@@ -105,7 +105,7 @@ namespace KFrame.UI.Editor
             //清空key
             saveKey = "";
             //获取所有语言类型，然后初始化每种语言数据
-            languages = LocalizationConfig.GetLanguageIdArray();
+            languages = LocalizationDic.GetLanguageIdArray();
             languageTexts = new Dictionary<int, string>();
             languageSprites = new Dictionary<int, Sprite>();
             //遍历设置key清空参数
@@ -185,7 +185,7 @@ namespace KFrame.UI.Editor
             GUILayout.Space(MStyle.spacing);
             foreach (var languageId in languages)
             {
-                languageTexts[languageId] = EditorGUILayout.TextField(LocalizationConfig.GetLanguageName(languageId),languageTexts[languageId], GUILayout.Height(MStyle.labelHeight));
+                languageTexts[languageId] = EditorGUILayout.TextField(LocalizationDic.GetLanguageName(languageId),languageTexts[languageId], GUILayout.Height(MStyle.labelHeight));
                 GUILayout.Space(MStyle.spacing);
             }
             
@@ -203,7 +203,7 @@ namespace KFrame.UI.Editor
             GUILayout.Space(MStyle.spacing);
             foreach (var language in languages)
             {
-                languageSprites[language] = (Sprite)EditorGUILayout.ObjectField(LocalizationConfig.GetLanguageName(language),languageSprites[language], typeof(Sprite), false);
+                languageSprites[language] = (Sprite)EditorGUILayout.ObjectField(LocalizationDic.GetLanguageName(language),languageSprites[language], typeof(Sprite), false);
                 GUILayout.Space(MStyle.spacing);
             }
             
@@ -255,7 +255,13 @@ namespace KFrame.UI.Editor
                 return false;
             }
             //key不能重复
-            else if (config.TextDic.ContainsKey(saveKey))
+            else if (curSelectType == SelectType.StringData && LocalizationDic.CheckUITextKey(saveKey))
+            {
+                EditorUtility.DisplayDialog("错误", $"已经有key为{saveKey}的数据存在了", "确认");
+                
+                return false;
+            }
+            else if (curSelectType == SelectType.ImageData && LocalizationDic.CheckUIImageKey(saveKey))
             {
                 EditorUtility.DisplayDialog("错误", $"已经有key为{saveKey}的数据存在了", "确认");
                 
@@ -286,7 +292,7 @@ namespace KFrame.UI.Editor
                 data.Datas.Add(new LocalizationStringDataBase(language, languageTexts[language]));
             }
             //然后保存添加
-            config.SaveStringData(data);
+            LocalizationDic.SaveUITextData(data);
             
             return true;
         }
@@ -309,7 +315,7 @@ namespace KFrame.UI.Editor
                 data.Datas.Add(new LocalizationImageDataBase(language, languageSprites[language]));
             }
             //然后保存添加
-            config.SaveImageData(data);
+            LocalizationDic.SaveImageData(data);
             
             return true;
         }

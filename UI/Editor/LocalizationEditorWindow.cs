@@ -166,6 +166,10 @@ namespace KFrame.UI.Editor
         /// </summary>
         private Action<LocalizationDataBase> selectCallback; 
         /// <summary>
+        /// 选择的回调
+        /// </summary>
+        private Action<string> selectTextCallback; 
+        /// <summary>
         /// 当前语言种类
         /// </summary>
         private int[] languageTypes;
@@ -253,6 +257,18 @@ namespace KFrame.UI.Editor
         /// 打开窗口选择文本数据
         /// </summary>
         /// <param name="selectCallback">选择后的回调</param>
+        public static void ShowWindowAsLocalizedTextSelector(Action<string> selectCallback)
+        {
+            LocalizationEditorWindow window = EditorWindow.GetWindow<LocalizationEditorWindow>();
+            window.titleContent = new GUIContent("点击选择一个Data");
+            window.editorMode = EditorMode.Select;
+            window.curSelectType = SelectType.LanguagePackageKey;
+            window.selectTextCallback = selectCallback;
+        }
+        /// <summary>
+        /// 打开窗口选择文本数据
+        /// </summary>
+        /// <param name="selectCallback">选择后的回调</param>
         public static void ShowWindowAsStringSelector(Action<LocalizationDataBase> selectCallback)
         {
             LocalizationEditorWindow window = EditorWindow.GetWindow<LocalizationEditorWindow>();
@@ -275,7 +291,7 @@ namespace KFrame.UI.Editor
         }
         private void Init()
         {
-            languageTypes = LocalizationConfig.GetLanguageIdArray();
+            languageTypes = LocalizationDic.GetLanguageIdArray();
             MStyle.visibleLanguageCount = languageTypes.Length;
             languageFilter = new Dictionary<int, bool>();
             languageGUIPos = new Dictionary<int, float>();
@@ -300,7 +316,7 @@ namespace KFrame.UI.Editor
             float toggleWidth = Mathf.Min(MStyle.filterTypeWidth / 3f, 20f);
             float labelWidth = MStyle.filterTypeWidth - toggleWidth - 5f;
             
-            EditorGUILayout.LabelField(LocalizationConfig.GetLanguageName(id),
+            EditorGUILayout.LabelField(LocalizationDic.GetLanguageName(id),
                 GUILayout.Width(labelWidth), GUILayout.Height(MStyle.labelHeight));
             
             GUILayout.Space(5f);
@@ -662,7 +678,7 @@ namespace KFrame.UI.Editor
                     dataRect.width -= MStyle.rowSpacing / 2f;
                     if (GUI.Button(dataRect, "选择"))
                     {
-                        Debug.Log("这个还没做");
+                        selectTextCallback?.Invoke(data.key);
                         Close();
                     }
                     break;
@@ -836,7 +852,7 @@ namespace KFrame.UI.Editor
             {
                 if (languageFilter[languageTypes[i]])
                 {
-                    EditorGUI.LabelField(titleRect, LocalizationConfig.GetLanguageName(languageTypes[i]), MStyle.RowTitle);
+                    EditorGUI.LabelField(titleRect, LocalizationDic.GetLanguageName(languageTypes[i]), MStyle.RowTitle);
                     titleRect.x += rowInterval;
                 }
             }
@@ -1113,6 +1129,33 @@ namespace KFrame.UI.Editor
                     EditorGUILayout.EndVertical();
                     break;
                 case EditorMode.Select:
+                    EditorGUILayout.BeginVertical();
+            
+                    GUILayout.FlexibleSpace();
+
+                    EditorGUILayout.BeginHorizontal();
+
+                    GUILayout.FlexibleSpace();
+
+                    if (curSelectType != SelectType.LanguagePackage)
+                    {
+                        if (GUILayout.Button("新建", GUILayout.Width(MStyle.filterTypeWidth)))
+                        {
+                            switch (curSelectType)
+                            {
+                                case SelectType.LanguagePackageKey:
+                                    LanguageKeyCreateWindow.ShowWindow();
+                                    break;
+                                default:
+                                    LocalizationCreateEditorWindow.ShowWindow();
+                                    break;
+                            }
+                        }
+                    }
+            
+                    EditorGUILayout.EndHorizontal();
+            
+                    EditorGUILayout.EndVertical();
                     break;
             }
         }
@@ -1137,7 +1180,7 @@ namespace KFrame.UI.Editor
             if(data == null || key == data.Key) return;
             
             //更新key
-            Config.UpdateStringDataKey(data, key);
+            LocalizationDic.UpdateUITextDataKey(data, key);
         }
         /// <summary>
         /// 更新key
@@ -1155,7 +1198,7 @@ namespace KFrame.UI.Editor
             if(data == null || key == data.Key) return;
             
             //更新key
-            Config.UpdateImageDataKey(data, key);
+            LocalizationDic.UpdateUIImageDataKey(data, key);
         }
         #endregion
         
