@@ -1,0 +1,46 @@
+.LayerButton {
+    border-radius: 8px;
+    border-width: 1px;
+    border-color: rgb(136, 136, 136);
+    background-color: rgb(84, 84, 84);
+    color: white;
+    padding: 6px 12px;
+    margin-right: 0;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    position: relative;
+    height: auto;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-left: 0;
+    width: auto;
+    -unity-text-align: middle-left;
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-bottom-width: 0;
+}
+
+.LayerButton:hover {
+    background-color: rgb(85, 85, 85);
+}
+
+.LayerButton:active {
+    background-color: rgb(34, 34, 34);
+}
+
+.LayerButton:disabled {
+    background-color: rgb(26, 26, 26);
+}
+
+.TreeViewer {
+    --grid-background-color: rgb(40, 40, 40);
+    --line-color: rgba(193, 196, 192, 0.1);
+    --thick-line-color: rgba(193, 196, 192, 0.1);
+    --spacing: 36;
+    flex-grow: 1;
+}

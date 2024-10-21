@@ -35,6 +35,15 @@ namespace KFrame.UI
         /// 初始化标记
         /// </summary>
         private static bool initted = false;
+        /// <summary>
+        /// 语言id
+        /// </summary>
+        private static int languageId = -1;
+
+        /// <summary>
+        /// 语言id
+        /// </summary>
+        public static int LanguageId => languageId;
 
         #endregion
         
@@ -65,6 +74,11 @@ namespace KFrame.UI
         #endregion
         
         #region 初始化
+
+        static LocalizationDic()
+        {
+            Init();
+        }
         
         /// <summary>
         /// 初始化字典
@@ -115,6 +129,9 @@ namespace KFrame.UI
         /// <param name="id">语言的id</param>
         public static void LoadLanguagePackage(int id)
         {
+            //乳沟相等就不需要更新
+            if(languageId == id) return;
+            
             //如果不存在该语言类型就报错然后返回
             if (!TryGetPackageReference(id, out LanguagePackageReference packageReference))
             {
@@ -128,6 +145,9 @@ namespace KFrame.UI
             {
                 throw new Exception($"错误：路径{packageReference.packagePath} 的语言包不存在！");
             }
+            
+            //更新语言id
+            languageId = id;
             
             //遍历每个数据，然后更新文本
             foreach (var data in package.datas)
@@ -488,6 +508,17 @@ namespace KFrame.UI
         public static string GetLanguageName(int id)
         {
             return packageDic.TryGetValue(id, out var data) ? data.LanguageName : "";
+        }
+        /// <summary>
+        /// 编辑器使用的
+        /// 更新本地化文本字典
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static void UpdateLocalizedTextDic(string key, string text)
+        {
+            textDictionary[key] = text;
         }
         
         #endif

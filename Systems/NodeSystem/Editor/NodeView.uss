@@ -1,0 +1,174 @@
+#input {
+    align-items: center;
+    justify-content: center;
+    flex-grow: 0.2;
+    flex-direction: column;
+    flex-wrap: wrap-reverse;
+}
+
+#Content {
+    flex-grow: 0.6;
+}
+
+#output {
+    flex-grow: 0.2;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+#title-label {
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    font-size: 20px;
+    flex-grow: 0.2;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-right: 2px;
+    padding-left: 2px;
+}
+
+#divider {
+    flex-grow: 0;
+    border-left-color: rgb(255, 255, 255);
+    border-right-color: rgb(255, 255, 255);
+    border-top-color: rgb(255, 255, 255);
+    border-bottom-color: rgb(255, 255, 255);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    flex-shrink: 0;
+    align-items: center;
+}
+
+#Content {
+    flex-grow: 1;
+    justify-content: space-between;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    transform-origin: center;
+    left: auto;
+    visibility: visible;
+    overflow: visible;
+}
+
+#unity-text-input {
+    align-content: center;
+    text-align: center;
+    -unity-text-align: middle-center;
+    font-size: 25px;
+    -unity-font-style: normal;
+}
+
+#BackGround {
+    flex-grow: 1;
+    border-left-width: 3px;
+    border-right-width: 3px;
+    border-top-width: 3px;
+    border-bottom-width: 3px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    background-color: rgb(72, 72, 72);
+    border-left-color: rgb(24, 24, 24);
+    border-right-color: rgb(24, 24, 24);
+    border-top-color: rgb(24, 24, 24);
+    border-bottom-color: rgb(24, 24, 24);
+    padding-top: 5px;
+    padding-bottom: 5px;
+    min-width: 200px;
+}
+
+:hover > #BackGround {
+    flex-grow: 1;
+    border-left-width: 3px;
+    border-right-width: 3px;
+    border-top-width: 3px;
+    border-bottom-width: 3px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-left-color: rgb(161, 161, 161);
+    border-right-color: rgb(161, 161, 161);
+    border-top-color: rgb(161, 161, 161);
+    border-bottom-color: rgb(161, 161, 161);
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+:selected > #BackGround {
+    flex-grow: 1;
+    border-left-width: 3px;
+    border-right-width: 3px;
+    border-top-width: 3px;
+    border-bottom-width: 3px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-left-color: rgb(255, 255, 255);
+    border-right-color: rgb(255, 255, 255);
+    border-top-color: rgb(255, 255, 255);
+    border-bottom-color: rgb(255, 255, 255);
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+:hover:selected > #BackGround {
+    flex-grow: 1;
+    border-left-width: 3px;
+    border-right-width: 3px;
+    border-top-width: 3px;
+    border-bottom-width: 3px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-left-color: rgb(231, 226, 151);
+    border-right-color: rgb(231, 226, 151);
+    border-top-color: rgb(231, 226, 151);
+    border-bottom-color: rgb(231, 226, 151);
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.running #NodeState {
+    flex-grow: 1;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    border-left-color: rgb(88, 255, 97);
+    border-right-color: rgb(88, 255, 97);
+    border-top-color: rgb(88, 255, 97);
+    border-bottom-color: rgb(88, 255, 97);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+.normal #BackGround {
+    background-color: rgb(51, 53, 56);
+}
+
+.composite #BackGround {
+    background-color: rgb(30, 46, 90);
+}
+
+.start #BackGround {
+    background-color: rgb(49, 126, 39);
+}

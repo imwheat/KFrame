@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="project://database/Assets/KFrame/Systems/NodeSystem/Editor/NodeView.uss?fileID=7433441132597879392&amp;guid=989400bfb4b7c7744b03b25c29ea6f10&amp;type=3#NodeView" />
+    <ui:VisualElement name="BackGround">
+        <ui:VisualElement name="input" />
+        <ui:VisualElement name="Content">
+            <ui:VisualElement name="divider" />
+            <ui:TextField picking-mode="Ignore" value="filler text" text="text" name="NodeName" style="flex-grow: 0.8; -unity-font: none; -unity-font-style: bold; font-size: 40px; -unity-text-align: middle-left;" />
+            <ui:Label display-tooltip-when-elided="false" name="title-label" text="Title" />
+            <ui:VisualElement name="divider" />
+        </ui:VisualElement>
+        <ui:VisualElement name="output" />
+        <ui:VisualElement name="NodeState" />
+    </ui:VisualElement>
+</ui:UXML>

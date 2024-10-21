@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/KFrame/Systems/NodeSystem/Editor/NodeEditor.uss?fileID=7433441132597879392&amp;guid=f4a3364a68e8eea4d89cc805596219e9&amp;type=3#NodeEditor" />
+    <ui:VisualElement style="flex-direction: row; flex-grow: 1;">
+        <ui:VisualElement name="LeftPanel" style="flex-grow: 0.3; right: auto; width: 200px; min-width: auto; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;">
+            <ui:Label text="属性Inspector" display-tooltip-when-elided="true" name="Inspector" style="font-size: 15px; -unity-font-style: bold;" />
+            <KFrame.Systems.NodeSystem.Editor.NodeInspectorViewer name="NodeInspectorViewer" style="flex-grow: 1; width: auto; min-width: auto; min-height: auto;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="RightPanel" style="flex-grow: 1;">
+            <uie:ObjectField label="节点树面板  当前正在编辑：" name="EditNodeTree" style="-unity-font-style: bold; font-size: 16px;" />
+            <ui:VisualElement name="Layers" style="height: auto; background-color: rgb(84, 84, 84); flex-direction: row;" />
+            <KFrame.Systems.NodeSystem.Editor.NodeTreeViewer focusable="true" class="GridBackground TreeViewer" style="flex-grow: 1;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

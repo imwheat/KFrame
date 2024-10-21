@@ -128,6 +128,25 @@ namespace KFrame.Systems
             mainInputModule.OnSwitchGamepad += OnSwitchGamepad;
         }
         #endregion
+
+        #region UI操作开关
+
+        /// <summary>
+        /// 启用UI输入控制
+        /// </summary>
+        public static void EnableUInput()
+        {
+            UIInput.EnableInput();
+        }
+        /// <summary>
+        /// 禁用UI输入控制
+        /// </summary>
+        public static void DisableUIInput()
+        {
+            UIInput.DisableInput();
+        }
+
+        #endregion
         
     }
 }

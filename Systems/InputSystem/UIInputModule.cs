@@ -88,6 +88,25 @@ namespace KFrame.Systems
             RegisterInput();
             inputAction.Enable();
         }
+
+        #region 开关控制
+
+        /// <summary>
+        /// 启用输入控制
+        /// </summary>
+        public void EnableInput()
+        {
+            inputAction.Enable();
+        }
+        /// <summary>
+        /// 禁用输入控制
+        /// </summary>
+        public void DisableInput()
+        {
+            inputAction.Disable();
+        }
+
+        #endregion
         
         #region 输入配置
       
@@ -125,6 +144,8 @@ namespace KFrame.Systems
         private void RegisterInput()
         {
             RegisterInputEvent(inputAction.UI.Navigate, OnNavigation, true, true,true);
+            RegisterInputEvent(inputAction.UI.Submit, OnSubmit, false, true,true);
+            RegisterInputEvent(inputAction.UI.Interact, OnSubmit, true, true,true);
             RegisterInputEvent(inputAction.UI.Esc, OnPressEsc, true);
         }
 
@@ -135,6 +156,7 @@ namespace KFrame.Systems
         private void UnRegisterInput()
         {
             UnRegisterInputEvent(inputAction.UI.Navigate, OnNavigation);
+            UnRegisterInputEvent(inputAction.UI.Submit, OnSubmit);
             UnRegisterInputEvent(inputAction.UI.Esc, OnPressEsc);
         }
 
@@ -153,6 +175,17 @@ namespace KFrame.Systems
             if (UISelectSystem.CurSelectUI == null || !UISelectSystem.CurSelectUI.IsInteractable() || !UISelectSystem.CurSelectUI.IsActive())
             {
                 UISelectSystem.SelectDefaultUI();
+            }
+        }
+        /// <summary>
+        /// 按下确认/交互键
+        /// </summary>
+        /// <param name="context">输入事件</param>
+        private void OnSubmit(InputAction.CallbackContext context)
+        {
+            if (DialogueSystem.DialogueSystem.InDialogue && context.ReadValueAsButton())
+            {
+                DialogueSystem.DialogueSystem.DialoguePanel?.Next();
             }
         }
         /// <summary>

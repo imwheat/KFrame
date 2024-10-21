@@ -123,6 +123,21 @@ namespace KFrame.Editor
         {
             return EditorUtility.DisplayDialog(title, message, ok);
         }
+        /// <summary>
+        /// 获取剪切板的文本内容
+        /// </summary>
+        /// <returns>剪切板的文本内容</returns>
+        public static string GetCopyText()
+        {
+            return GUIUtility.systemCopyBuffer;
+        }
+        /// <summary>
+        /// 设置剪切板的文本内容
+        /// </summary>
+        public static void SetCopyText(string text)
+        {
+            GUIUtility.systemCopyBuffer = text;
+        }
     }
 }
 

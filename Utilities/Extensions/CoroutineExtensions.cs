@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -47,6 +48,23 @@ namespace KFrame.Utilities
         }
 
         /// <summary>
+        /// 创建一个等待指定时间的协程，事件到后调用回调函数
+        /// </summary>
+        /// <param name="time">要等待的时间（以秒为单位）。</param>
+        /// <param name="callback">回调</param>
+        /// <returns>等待的协程。</returns>
+        public static IEnumerator WaitForSecondsCallback(float time, Action callback)
+        {
+            float currTime = 0;
+            while (currTime < time)
+            {
+                currTime += Time.deltaTime;
+                yield return new WaitForFrameStruct();
+            }
+            
+            callback?.Invoke();
+        }
+        /// <summary>
         /// 创建一个在实际时间上等待指定时间的协程。
         /// </summary>
         /// <param name="time">要等待的时间（以秒为单位）。</param>
@@ -61,6 +79,23 @@ namespace KFrame.Utilities
             }
         }
 
+        /// <summary>
+        /// 创建一个在实际时间上等待指定时间的协程，时间到后调用回调
+        /// </summary>
+        /// <param name="time">要等待的时间（以秒为单位）。</param>
+        /// <param name="callback">回调</param>
+        /// <returns>等待的协程。</returns>
+        public static IEnumerator WaitForSecondsRealtimeCallback(float time, Action callback)
+        {
+            float currTime = 0;
+            while (currTime < time)
+            {
+                currTime += Time.unscaledDeltaTime;
+                yield return new WaitForFrameStruct();
+            }
+            
+            callback?.Invoke();
+        }
         /// <summary>
         /// 创建一个等待一帧的协程
         /// </summary>
