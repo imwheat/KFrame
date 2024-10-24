@@ -124,10 +124,10 @@ namespace KFrame
             switch (resourcesSystemType)
             {
                 case ResourcesSystemType.Resources:
-                    KEditorUtility.RemoveScriptCompilationSymbol("ENABLE_ADDRESSABLES");
+                    RemoveScriptCompilationSymbol("ENABLE_ADDRESSABLES");
                     break;
                 case ResourcesSystemType.Addressables:
-                    KEditorUtility.AddScriptCompilationSymbol("ENABLE_ADDRESSABLES");
+                    AddScriptCompilationSymbol("ENABLE_ADDRESSABLES");
                     break;
             }
         }
@@ -139,6 +139,32 @@ namespace KFrame
         {
             // 清空存档
             SaveSystem.DeleteAll();
+        }
+        
+        /// <summary>
+        /// 增加编辑器宏
+        /// </summary>
+        public static void AddScriptCompilationSymbol(string name)
+        {
+            BuildTargetGroup buildTargetGroup = UnityEditor.EditorUserBuildSettings.selectedBuildTargetGroup;
+            string group = UnityEditor.PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
+            if (!group.Contains(name))
+            {
+                UnityEditor.PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, group + ";" + name);
+            }
+        }
+        /// <summary>
+        /// 移除编辑器宏
+        /// </summary>
+        public static void RemoveScriptCompilationSymbol(string name)
+        {
+            BuildTargetGroup buildTargetGroup = UnityEditor.EditorUserBuildSettings.selectedBuildTargetGroup;
+            string group = UnityEditor.PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
+            if (group.Contains(name))
+            {
+                UnityEditor.PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup,
+                    group.Replace(";" + name, string.Empty));
+            }
         }
 
 #endif

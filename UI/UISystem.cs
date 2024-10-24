@@ -32,11 +32,12 @@ namespace KFrame.UI
             //获取实例
             instance = FrameRoot.RootTransform.GetComponentInChildren<UISystem>();
             
-            //初始化字典
-            instance.InitDic();
-            
             //加载UI配置
             LoadUISettings();
+            
+            //初始化字典
+            instance.InitDic();
+
         }
         /// <summary>
         /// 初始化字典
@@ -51,6 +52,12 @@ namespace KFrame.UI
             foreach (UIData uiData in UIGlobalConfig.Instance.UIDatas)
             {
                 uiDataDic[uiData.UIKey] = uiData;
+                //缓存处理
+                if (uiData.IsCache)
+                {
+                    var ui = Show(uiData.UIKey);
+                    ui.Close();
+                }
             }
         }
 

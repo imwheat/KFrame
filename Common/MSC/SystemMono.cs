@@ -6,6 +6,7 @@
 //*******************************************************
 
 using System;
+using KFrame.Utilities;
 using UnityEngine;
 
 namespace KFrame
@@ -23,11 +24,6 @@ namespace KFrame
         /// Model所属对象
         /// </summary>
         public IController Owner { get; set; }
-        /// <summary>
-        /// 获取System的keyName
-        /// </summary>
-        /// <returns></returns>
-        protected abstract string GetKeyName();
 
         #endregion
 
@@ -38,11 +34,11 @@ namespace KFrame
             //设置控制器
             if (controllerTransform == null)
             {
-                transform.GetComponent<IController>()?.RegisterSystem(this, GetKeyName());
+                transform.GetComponent<IController>()?.RegisterSystem(this, GetType().GetNiceName());
             }
             else
             {
-                controllerTransform.GetComponent<IController>()?.RegisterSystem(this, GetKeyName());
+                controllerTransform.GetComponent<IController>()?.RegisterSystem(this, GetType().GetNiceName());
             }
         }
 

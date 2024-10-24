@@ -6,16 +6,12 @@
 //*****************************************************
 
 using UnityEngine;
-using KFrame.Systems;
 using System;
 using UnityEditor;
 using System.IO;
 using System.Reflection;
-using UnityEditor.AddressableAssets.Settings;
-using Object = UnityEngine.Object;
 using System.Collections.Generic;
 using KFrame.Attributes;
-using KFrame.UI;
 using KFrame.Utilities;
 using Sirenix.OdinInspector;
 
@@ -53,29 +49,6 @@ namespace KFrame.Editor
         /// 暂时使用的枚举的label字典
         /// </summary>
         private static Dictionary<string, string> tempEnumLabelDic = new Dictionary<string, string>();
-        /// <summary>
-        /// AB包配置路径
-        /// </summary>
-        private static string ABSettingsPath = "Assets/6.ProjectPresets/AddressableAssetsData/AddressableAssetSettings.asset";
-        /// <summary>
-        /// AB包配置
-        /// </summary>
-        public static AddressableAssetSettings ABSettings
-        {
-            get
-            {
-                if (_addressableAssetSettings == null)
-                {
-                    _addressableAssetSettings = AssetDatabase.LoadAssetAtPath<AddressableAssetSettings>(ABSettingsPath);
-                }
-
-                return _addressableAssetSettings;
-            }
-        }
-        /// <summary>
-        /// AB包配置
-        /// </summary>
-        private static AddressableAssetSettings _addressableAssetSettings;
 
         #region GUI显示工具
 
@@ -271,98 +244,6 @@ namespace KFrame.Editor
             EditorGUILayout.EndHorizontal();
         }
 
-        #endregion
-
-        #region AB包工具
-
-        /// <summary>
-        /// 把指定文件添加进AB包中
-        /// </summary>
-        /// <param name="obj">要添加的东西</param>
-        /// <param name="addressPath">保存路径</param>
-        /// <param name="saveGroup">保存的分组</param>
-        public static void AddToAddressable(Object obj, string addressPath, AddressableAssetGroup saveGroup)
-        {
-            AddToAddressable(GetPathHelper(obj), addressPath, saveGroup);
-        }
-        /// <summary>
-        /// 把指定文件添加进AB包中
-        /// </summary>
-        /// <param name="obj">要添加的东西</param>
-        /// <param name="addressPath">保存路径</param>
-        /// <param name="saveGroupName">保存的分组名称</param>
-        public static void AddToAddressable(Object obj, string addressPath, string saveGroupName)
-        {
-            AddToAddressable(GetPathHelper(obj), addressPath, ABSettings.FindGroup(saveGroupName));
-        }
-        /// <summary>
-        /// 把指定路径的文件添加进AB包中
-        /// </summary>
-        /// <param name="path">文件路径</param>
-        /// <param name="addressPath">保存路径</param>
-        /// <param name="saveGroupName">保存的分组名称</param>
-        public static void AddToAddressable(string path, string addressPath, string saveGroupName)
-        {
-            AddToAddressable(path, addressPath, ABSettings.FindGroup(saveGroupName));
-        }
-        /// <summary>
-        /// 把指定路径的文件添加进AB包中
-        /// </summary>
-        /// <param name="path">文件路径</param>
-        /// <param name="addressPath">保存路径</param>
-        /// <param name="saveGroup">要保存的group</param>
-        public static void AddToAddressable(string path, string addressPath, AddressableAssetGroup saveGroup)
-        {
-            if (string.IsNullOrEmpty(path) || string.IsNullOrEmpty(addressPath))
-            {
-                Debug.LogWarning("路径错误无法添加");
-                return;
-            }
-
-            if (saveGroup == null)
-            {
-                Debug.LogWarning("所选分组为空，无法添加");
-                return;
-            }
-
-            //添加到addressable里面
-            AddressableAssetEntry entry = ABSettings.CreateOrMoveEntry(AssetDatabase.AssetPathToGUID(path), saveGroup);
-            entry.address = addressPath;
-
-            //保存设置
-            ABSettings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, entry, true, true);
-            AssetDatabase.Refresh();
-            AssetDatabase.SaveAssets();
-        }
-        /// <summary>
-        /// 把指定文件从AB包中移除
-        /// </summary>
-        /// <param name="obj">要移除的文件</param>
-        public static void RemoveFromAddressable(Object obj)
-        {
-            RemoveFromAddressable(GetPathHelper(obj));
-        }
-        /// <summary>
-        /// 把指定路径的文件从AB包中移除
-        /// </summary>
-        /// <param name="path">文件路径</param>
-        public static void RemoveFromAddressable(string path)
-        {
-            //移除
-            ABSettings.RemoveAssetEntry(AssetDatabase.AssetPathToGUID(path));
-
-            //保存设置
-            EditorUtility.SetDirty(ABSettings);
-            AssetDatabase.Refresh();
-            AssetDatabase.SaveAssets();
-        }
-        /// <summary>
-        /// 获取Asset路径
-        /// </summary>
-        private static string GetPathHelper(Object obj)
-        {
-            return AssetDatabase.GetAssetPath(obj);
-        }
         #endregion
 
         #region 转化工具
@@ -607,7 +488,7 @@ namespace KFrame.Editor
         }
 
         #endregion
-        
+
         #region 其他通用操作
         
         /// <summary>
@@ -645,7 +526,7 @@ namespace KFrame.Editor
         /// 以默认的方式绘制的属性
         /// </summary>
         /// <param name="instance">被绘制的类的实例</param>
-        public static void DrawDefaultProperties<T>(T instance)
+        public static void DrawDefalutProperties<T>(T instance)
         {
             //获取所有字段
             FieldInfo[] fieldInfos = typeof(T).GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
