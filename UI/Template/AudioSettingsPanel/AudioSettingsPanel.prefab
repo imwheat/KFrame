@@ -377,15 +377,7 @@ MonoBehaviour:
       Text: "\u4E3B\u97F3\u91CF"
   ImageData:
     Key: 
-    Datas:
-    - LanguageId: 0
-      Sprite: {fileID: 0}
-    - LanguageId: 1
-      Sprite: {fileID: 0}
-    - LanguageId: 2
-      Sprite: {fileID: 0}
-    - LanguageId: 3
-      Sprite: {fileID: 0}
+    Datas: []
 --- !u!1 &897053219059194848
 GameObject:
   m_ObjectHideFlags: 0
@@ -412,8 +404,8 @@ RectTransform:
   m_GameObject: {fileID: 897053219059194848}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 3, y: 3, z: 3}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 7568715385834990160}
   - {fileID: 8278766508023596667}
@@ -646,15 +638,7 @@ MonoBehaviour:
       Text: "\u623B\u308B"
   ImageData:
     Key: 
-    Datas:
-    - LanguageId: 0
-      Sprite: {fileID: 0}
-    - LanguageId: 1
-      Sprite: {fileID: 0}
-    - LanguageId: 2
-      Sprite: {fileID: 0}
-    - LanguageId: 3
-      Sprite: {fileID: 0}
+    Datas: []
 --- !u!1 &1100580024969696314
 GameObject:
   m_ObjectHideFlags: 0
@@ -1009,15 +993,7 @@ MonoBehaviour:
       Text: "\u52B9\u679C\u97F3"
   ImageData:
     Key: 
-    Datas:
-    - LanguageId: 0
-      Sprite: {fileID: 0}
-    - LanguageId: 1
-      Sprite: {fileID: 0}
-    - LanguageId: 2
-      Sprite: {fileID: 0}
-    - LanguageId: 3
-      Sprite: {fileID: 0}
+    Datas: []
 --- !u!1 &1483191342208435318
 GameObject:
   m_ObjectHideFlags: 0
@@ -2075,15 +2051,7 @@ MonoBehaviour:
       Text: UI
   ImageData:
     Key: 
-    Datas:
-    - LanguageId: 0
-      Sprite: {fileID: 0}
-    - LanguageId: 1
-      Sprite: {fileID: 0}
-    - LanguageId: 2
-      Sprite: {fileID: 0}
-    - LanguageId: 3
-      Sprite: {fileID: 0}
+    Datas: []
 --- !u!1 &4542153059457270005
 GameObject:
   m_ObjectHideFlags: 0
@@ -3204,15 +3172,7 @@ MonoBehaviour:
       Text: "\u97F3\u697D"
   ImageData:
     Key: 
-    Datas:
-    - LanguageId: 0
-      Sprite: {fileID: 0}
-    - LanguageId: 1
-      Sprite: {fileID: 0}
-    - LanguageId: 2
-      Sprite: {fileID: 0}
-    - LanguageId: 3
-      Sprite: {fileID: 0}
+    Datas: []
 --- !u!1 &8480158394418877932
 GameObject:
   m_ObjectHideFlags: 0
@@ -3512,15 +3472,7 @@ MonoBehaviour:
       Text: "\u97F3\u58F0\u8A2D\u5B9A"
   ImageData:
     Key: 
-    Datas:
-    - LanguageId: 0
-      Sprite: {fileID: 0}
-    - LanguageId: 1
-      Sprite: {fileID: 0}
-    - LanguageId: 2
-      Sprite: {fileID: 0}
-    - LanguageId: 3
-      Sprite: {fileID: 0}
+    Datas: []
 --- !u!1 &8905562475410429703
 GameObject:
   m_ObjectHideFlags: 0
@@ -3724,17 +3676,17 @@ RectTransform:
   m_GameObject: {fileID: 9071925823465985299}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1344631363905563925}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 640, y: 480}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5102679567217333059
 CanvasRenderer:

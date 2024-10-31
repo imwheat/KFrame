@@ -18,7 +18,7 @@ namespace KFrame.UI
         public static UISettingsSave Settings;
 
         private static Dictionary<string, UIData> uiDataDic;
-        private static Dictionary<string, List<UIBase>> activeWindowsDic;
+        private static Dictionary<string, List<UIBase>> activeUIsDic;
 
         [SerializeField, ShowInInspector] private UILayerBase[] uiLayers;
         [SerializeField] private RectTransform dragLayer;
@@ -37,7 +37,7 @@ namespace KFrame.UI
             
             //初始化字典
             instance.InitDic();
-
+            
         }
         /// <summary>
         /// 初始化字典
@@ -46,7 +46,7 @@ namespace KFrame.UI
         {
             //新建字典
             uiDataDic = new Dictionary<string, UIData>();
-            activeWindowsDic = new Dictionary<string, List<UIBase>>();
+            activeUIsDic = new Dictionary<string, List<UIBase>>();
             
             //注册字典
             foreach (UIData uiData in UIGlobalConfig.Instance.UIDatas)
@@ -55,6 +55,7 @@ namespace KFrame.UI
                 //缓存处理
                 if (uiData.IsCache)
                 {
+                    Debug.Log(uiData.UIKey);
                     var ui = Show(uiData.UIKey);
                     ui.Close();
                 }
@@ -163,28 +164,29 @@ namespace KFrame.UI
         /// <summary>
         /// 显示UI
         /// </summary>
-        /// <param name="base">要显示的UI</param>
-        public static void Show(UIBase @base)
+        /// <param name="ui">要显示的UI</param>
+        public static void Show(UIBase ui)
         {
-            //设置父级，然后激活Gameobject
-            @base.transform.SetParent(UILayers[@base.CurrentLayer].Root);
-            @base.transform.SetAsLastSibling();
-            @base.gameObject.SetActive(true);
+            //设置父级，然后激活GameObject
+            ui.transform.SetParent(UILayers[ui.CurrentLayer].Root);
+            ui.transform.localScale = Vector3.one;
+            ui.transform.SetAsLastSibling();
+            ui.gameObject.SetActive(true);
             
             //放入激活的UI列表
-            if (!activeWindowsDic.TryGetValue(@base.UIKey, out var list))
+            if (!activeUIsDic.TryGetValue(ui.UIKey, out var list))
             {
                 list = new List<UIBase>();
-                activeWindowsDic[@base.UIKey] = list;
+                activeUIsDic[ui.UIKey] = list;
             }
-            list.Add(@base);
+            list.Add(ui);
         }
         /// <summary>
         /// 显示UI
         /// </summary>
         /// <param name="data">UI数据</param>
         /// <returns>UI</returns>
-        private static UIBase ShowWindow(UIData data)
+        private static UIBase ShowUI(UIData data)
         {
             //获取layer和UIKey
             int layerNum = data.LayerNum;
@@ -202,16 +204,17 @@ namespace KFrame.UI
             
             //尝试从对象池里面获取GameObject，并放到对应的层级
             GameObject uiObj = PoolSystem.GetOrNewGameObject(data.Prefab, UILayers[layerNum].Root);
+            uiObj.transform.localScale = Vector3.one;
             //然后获取UI组件，再进行初始化
             UIBase ui = uiObj.GetComponent<UIBase>();
             uiObj.transform.SetAsLastSibling();
             ui.Init(data);
             
             //然后把window放入Active的列表里面
-            if (!activeWindowsDic.TryGetValue(uiKey, out List<UIBase> uiList))
+            if (!activeUIsDic.TryGetValue(uiKey, out List<UIBase> uiList))
             {
                 uiList = new List<UIBase>();
-                activeWindowsDic[uiKey] = uiList;
+                activeUIsDic[uiKey] = uiList;
             }
             uiList.Add(ui);
             
@@ -226,9 +229,9 @@ namespace KFrame.UI
         public static UIBase Show(string uiKey)
         {
             //获取数据，然后显示UI
-            if (uiDataDic.TryGetValue(uiKey, out UIData windowData))
+            if (uiDataDic.TryGetValue(uiKey, out UIData uiData))
             {
-                return ShowWindow(windowData);
+                return ShowUI(uiData);
             }
 
             // 资源库中没有意味着不允许显示
@@ -273,9 +276,9 @@ namespace KFrame.UI
         /// <returns>没找到会为Null</returns>
         public static UIBase GetUI(string uiKey)
         {
-            if (activeWindowsDic.TryGetValue(uiKey, out List<UIBase> windowList) && windowList.Count > 0)
+            if (activeUIsDic.TryGetValue(uiKey, out List<UIBase> activeUIList) && activeUIList.Count > 0)
             {
-                return windowList[0];
+                return activeUIList[0];
             }
 
             return null;
@@ -295,9 +298,9 @@ namespace KFrame.UI
         /// 获取窗口(单个)
         /// </summary>
         /// <returns>没找到会为Null</returns>
-        public static UIBase GetUI(Type windowType)
+        public static UIBase GetUI(Type uiType)
         {
-            return GetUI(windowType.GetNiceName());
+            return GetUI(uiType.GetNiceName());
         }
         
         /// <summary>
@@ -316,9 +319,9 @@ namespace KFrame.UI
         /// <returns>没找到会为Null</returns>
         public static List<UIBase> GetUIAll(string uiKey)
         {
-            if (activeWindowsDic.TryGetValue(uiKey, out List<UIBase> windowList))
+            if (activeUIsDic.TryGetValue(uiKey, out List<UIBase> activeUIList))
             {
-                return windowList;
+                return activeUIList;
             }
 
             return null;
@@ -327,9 +330,9 @@ namespace KFrame.UI
         /// 获取窗口(所有)
         /// </summary>
         /// <returns>没找到会为Null</returns>
-        public static List<UIBase> GetUIAll(Type windowType)
+        public static List<UIBase> GetUIAll(Type uiType)
         {
-            return GetUIAll(windowType.GetNiceName());
+            return GetUIAll(uiType.GetNiceName());
         }
         /// <summary>
         /// 获取窗口(所有)
@@ -375,10 +378,10 @@ namespace KFrame.UI
         /// </summary>
         public static void DestroyUI(string uiKey)
         {
-            if (activeWindowsDic.TryGetValue(uiKey, out var windowList))
+            if (activeUIsDic.TryGetValue(uiKey, out var activeUIList))
             {
-                UIBase window = windowList[0];
-                windowList.RemoveAt(0);
+                UIBase window = activeUIList[0];
+                activeUIList.RemoveAt(0);
                 Destroy(window.gameObject);
             }
         }
@@ -387,14 +390,14 @@ namespace KFrame.UI
         /// </summary>
         public static void DestroyAllUI(string uiKey)
         {
-            if (activeWindowsDic.TryGetValue(uiKey, out var windowList))
+            if (activeUIsDic.TryGetValue(uiKey, out var activeUIList))
             {
                 //遍历删除每个窗口
-                for (int i = windowList.Count - 1; i >= 0; i--)
+                for (int i = activeUIList.Count - 1; i >= 0; i--)
                 {
-                    Destroy(windowList[i].gameObject);
+                    Destroy(activeUIList[i].gameObject);
                 }
-                windowList.Clear();
+                activeUIList.Clear();
             }
         }
 
@@ -403,48 +406,48 @@ namespace KFrame.UI
         #region 关闭UI
 
         /// <summary>
-        /// 关闭窗口
+        /// 关闭UI
         /// </summary>
-        /// <param name="base">要关闭的窗口</param>
-        public static void Close(UIBase @base)
+        /// <param name="ui">要关闭的UI</param>
+        public static void Close(UIBase ui)
         {
             //从Active列表里面去除，然后推进对象池
-            List<UIBase> windowList = GetUIAll(@base.Type);
-            windowList.Remove(@base);
-            PoolSystem.PushGameObject(@base.gameObject);
+            List<UIBase> windowList = GetUIAll(ui.Type);
+            windowList.Remove(ui);
+            PoolSystem.PushGameObject(ui.gameObject);
         }
 
         /// <summary>
-        /// 关闭窗口
+        /// 关闭UI
         /// </summary>
-        /// <param name="uiKey">窗口key</param>
+        /// <param name="uiKey">UIkey</param>
         public static void Close(string uiKey)
         {
-            if (TryGetUI(uiKey, out UIBase windowBase))
+            if (TryGetUI(uiKey, out UIBase ui))
             {
-                Close(windowBase);
+                Close(ui);
             }
             else Debug.Log($"GameFrame:找不到激活的{uiKey}");
         }
         /// <summary>
-        /// 关闭窗口
+        /// 关闭UI
         /// </summary>
-        /// <typeparam name="Type">窗口类型</typeparam>
+        /// <typeparam name="type">UI类型</typeparam>
         public static void Close(Type type)
         {
             Close(type.GetNiceName());
         }
         /// <summary>
-        /// 关闭窗口
+        /// 关闭UI
         /// </summary>
-        /// <typeparam name="T">窗口类型</typeparam>
-        public static void Close<T>()
+        /// <typeparam name="T">UI类型</typeparam>
+        public static void Close<T>() where T : UIBase
         {
             Close(typeof(T));
         }
 
         /// <summary>
-        /// 关闭全部窗口
+        /// 关闭全部UI
         /// </summary>
         public static void CloseAllUI(string uiKey)
         {
@@ -460,14 +463,14 @@ namespace KFrame.UI
             }
         }
         /// <summary>
-        /// 关闭全部窗口
+        /// 关闭全部UI
         /// </summary>
         public static void CloseAllUI(Type type)
         {
             CloseAllUI(type.GetNiceName());
         }
         /// <summary>
-        /// 关闭全部窗口
+        /// 关闭全部UI
         /// </summary>
         public static void CloseAllUI<T>()
         {

@@ -26,8 +26,8 @@ RectTransform:
   m_GameObject: {fileID: 897053219059194848}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 3, y: 3, z: 3}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 7568715385834990160}
   - {fileID: 8278766508023596667}
@@ -226,6 +226,9 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 339644227230752520}
   m_TargetGraphics: []
+  onSelect:
+    m_PersistentCalls:
+      m_Calls: []
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -241,30 +244,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  key: ui_ReturnButton
   Parent: {fileID: 3564764829719635703}
   target: {fileID: 339644227230752520}
   StringData:
     Key: 
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u8FD4\u56DE"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u8FD4\u56DE"
-    - Language: 2
+    - LanguageId: 2
       Text: Back
-    - Language: 3
+    - LanguageId: 3
       Text: "\u623B\u308B"
   ImageData:
     Key: 
-    Datas:
-    - Language: 0
-      Sprite: {fileID: 0}
-    - Language: 1
-      Sprite: {fileID: 0}
-    - Language: 2
-      Sprite: {fileID: 0}
-    - Language: 3
-      Sprite: {fileID: 0}
+    Datas: []
 --- !u!1 &1751545289541801321
 GameObject:
   m_ObjectHideFlags: 0
@@ -525,6 +521,9 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 6790149027095856756}
   m_TargetGraphics: []
+  onSelect:
+    m_PersistentCalls:
+      m_Calls: []
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -540,30 +539,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  key: ui_InputSettings
   Parent: {fileID: 3564764829719635703}
   target: {fileID: 6790149027095856756}
   StringData:
     Key: 
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u6309\u952E\u8BBE\u7F6E"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u6309\u9375\u8A2D\u7F6E"
-    - Language: 2
+    - LanguageId: 2
       Text: Input
-    - Language: 3
+    - LanguageId: 3
       Text: "\u30AD\u30FC\u8A2D\u5B9A"
   ImageData:
     Key: 
-    Datas:
-    - Language: 0
-      Sprite: {fileID: 0}
-    - Language: 1
-      Sprite: {fileID: 0}
-    - Language: 2
-      Sprite: {fileID: 0}
-    - Language: 3
-      Sprite: {fileID: 0}
+    Datas: []
 --- !u!1 &5122115797077206686
 GameObject:
   m_ObjectHideFlags: 0
@@ -743,6 +735,9 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 3031100785702663113}
   m_TargetGraphics: []
+  onSelect:
+    m_PersistentCalls:
+      m_Calls: []
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -758,30 +753,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  key: ui_AudioSettings
   Parent: {fileID: 3564764829719635703}
   target: {fileID: 3031100785702663113}
   StringData:
     Key: 
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u97F3\u6548\u8BBE\u7F6E"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u97F3\u6548\u8A2D\u7F6E"
-    - Language: 2
+    - LanguageId: 2
       Text: Audio
-    - Language: 3
+    - LanguageId: 3
       Text: "\u97F3\u58F0\u8A2D\u5B9A"
   ImageData:
     Key: 
-    Datas:
-    - Language: 0
-      Sprite: {fileID: 0}
-    - Language: 1
-      Sprite: {fileID: 0}
-    - Language: 2
-      Sprite: {fileID: 0}
-    - Language: 3
-      Sprite: {fileID: 0}
+    Datas: []
 --- !u!1 &5620435341534309027
 GameObject:
   m_ObjectHideFlags: 0
@@ -1037,6 +1025,9 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 2065462514761455294}
   m_TargetGraphics: []
+  onSelect:
+    m_PersistentCalls:
+      m_Calls: []
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -1052,30 +1043,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  key: ui_GameSettings
   Parent: {fileID: 3564764829719635703}
   target: {fileID: 2065462514761455294}
   StringData:
     Key: 
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u6E38\u620F\u8BBE\u7F6E"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u904A\u6232\u8A2D\u7F6E"
-    - Language: 2
+    - LanguageId: 2
       Text: Game Settings
-    - Language: 3
+    - LanguageId: 3
       Text: "\u30B2\u30E0\u8A2D\u5B9A"
   ImageData:
     Key: 
-    Datas:
-    - Language: 0
-      Sprite: {fileID: 0}
-    - Language: 1
-      Sprite: {fileID: 0}
-    - Language: 2
-      Sprite: {fileID: 0}
-    - Language: 3
-      Sprite: {fileID: 0}
+    Datas: []
 --- !u!1 &7648418859540984890
 GameObject:
   m_ObjectHideFlags: 0
@@ -1292,6 +1276,9 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 6570377193190052469}
   m_TargetGraphics: []
+  onSelect:
+    m_PersistentCalls:
+      m_Calls: []
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -1307,30 +1294,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37ca4cefb6ee93a46b27d7ad31329a40, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  key: ui_GraphicSettings
   Parent: {fileID: 3564764829719635703}
   target: {fileID: 6570377193190052469}
   StringData:
     Key: 
     Datas:
-    - Language: 0
+    - LanguageId: 0
       Text: "\u753B\u9762\u8BBE\u7F6E"
-    - Language: 1
+    - LanguageId: 1
       Text: "\u756B\u9762\u8A2D\u7F6E"
-    - Language: 2
+    - LanguageId: 2
       Text: Graphic
-    - Language: 3
+    - LanguageId: 3
       Text: "\u6620\u753B\u8A2D\u5B9A"
   ImageData:
     Key: 
-    Datas:
-    - Language: 0
-      Sprite: {fileID: 0}
-    - Language: 1
-      Sprite: {fileID: 0}
-    - Language: 2
-      Sprite: {fileID: 0}
-    - Language: 3
-      Sprite: {fileID: 0}
+    Datas: []
 --- !u!1 &9071925823465985299
 GameObject:
   m_ObjectHideFlags: 0
@@ -1359,17 +1339,17 @@ RectTransform:
   m_GameObject: {fileID: 9071925823465985299}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1344631363905563925}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 640, y: 480}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5102679567217333059
 CanvasRenderer:
@@ -1407,6 +1387,7 @@ MonoBehaviour:
   - Key: ui_ReturnButton
     Component: {fileID: 339644227230752520}
   defaultSelection: {fileID: 8342613518327701628}
+  panelScrollBar: {fileID: 0}
   anim: {fileID: 6881628761190842014}
   closeAnimTrigger: close
   gameSettingsBtn: {fileID: 8342613518327701628}

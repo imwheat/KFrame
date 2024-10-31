@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d750f7a5bcda4947b58e6a0706d3a42, type: 3}
   m_Name: FrameEditorConfig
   m_EditorClassIdentifier: 
-  addressableAssetSettings: {fileID: 11400000, guid: 317b60c92b7b8bf4ba1e20f4ea8e8209, type: 2}
+  addressableAssetSettings: {fileID: 0}
