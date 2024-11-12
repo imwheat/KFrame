@@ -21,10 +21,6 @@ namespace KFrame.UI.Editor
         /// </summary>
         private static LanguagePackage package;
         /// <summary>
-        /// 正在编辑的数据
-        /// </summary>
-        private static LanguagePackageTextData editData;
-        /// <summary>
         /// 原文GUIStyle
         /// </summary>
         private static GUIStyle originalTextStyle;
@@ -47,25 +43,9 @@ namespace KFrame.UI.Editor
             }
         }
         /// <summary>
-        /// 语言原文
-        /// </summary>
-        private static string originalText;
-        /// <summary>
-        /// 当前语言的id
-        /// </summary>
-        private static int languageId;
-        /// <summary>
-        /// 正在编辑的key
-        /// </summary>
-        private static string editKey;
-        /// <summary>
         /// 语言切换选项
         /// </summary>
         private static string[] languageSelections;
-        /// <summary>
-        /// 当前所选语言
-        /// </summary>
-        private static int languageSelectId;
         /// <summary>
         /// Label的高度
         /// </summary>
@@ -82,8 +62,29 @@ namespace KFrame.UI.Editor
         /// ScrollPos2
         /// </summary>
         private Vector2 _scrollPos2;
+        /// <summary>
+        /// 语言原文
+        /// </summary>
+        private string originalText;
+        /// <summary>
+        /// 当前语言的id
+        /// </summary>
+        private int languageId;
+        /// <summary>
+        /// 当前所选语言
+        /// </summary>
+        private int languageSelectId;
+        /// <summary>
+        /// 正在编辑的数据
+        /// </summary>
+        private LanguagePackageTextData editData;
+        /// <summary>
+        /// 正在编辑的key
+        /// </summary>
+        private string editKey;
         
         #endregion
+
 
         #region 编辑操作
 

@@ -66,8 +66,9 @@ namespace KFrame.UI
 
         #region 生命周期
 
-        protected virtual void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             if (anim == null) anim = GetComponent<Animator>();
         }
 

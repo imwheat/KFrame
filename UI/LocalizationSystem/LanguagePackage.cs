@@ -114,7 +114,7 @@ namespace KFrame.UI
         public void UpdateKey(string prevKey, string newKey)
         {
             //如果有这个数据，那就更新数据
-            if (keyDic.TryGetValue(prevKey, out var data))
+            if (KeyDic.TryGetValue(prevKey, out var data))
             {
                 data.key = newKey;
                 KeyDic.Remove(prevKey);

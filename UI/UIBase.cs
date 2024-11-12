@@ -67,6 +67,14 @@ namespace KFrame.UI
 
         #region 生命周期
 
+        protected virtual void Awake()
+        {
+            //注册事件
+            RegisterEventListener();
+            //更新语言
+            OnUpdateLanguage(LocalizationSystem.UILanguageType);
+        }
+
         protected virtual void OnEnable()
         {
             OnShow();
@@ -87,17 +95,12 @@ namespace KFrame.UI
         #region 通用基础虚方法
 
         /// <summary>
-        /// 初始化在创建额时候执行一次
+        /// 初始化在显示的时候执行一次
         /// </summary>
         public virtual void Init(UIData data)
         {
             currentLayer = data.LayerNum;
             uiKey = data.UIKey;
-            
-            //注册事件
-            RegisterEventListener();
-            //更新语言
-            OnUpdateLanguage(LocalizationSystem.UILanguageType);
         }
         /// <summary>
         /// 显示时执行额外内容
