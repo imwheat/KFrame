@@ -215,7 +215,7 @@ namespace KFrame.Systems
         /// <param name="pos">位置</param>
         /// <param name="parent">父级</param>
         /// <param name="callBack">回调</param>
-        public AudioPlay PlayAudio(AudioStack audioStack, Vector2 pos, Transform parent = null, Action callBack = null)
+        public AudioPlay PlayAudio(AudioStack audioStack, Vector3 pos, Transform parent = null, Action callBack = null)
         {
             //先生成音效播放器
             GameObject audioPlayer = PoolSystem.GetOrNewGameObject(audioStack.Is3D?effectAudioPlayPrefab3D:effectAudioPlayPrefab2D, parent);
@@ -319,14 +319,8 @@ namespace KFrame.Systems
 
     public class AudioModifyData
     {
-        public float Volume;
-        public float Pitch;
-
-        public AudioModifyData()
-        {
-            Volume = float.MinValue;
-            Pitch = float.MinValue;
-        }
+        public float Volume = float.MinValue;
+        public float Pitch = float.MinValue;
     }
 
 }

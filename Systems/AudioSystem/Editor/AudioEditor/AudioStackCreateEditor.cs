@@ -63,7 +63,7 @@ namespace KFrame.Systems
             /// 简化名称
             /// 如果末尾是数字或者'_'结尾的就去掉
             /// </summary>
-            private static string SimplizeName(string name)
+            private static string SimplifyName(string name)
             {
                 while (name.Length > 0 && ((name[^1] >= '0' && name[^1] <= '9') || name[^1] == '_'))
                 {
@@ -85,7 +85,7 @@ namespace KFrame.Systems
                 AudioClips = new List<AudioClip>() {clip};
             }
 
-            public AudioCreateGUI(AudioEditData baseData,List<AudioClip> clips): this(baseData, SimplizeName(clips[0].name))
+            public AudioCreateGUI(AudioEditData baseData,List<AudioClip> clips): this(baseData, SimplifyName(clips[0].name))
             {
                 AudioClips = new List<AudioClip>(clips);
             }
@@ -98,7 +98,7 @@ namespace KFrame.Systems
                 //如果关闭了同步更新那就返回
                 if(!SyncUpdate) return;
                 
-                EditData.CopyData(data);
+                EditData.CopyParams(data);
             }
         }
         
@@ -253,7 +253,7 @@ namespace KFrame.Systems
             DrawMainEditGUI();
             
             //绘制分割线
-            DrawDividBar();
+            DrawDivideBar();
             
             //绘制副编辑区域
             DrawSideEditGUI();
@@ -274,7 +274,7 @@ namespace KFrame.Systems
         /// <summary>
         /// 绘制侧栏分割线
         /// </summary>
-        private void DrawDividBar()
+        private void DrawDivideBar()
         {
             //分割线
             Rect lineRect = EditorGUILayout.GetControlRect(GUILayout.Width(MStyle.lineWidth), GUILayout.ExpandHeight(true));
@@ -695,14 +695,10 @@ namespace KFrame.Systems
             HashSet<string> creatingAudioNames = new HashSet<string>();
             foreach (AudioCreateGUI createGUI in createGUIs)
             {
-                if (creatingAudioNames.Contains(createGUI.AudioName))
+                if (!creatingAudioNames.Add(createGUI.AudioName))
                 {
                     EditorUtility.DisplayDialog("错误", $"创建 {createGUI.AudioName} 时发生错误：\n"+"已经包含重复名称的待创建音效。", "确认");
                     return;
-                }
-                else
-                {
-                    creatingAudioNames.Add(createGUI.AudioName);
                 }
             }
             

@@ -267,7 +267,7 @@ namespace KFrame.Systems
         /// <param name="pos">位置</param>
         /// <param name="parent">父级</param>
         /// <param name="callBack">回调事件</param>
-        public static AudioPlay PlayAudio(int id, Vector2 pos, Transform parent = null, Action callBack = null)
+        public static AudioPlay PlayAudio(int id, Vector3 pos, Transform parent = null, Action callBack = null)
         {
             //id为0表示没声音
             if (id == 0) return null;
@@ -405,6 +405,8 @@ namespace KFrame.Systems
         /// </summary>
         public static int GetAudioGroupIndex(AudioMixerGroup mixerGroup)
         {
+            if (mixerGroup == null) return 0;
+            
             //如果字典中有的话就返回
             if (groupDic2.TryGetValue(mixerGroup, out var value))
             {

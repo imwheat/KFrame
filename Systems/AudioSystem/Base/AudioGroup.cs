@@ -60,7 +60,7 @@ namespace KFrame.Systems
         /// 会受到父级影响
         /// </summary>
         [KLabelText("当前音量"), Range(0, 1f)]
-        private float curVolume;
+        private float curVolume =1f;
         /// <summary>
         /// 当前音量值
         /// 会受到父级影响
@@ -95,6 +95,15 @@ namespace KFrame.Systems
 
         #region 音量调节
 
+        /// <summary>
+        /// 初始化音量设置
+        /// </summary>
+        /// <param name="v"></param>
+        public void InitVolume(float v)
+        {
+            Volume = v;
+            curVolume = v;
+        }
         /// <summary>
         /// 更新音量
         /// </summary>

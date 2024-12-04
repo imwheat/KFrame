@@ -69,7 +69,7 @@ namespace KFrame.Systems
 
             float pitch = 1f;
 
-            if (audioStack.RandomMaxPitch != audioStack.RandomMinPitch)
+            if (!Mathf.Approximately(audioStack.RandomMaxPitch, audioStack.RandomMinPitch))
             {
                 pitch = UnityEngine.Random.Range(audioStack.RandomMinPitch, audioStack.RandomMaxPitch);
             }
@@ -91,11 +91,11 @@ namespace KFrame.Systems
             if (modifyData != null)
             {
                 AudioModifyData data = modifyData;
-                if (data.Pitch != float.MinValue)
+                if (!Mathf.Approximately(data.Pitch, float.MinValue))
                 {
                     pitch = data.Pitch;
                 }
-                if (data.Volume != float.MinValue)
+                if (!Mathf.Approximately(data.Volume, float.MinValue))
                 {
                     volume = data.Volume;
                 }
@@ -120,7 +120,7 @@ namespace KFrame.Systems
         {
             //防空初始化
             if (AudioSource == null) InitAudio();
-
+            
             //赋值
             onVanish += callBack;
             onVanishUnRegisterAudioPlay += unregister;

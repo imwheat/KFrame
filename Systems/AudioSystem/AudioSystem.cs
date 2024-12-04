@@ -40,7 +40,13 @@ namespace KFrame.Systems
                 {
                     group.AddChild(index);
                 }
+                
+                //设置默认音量
+                group.InitVolume(1f);
             }
+            
+            //初始化MixerGroup
+            m_AudioMixerGroupList = new List<AudioMixerGroup>(AudioLibrary.Instance.AudioMixerGroups);
         }
 
         public static float MasterVolume
@@ -139,7 +145,7 @@ namespace KFrame.Systems
         /// <param name="pos">位置</param>
         /// <param name="parent">父级</param>
         /// <param name="callBack">回调函数（播放完后触发）</param>
-        public static AudioPlay PlayAudio(AudioStack audioStack, Vector2 pos, Transform parent = null,
+        public static AudioPlay PlayAudio(AudioStack audioStack, Vector3 pos, Transform parent = null,
             Action callBack = null)
             => audioModule.PlayAudio(audioStack, pos, parent, callBack);
     }

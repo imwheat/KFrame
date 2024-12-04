@@ -172,6 +172,7 @@ namespace KFrame.Systems
         public void LoadTemplate(AudioEditData template)
         {
             AudioGroupIndex = template.AudioGroupIndex;
+            AudioMixerGroup = AudioDic.GetAudioMixerGroup(AudioGroupIndex);
             Volume = template.Volume;
             Pitch = template.Pitch;
             RandomMinPitch = template.RandomMinPitch;
@@ -191,9 +192,18 @@ namespace KFrame.Systems
         {
             AudioIndex = copyData.AudioIndex;
             AudioName = copyData.AudioName;
-            AudioGroupIndex = copyData.AudioGroupIndex;
             ClipIndexes = new List<int>(copyData.ClipIndexes);
             Clips = new List<AudioClip>(copyData.Clips);
+            CopyParams(copyData);
+        }
+        /// <summary>
+        /// 复制参数
+        /// </summary>
+        /// <param name="copyData">复制的数据</param>
+        public void CopyParams(AudioEditData copyData)
+        {
+            AudioGroupIndex = copyData.AudioGroupIndex;
+            AudioMixerGroup = copyData.AudioMixerGroup;
             Volume = copyData.Volume;
             Pitch = copyData.Pitch;
             RandomMinPitch = copyData.RandomMinPitch;
@@ -214,6 +224,7 @@ namespace KFrame.Systems
             //如果为空就返回
             if(audioStack == null) return;
 
+            audioStack.AudioName = AudioName;
             audioStack.AudioesType = AudioType;
             audioStack.AudioGroupIndex = AudioGroupIndex;
             audioStack.Clips = new List<int>(ClipIndexes);
