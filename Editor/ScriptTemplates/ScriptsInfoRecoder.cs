@@ -8,7 +8,7 @@ namespace KFrame.Editor.ScriptTemplates
         private static void OnWillCreateAsset(string path)
         {
             path = path.Replace(".meta", "");
-            if (path.EndsWith(".cs"))
+            if (path.EndsWith(".cs") && File.Exists(path)) 
             {
                 string str = File.ReadAllText(path);
                 str = str.Replace("#AUTHORNAME#", Environment.UserName).Replace(

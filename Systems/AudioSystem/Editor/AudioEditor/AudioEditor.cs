@@ -48,6 +48,15 @@ namespace KFrame.Systems
         #region GUI操作相关
 
         /// <summary>
+        /// 0默认
+        /// 1选择模式
+        /// </summary>
+        private int mode;
+        /// <summary>
+        /// 选择回调
+        /// </summary>
+        private Action<int> selectCallback;
+        /// <summary>
         /// 正在播放的音效下标
         /// </summary>
         private int playingAudioIndex = -1;
@@ -270,6 +279,16 @@ namespace KFrame.Systems
         {
             AudioEditor window = EditorWindow.GetWindow<AudioEditor>();
             window.titleContent = new GUIContent("音效编辑器");
+            window.mode = 0;
+            window.selectCallback = null;
+        }
+
+        public static void ShowAsSelector(Action<int> callback)
+        {
+            AudioEditor window = EditorWindow.GetWindow<AudioEditor>();
+            window.titleContent = new GUIContent("音效编辑器");
+            window.mode = 1;
+            window.selectCallback = callback;
         }
         /// <summary>
         /// 初始化编辑器窗口
@@ -571,15 +590,19 @@ namespace KFrame.Systems
             }
             
             GUILayout.Space(10f);
-            
-            //创建新的音效资源
-            GUILayout.Space(MStyle.spacing);
-            if (GUILayout.Button("创建新的音效资源", GUILayout.Height(MStyle.labelHeight)))
+
+            if (mode == 0)
             {
-                AudioStackCreateEditor.ShowWindow();
-            }
+                //创建新的音效资源
+                GUILayout.Space(MStyle.spacing);
+                if (GUILayout.Button("创建新的音效资源", GUILayout.Height(MStyle.labelHeight)))
+                {
+                    AudioStackCreateEditor.ShowWindow();
+                }
             
-            GUILayout.Space(10f);
+                GUILayout.Space(10f);
+            }
+
             
             audioScrollPosition = EditorGUILayout.BeginScrollView(audioScrollPosition);
 
@@ -941,47 +964,68 @@ namespace KFrame.Systems
                     EditorPlayAudio(clip);
                 }
             }
-            
-            //点击打开编辑
-            if(GUILayout.Button("编辑",GUILayout.Height(MStyle.labelHeight), GUILayout.Width(MStyle.btnWidth)))
+
+            if (mode == 0)
             {
+                //点击打开编辑
+                if(GUILayout.Button("编辑",GUILayout.Height(MStyle.labelHeight), GUILayout.Width(MStyle.btnWidth)))
+                {
                 
-                switch (option)
-                {
-                    case BGMGUI bgm:
-                        BGMEditor.ShowWindow(bgm.Stack);
-                        break;
-                    case AudioGUI audio:
-                        AudioStackEditor.ShowWindow(audio.Stack);
-                        break;
-                }
-            }
-            
-            //点击删除
-            if(GUILayout.Button("删除",GUILayout.Height(MStyle.labelHeight), GUILayout.Width(MStyle.btnWidth)))
-            {
-                if (EditorUtility.DisplayDialog("警告", "这是一项危险操作，你确定要删除吗？", "确定", "取消"))
-                {
                     switch (option)
                     {
                         case BGMGUI bgm:
-                            AudioLibrary.DeleteBGMStack(bgm.Stack);
-                            //然后删除GUI
-                            bgmGUIs.RemoveAt(i);
-                            Repaint();
+                            BGMEditor.ShowWindow(bgm.Stack);
                             break;
                         case AudioGUI audio:
-                            AudioLibrary.DeleteAudioStack(audio.Stack);
-                            //然后删除GUI
-                            audioGUIs.RemoveAt(i);
-                            Repaint();
+                            AudioStackEditor.ShowWindow(audio.Stack);
                             break;
                     }
-                    
-                    
                 }
+            
+                //点击删除
+                if(GUILayout.Button("删除",GUILayout.Height(MStyle.labelHeight), GUILayout.Width(MStyle.btnWidth)))
+                {
+                    if (EditorUtility.DisplayDialog("警告", "这是一项危险操作，你确定要删除吗？", "确定", "取消"))
+                    {
+                        switch (option)
+                        {
+                            case BGMGUI bgm:
+                                AudioLibrary.DeleteBGMStack(bgm.Stack);
+                                //然后删除GUI
+                                bgmGUIs.RemoveAt(i);
+                                Repaint();
+                                break;
+                            case AudioGUI audio:
+                                AudioLibrary.DeleteAudioStack(audio.Stack);
+                                //然后删除GUI
+                                audioGUIs.RemoveAt(i);
+                                Repaint();
+                                break;
+                        }
+                    
+                    }
 
+                }
             }
+            else if (mode == 1)
+            {
+                //点击选择
+                if(GUILayout.Button("选择",GUILayout.Height(MStyle.labelHeight), GUILayout.Width(MStyle.btnWidth)))
+                {
+                    //调用回调，然后关闭窗口
+                    switch (option)
+                    {
+                        case BGMGUI bgm:
+                            selectCallback?.Invoke(bgm.Stack.BGMIndex);
+                            break;
+                        case AudioGUI audio:
+                            selectCallback?.Invoke(audio.Stack.AudioIndex);
+                            break;
+                    }
+                    Close();
+                }
+            }
+            
             
             EditorGUILayout.EndHorizontal();
         }
