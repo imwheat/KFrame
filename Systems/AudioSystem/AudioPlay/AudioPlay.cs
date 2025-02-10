@@ -28,6 +28,10 @@ namespace KFrame.Systems
         /// </summary>
         public AudioGroup LinkedGroup;
         /// <summary>
+        /// StackVolume
+        /// </summary>
+        private float stackVolume;
+        /// <summary>
         /// 消失的时候的回调
         /// </summary>
         private event Action onVanish;
@@ -76,6 +80,7 @@ namespace KFrame.Systems
 
             //获取音量
             float volume = audioStack.Volume;
+            stackVolume = audioStack.Volume;
             //如果有分组信息，那就再根据分组的音量调节音量
             LinkedGroup = AudioDic.GetAudioGroup(audioStack.AudioGroupIndex);
             if (LinkedGroup != null)
@@ -163,7 +168,7 @@ namespace KFrame.Systems
         /// </summary>
         private void UpdateVolume(float volume)
         {
-            AudioSource.volume = volume;
+            AudioSource.volume = volume * stackVolume;
         }
         /// <summary>
         /// 卸载场景事件 

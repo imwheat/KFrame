@@ -113,6 +113,15 @@ namespace KFrame.Systems
             curVolume = GetVolume();
             //调用更新音量事件
             UpdateVolumeAction?.Invoke(CurVolume);
+            //子集音量更新
+            if (ChildrenIndexes is { Count: > 0 })
+            {
+                foreach (var id in ChildrenIndexes)
+                {
+                    var child = AudioDic.GetAudioGroup(id);
+                    child.UpdateVolume();
+                }
+            }
         }
         /// <summary>
         /// 更新音量

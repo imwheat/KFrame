@@ -25,12 +25,12 @@ namespace KFrame.Systems
         /// BGMMixerGroup
         /// </summary>
         [SerializeField, LabelText("BGMMixerGroupId")]
-        private int bgmMixerGroupIndex = 1;
+        private int bgmMixerGroupIndex = 2;
         /// <summary>
         /// SFXMixerGroup
         /// </summary>
         [SerializeField, LabelText("SFXMixerGroupId")]
-        private int sfxMixerGroupIndex = 2;
+        private int sfxMixerGroupIndex = 1;
         /// <summary>
         /// UIMixerGroup
         /// </summary>
@@ -161,6 +161,23 @@ namespace KFrame.Systems
             bgmGroup = AudioDic.GetAudioGroup(bgmMixerGroupIndex);
             sfxGroup = AudioDic.GetAudioGroup(sfxMixerGroupIndex);
             uiGroup = AudioDic.GetAudioGroup(uiMixerGroupIndex);
+            //绑定子集
+            var groups = AudioDic.GetAllAudioGroup();
+            foreach (var group in groups)
+            {
+                if (group.ChildrenIndexes != null)
+                {
+                    foreach (var id in group.ChildrenIndexes)
+                    {
+                        var childGroup = AudioDic.GetAudioGroup(id);
+                        if (childGroup != null)
+                        {
+                            childGroup.Parent = group;
+                        }
+                    }
+                }
+            }
+            
             
             //防空
             if(bgmPlayer==null)
